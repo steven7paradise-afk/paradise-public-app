@@ -6,6 +6,7 @@ EXPOSE 3000
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV DATABASE_URL=file:/data/production.sqlite
 
 COPY package.json package-lock.json* ./
 
@@ -17,4 +18,4 @@ RUN npm run build
 
 RUN npm cache clean --force
 
-CMD ["npm", "run", "docker-start"]
+CMD ["sh", "-c", "mkdir -p /data && npm run docker-start"]
