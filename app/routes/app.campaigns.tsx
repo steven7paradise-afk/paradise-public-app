@@ -24,6 +24,9 @@ type MetaobjectNode = {
 };
 
 const fieldDefinitions = [
+  { key: "is_active", name: "Active", type: "boolean" },
+  { key: "starts_at", name: "Start date", type: "date_time" },
+  { key: "ends_at", name: "End date", type: "date_time" },
   { key: "desktop_image", name: "Desktop image", type: "file_reference" },
   { key: "mobile_image", name: "Mobile image", type: "file_reference" },
   { key: "kicker", name: "Kicker", type: "single_line_text_field" },
@@ -91,12 +94,10 @@ async function ensureCampaignDefinition(admin: Awaited<ReturnType<typeof authent
 
   if (existing.metaobjectDefinitionByType?.id) {
     const existingKeys = new Set(existing.metaobjectDefinitionByType.fieldDefinitions.map((field) => field.key));
-    const missingImageFields = fieldDefinitions
-      .filter((field) => field.key === "desktop_image" || field.key === "mobile_image")
-      .filter((field) => !existingKeys.has(field.key));
+    const missingFields = fieldDefinitions.filter((field) => !existingKeys.has(field.key));
     const legacyFields = legacyFieldKeys.filter((key) => existingKeys.has(key));
 
-    if (!missingImageFields.length && !legacyFields.length) return;
+    if (!missingFields.length && !legacyFields.length) return;
 
     const updated = await runGraphql<{
       metaobjectDefinitionUpdate: {
@@ -122,7 +123,7 @@ async function ensureCampaignDefinition(admin: Awaited<ReturnType<typeof authent
         id: existing.metaobjectDefinitionByType.id,
         definition: {
           fieldDefinitions: [
-            ...missingImageFields.map((field) => ({
+            ...missingFields.map((field) => ({
               create: field,
             })),
             ...legacyFields.map((key) => ({
@@ -250,7 +251,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   try {
     await ensureCampaignDefinition(admin);
 
-    const editableFieldDefinitions = fieldDefinitions.filter((field) => !field.key.endsWith("_image"));
+    const appFormFieldKeys = ["kicker", "title", "text", "button_label", "button_link_url"];
+    const editableFieldDefinitions = fieldDefinitions.filter((field) => appFormFieldKeys.includes(field.key));
     const fields = editableFieldDefinitions.map((field) => ({
       key: field.key,
       value: String(formData.get(field.key) || "").trim(),
@@ -358,7 +360,8 @@ export default function CampaignsPage() {
           <h2>Campagna globale</h2>
           <p>
             Puoi selezionare le immagini direttamente da Shopify Metaobjects
-            usando i campi Desktop image e Mobile image.
+            usando i campi Desktop image e Mobile image. Usa Active, Start date
+            ed End date per attivare, disattivare o programmare la campagna.
           </p>
         </div>
 

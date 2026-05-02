@@ -4,6 +4,28 @@
   {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[block.settings.slot_code] %}
 {% endif %}
 
+{% assign has_global_campaign = false %}
+{% if global_campaign != blank %}
+  {% assign has_global_campaign = true %}
+{% endif %}
+{% assign global_campaign_active = true %}
+{% if global_campaign.is_active.value == false or global_campaign.is_active.value == 'false' %}
+  {% assign global_campaign_active = false %}
+{% endif %}
+{% assign now_timestamp = 'now' | date: '%s' | plus: 0 %}
+{% if global_campaign.starts_at.value != blank %}
+  {% assign start_timestamp = global_campaign.starts_at.value | date: '%s' | plus: 0 %}
+  {% if now_timestamp < start_timestamp %}
+    {% assign global_campaign_active = false %}
+  {% endif %}
+{% endif %}
+{% if global_campaign.ends_at.value != blank %}
+  {% assign end_timestamp = global_campaign.ends_at.value | date: '%s' | plus: 0 %}
+  {% if now_timestamp > end_timestamp %}
+    {% assign global_campaign_active = false %}
+  {% endif %}
+{% endif %}
+
 {% assign global_desktop_image = global_campaign.desktop_image.value %}
 {% assign global_mobile_image = global_campaign.mobile_image.value | default: global_desktop_image %}
 {% assign global_desktop_image_url = global_campaign.desktop_image_url.value %}
@@ -23,14 +45,16 @@
 {% assign adv_button_link = global_button_link | default: block.settings.banner_link %}
 {% assign adv_alt = block.settings.accessibility_label | default: adv_title | default: block.settings.slot_code %}
 {% assign has_global_image = false %}
-{% if global_desktop_image != blank or global_desktop_image_url != blank %}
-  {% assign has_global_image = true %}
+{% if global_campaign_active %}
+  {% if global_desktop_image != blank or global_desktop_image_url != blank %}
+    {% assign has_global_image = true %}
+  {% endif %}
 {% endif %}
 {% assign can_render_adv = false %}
 {% if block.settings.enabled and has_global_image %}
   {% assign can_render_adv = true %}
 {% endif %}
-{% if block.settings.enabled and adv_image != blank %}
+{% if block.settings.enabled and adv_image != blank and has_global_campaign == false %}
   {% assign can_render_adv = true %}
 {% endif %}
 {% assign has_copy = false %}
