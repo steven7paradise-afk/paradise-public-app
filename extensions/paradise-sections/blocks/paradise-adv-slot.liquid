@@ -1,0 +1,398 @@
+{% assign adv_id = 'paradise-adv-slot-' | append: block.id %}
+{% assign global_campaign = blank %}
+{% if block.settings.use_global_campaign and block.settings.slot_code != blank %}
+  {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[block.settings.slot_code] %}
+{% endif %}
+
+{% assign global_desktop_image_url = global_campaign.desktop_image_url.value %}
+{% assign global_mobile_image_url = global_campaign.mobile_image_url.value | default: global_desktop_image_url %}
+{% assign global_kicker = global_campaign.kicker.value %}
+{% assign global_title = global_campaign.title.value %}
+{% assign global_text = global_campaign.text.value %}
+{% assign global_button_label = global_campaign.button_label.value %}
+{% assign global_button_link = global_campaign.button_link_url.value %}
+
+{% assign adv_image = block.settings.desktop_image %}
+{% assign adv_mobile_image = block.settings.mobile_image | default: adv_image %}
+{% assign adv_kicker = global_kicker | default: block.settings.kicker %}
+{% assign adv_title = global_title | default: block.settings.title %}
+{% assign adv_text = global_text | default: block.settings.text %}
+{% assign adv_button_label = global_button_label | default: block.settings.button_label %}
+{% assign adv_button_link = global_button_link | default: block.settings.banner_link %}
+{% assign adv_alt = block.settings.accessibility_label | default: adv_title | default: block.settings.slot_code %}
+{% assign has_global_image = false %}
+{% if global_desktop_image_url != blank %}
+  {% assign has_global_image = true %}
+{% endif %}
+{% assign can_render_adv = false %}
+{% if block.settings.enabled and has_global_image %}
+  {% assign can_render_adv = true %}
+{% endif %}
+{% if block.settings.enabled and adv_image != blank %}
+  {% assign can_render_adv = true %}
+{% endif %}
+{% assign has_copy = false %}
+{% if adv_kicker != blank or adv_title != blank or adv_text != blank or adv_button_label != blank %}
+  {% assign has_copy = true %}
+{% endif %}
+
+{% if can_render_adv %}
+  <section
+    id="{{ adv_id }}"
+    class="paradise-adv-slot paradise-adv-slot--{{ block.settings.content_position }}"
+    data-adv-slot="{{ block.settings.slot_code | escape }}"
+    style="
+      --pas-height: {{ block.settings.desktop_height }}px;
+      --pas-mobile-height: {{ block.settings.mobile_height }}px;
+      --pas-image-position: {{ block.settings.desktop_image_position }};
+      --pas-mobile-image-position: {{ block.settings.mobile_image_position }};
+      --pas-overlay-opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+      --pas-radius: {{ block.settings.card_radius }}px;
+      --pas-content-width: {{ block.settings.content_max_width }}px;
+      --pas-text: {{ block.settings.text_color }};
+      --pas-button-bg-rgb: {{ block.settings.button_background.red }}, {{ block.settings.button_background.green }}, {{ block.settings.button_background.blue }};
+      --pas-button-bg-opacity: {{ block.settings.button_background_opacity | divided_by: 100.0 }};
+      --pas-button-text: {{ block.settings.button_text_color }};
+      --pas-button-border: {{ block.settings.button_border_color }};
+      --pas-button-hover-bg: {{ block.settings.button_hover_background }};
+      --pas-button-hover-text: {{ block.settings.button_hover_text_color }};
+      --pas-button-radius: {{ block.settings.button_radius }}px;
+      --pas-padding-top: {{ block.settings.padding_top }}px;
+      --pas-padding-bottom: {{ block.settings.padding_bottom }}px;
+      --pas-mobile-padding-top: {{ block.settings.mobile_padding_top }}px;
+      --pas-mobile-padding-bottom: {{ block.settings.mobile_padding_bottom }}px;
+    "
+    {{ block.shopify_attributes }}
+  >
+    {% if adv_button_link != blank %}
+      <a class="pas-frame" href="{{ adv_button_link }}" aria-label="{{ adv_alt | escape }}">
+    {% else %}
+      <div class="pas-frame pas-frame--static" role="img" aria-label="{{ adv_alt | escape }}">
+    {% endif %}
+      <picture class="pas-picture">
+        {% if has_global_image %}
+          {% if global_mobile_image_url != blank %}
+            <source media="(max-width: 749px)" srcset="{{ global_mobile_image_url | escape }}">
+          {% endif %}
+          <img src="{{ global_desktop_image_url | escape }}" alt="{{ adv_alt | escape }}" loading="lazy" width="2400" height="1200">
+        {% else %}
+          {% if adv_mobile_image != blank %}
+            <source media="(max-width: 749px)" srcset="{{ adv_mobile_image | image_url: width: 1200 }}">
+          {% endif %}
+          {{ adv_image | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750, 1100, 1500, 2000, 2400', sizes: '100vw', alt: adv_alt }}
+        {% endif %}
+      </picture>
+      <div class="pas-overlay" aria-hidden="true"></div>
+      {% if has_copy %}
+        <div class="pas-content">
+          <div class="pas-copy">
+            {% if adv_kicker != blank %}<p class="pas-kicker">{{ adv_kicker }}</p>{% endif %}
+            {% if adv_title != blank %}<h2 class="pas-title">{{ adv_title }}</h2>{% endif %}
+            {% if adv_text != blank %}
+              <div class="pas-text">
+                {% if global_text != blank %}
+                  {{ adv_text | newline_to_br }}
+                {% else %}
+                  {{ adv_text }}
+                {% endif %}
+              </div>
+            {% endif %}
+            {% if adv_button_label != blank %}
+              <span class="pas-button">{{ adv_button_label }}</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% if adv_button_link != blank %}
+      </a>
+    {% else %}
+      </div>
+    {% endif %}
+  </section>
+{% elsif request.design_mode %}
+  <div class="paradise-adv-slot-placeholder" data-adv-slot="{{ block.settings.slot_code | escape }}" {{ block.shopify_attributes }}>
+    <strong>Paradise ADV Slot vuoto</strong>
+    <span>Codice slot: {{ block.settings.slot_code | default: 'collection-adv-1' }}. Carica immagine desktop/mobile per mostrarlo nel sito.</span>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Paradise ADV Slot",
+  "target": "section",
+  "stylesheet": "paradise-adv-slot.css",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Mostra ADV",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "slot_code",
+      "label": "Codice slot",
+      "default": "collection-adv-1",
+      "info": "Usalo come riferimento interno, per esempio home-adv-1 o collection-adv-1."
+    },
+    {
+      "type": "checkbox",
+      "id": "use_global_campaign",
+      "label": "Usa campagna globale dall'app",
+      "default": true,
+      "info": "Se attivo, tutti i blocchi con lo stesso codice slot leggono la stessa campagna salvata nell'app."
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Immagine desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Immagine mobile"
+    },
+    {
+      "type": "text",
+      "id": "accessibility_label",
+      "label": "Testo accessibilita immagine",
+      "default": "Paradise promotional banner"
+    },
+    {
+      "type": "url",
+      "id": "banner_link",
+      "label": "Link banner"
+    },
+    {
+      "type": "header",
+      "content": "Testi"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Sopratitolo",
+      "default": "New edit"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Titolo",
+      "default": "Spring flush."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Descrizione",
+      "default": "<p>Campagna editoriale per collezioni, landing e pagine prodotto.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Testo bottone",
+      "default": "Shop now"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Posizione testo",
+      "default": "bottom-left",
+      "options": [
+        { "value": "bottom-left", "label": "Basso sinistra" },
+        { "value": "bottom-center", "label": "Basso centro" },
+        { "value": "center", "label": "Centro" },
+        { "value": "top-left", "label": "Alto sinistra" },
+        { "value": "top-center", "label": "Alto centro" },
+        { "value": "hidden", "label": "Solo immagine" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "min": 240,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "label": "Altezza desktop",
+      "default": 520
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "min": 220,
+      "max": 720,
+      "step": 20,
+      "unit": "px",
+      "label": "Altezza mobile",
+      "default": 420
+    },
+    {
+      "type": "select",
+      "id": "desktop_image_position",
+      "label": "Posizione immagine desktop",
+      "default": "center center",
+      "options": [
+        { "value": "center center", "label": "Centro" },
+        { "value": "center top", "label": "Alto" },
+        { "value": "center bottom", "label": "Basso" },
+        { "value": "left center", "label": "Sinistra" },
+        { "value": "right center", "label": "Destra" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_position",
+      "label": "Posizione immagine mobile",
+      "default": "center center",
+      "options": [
+        { "value": "center center", "label": "Centro" },
+        { "value": "center top", "label": "Alto" },
+        { "value": "center bottom", "label": "Basso" },
+        { "value": "left center", "label": "Sinistra" },
+        { "value": "right center", "label": "Destra" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Trasparenza overlay",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Angoli immagine",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 240,
+      "max": 760,
+      "step": 20,
+      "unit": "px",
+      "label": "Larghezza massima testo",
+      "default": 520
+    },
+    {
+      "type": "header",
+      "content": "Colori e CTA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Colore testo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Sfondo bottone",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_background_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Trasparenza sfondo bottone",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Testo bottone",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Bordo bottone",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background",
+      "label": "Sfondo bottone hover",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Testo bottone hover",
+      "default": "#171313"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Angoli bottone",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Spaziatura"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Spazio sopra desktop",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Spazio sotto desktop",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Spazio sopra mobile",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Spazio sotto mobile",
+      "default": 16
+    }
+  ]
+}
+{% endschema %}

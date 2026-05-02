@@ -1,0 +1,198 @@
+.paradise-adv-slot {
+  background: transparent;
+  color: var(--pas-text);
+  display: block;
+  padding: var(--pas-padding-top) 0 var(--pas-padding-bottom);
+}
+
+.pas-frame {
+  background: transparent;
+  border-radius: var(--pas-radius);
+  color: inherit;
+  display: block;
+  min-height: var(--pas-height);
+  overflow: hidden;
+  position: relative;
+  text-decoration: none;
+}
+
+.pas-frame--static {
+  cursor: default;
+}
+
+.pas-picture,
+.pas-picture img,
+.pas-placeholder {
+  display: block;
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.pas-picture img {
+  object-fit: cover;
+  object-position: var(--pas-image-position);
+}
+
+.pas-overlay {
+  background: rgba(0, 0, 0, var(--pas-overlay-opacity));
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.pas-content {
+  align-items: flex-end;
+  display: flex;
+  inset: 0;
+  justify-content: flex-start;
+  padding: clamp(20px, 4vw, 56px);
+  position: absolute;
+  z-index: 1;
+}
+
+.paradise-adv-slot--bottom-center .pas-content {
+  justify-content: center;
+  text-align: center;
+}
+
+.paradise-adv-slot--center .pas-content {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.paradise-adv-slot--top-left .pas-content {
+  align-items: flex-start;
+}
+
+.paradise-adv-slot--top-center .pas-content {
+  align-items: flex-start;
+  justify-content: center;
+  text-align: center;
+}
+
+.paradise-adv-slot--hidden .pas-content {
+  display: none;
+}
+
+.pas-copy {
+  max-width: var(--pas-content-width);
+}
+
+.pas-kicker {
+  color: inherit;
+  font-size: clamp(10px, 1vw, 12px);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  line-height: 1.25;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.pas-title {
+  color: inherit;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(34px, 6vw, 78px);
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 0.95;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.pas-text {
+  color: inherit;
+  font-size: clamp(14px, 1.4vw, 18px);
+  line-height: 1.55;
+  margin-top: 14px;
+  max-width: 46em;
+}
+
+.pas-text p {
+  margin: 0;
+}
+
+.pas-button {
+  align-items: center;
+  background: rgba(var(--pas-button-bg-rgb), var(--pas-button-bg-opacity));
+  border: 1px solid var(--pas-button-border);
+  border-radius: var(--pas-button-radius);
+  color: var(--pas-button-text);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  justify-content: center;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  margin-top: 22px;
+  min-height: 42px;
+  padding: 0 18px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.pas-frame[href]:hover .pas-button,
+.pas-button:hover {
+  background: var(--pas-button-hover-bg);
+  border-color: var(--pas-button-hover-bg);
+  color: var(--pas-button-hover-text);
+  transform: translateY(-1px);
+}
+
+.paradise-adv-slot-placeholder {
+  align-items: center;
+  background: transparent;
+  border: 1px dashed rgba(23, 19, 19, 0.28);
+  border-radius: 8px;
+  color: #171313;
+  display: grid;
+  gap: 6px;
+  min-height: 160px;
+  padding: 24px;
+  text-align: center;
+}
+
+.paradise-adv-slot-placeholder strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.paradise-adv-slot-placeholder span {
+  color: #6c5958;
+  font-size: 13px;
+}
+
+@media (max-width: 749px) {
+  .paradise-adv-slot {
+    padding: var(--pas-mobile-padding-top) 0 var(--pas-mobile-padding-bottom);
+  }
+
+  .pas-frame {
+    min-height: var(--pas-mobile-height);
+  }
+
+  .pas-picture img {
+    object-position: var(--pas-mobile-image-position);
+  }
+
+  .pas-content {
+    padding: 18px;
+  }
+
+  .pas-title {
+    font-size: clamp(30px, 12vw, 52px);
+  }
+
+  .pas-button {
+    min-height: 38px;
+    padding: 0 15px;
+  }
+}
