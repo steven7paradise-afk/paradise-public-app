@@ -31,9 +31,9 @@
 .pd-home-hero,
 .pd-home-panel,
 .pd-home-guide {
-  background: #fffdf9;
-  border: 1px solid rgba(34, 24, 22, 0.13);
-  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
 
 .pd-home-hero {
@@ -103,9 +103,9 @@
 }
 
 .pd-home-checklist {
-  background: #fbf7f1;
-  border: 1px solid rgba(184, 154, 97, 0.28);
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(23, 19, 19, 0.14);
+  border-radius: 6px;
   display: grid;
   gap: 14px;
   padding: 20px;
@@ -149,11 +149,9 @@
 }
 
 .pd-home-adv-card {
-  background:
-    linear-gradient(145deg, rgba(255, 253, 249, 0.96), rgba(251, 247, 241, 0.9)),
-    #fffdf9;
-  border: 1px solid rgba(34, 24, 22, 0.1);
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(23, 19, 19, 0.12);
+  border-radius: 6px;
   color: inherit;
   display: grid;
   gap: 10px;
@@ -167,8 +165,8 @@
 }
 
 .pd-home-adv-card:hover {
-  border-color: rgba(184, 154, 97, 0.44);
-  box-shadow: 0 18px 42px rgba(49, 30, 27, 0.08);
+  border-color: rgba(23, 19, 19, 0.3);
+  box-shadow: none;
   transform: translateY(-1px);
 }
 
@@ -230,7 +228,7 @@
 
 .pd-campaign-form input,
 .pd-campaign-form textarea {
-  background: #fffdf9;
+  background: transparent;
   border: 1px solid rgba(34, 24, 22, 0.16);
   border-radius: 8px;
   color: #171313;
@@ -269,9 +267,9 @@
 
 .pd-home-section {
   align-items: center;
-  background: #fbf7f1;
-  border: 1px solid rgba(34, 24, 22, 0.1);
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(23, 19, 19, 0.12);
+  border-radius: 6px;
   display: flex;
   gap: 14px;
   justify-content: space-between;
