@@ -24,6 +24,8 @@ type MetaobjectNode = {
 };
 
 const fieldDefinitions = [
+  { key: "desktop_image", name: "Desktop image", type: "file_reference" },
+  { key: "mobile_image", name: "Mobile image", type: "file_reference" },
   { key: "desktop_image_url", name: "Desktop image URL", type: "single_line_text_field" },
   { key: "mobile_image_url", name: "Mobile image URL", type: "single_line_text_field" },
   { key: "kicker", name: "Kicker", type: "single_line_text_field" },
@@ -68,20 +70,70 @@ async function runGraphql<TData extends Record<string, unknown>>(
 
 async function ensureCampaignDefinition(admin: Awaited<ReturnType<typeof authenticate.admin>>["admin"]) {
   const existing = await runGraphql<{
-    metaobjectDefinitionByType?: { id: string } | null;
+    metaobjectDefinitionByType?: {
+      id: string;
+      fieldDefinitions: Array<{ key: string }>;
+    } | null;
   }>(
     admin,
     `#graphql
       query CampaignDefinition($type: String!) {
         metaobjectDefinitionByType(type: $type) {
           id
+          fieldDefinitions {
+            key
+          }
         }
       }
     `,
     { type: campaignType },
   );
 
-  if (existing.metaobjectDefinitionByType?.id) return;
+  if (existing.metaobjectDefinitionByType?.id) {
+    const existingKeys = new Set(existing.metaobjectDefinitionByType.fieldDefinitions.map((field) => field.key));
+    const missingImageFields = fieldDefinitions
+      .filter((field) => field.key === "desktop_image" || field.key === "mobile_image")
+      .filter((field) => !existingKeys.has(field.key));
+
+    if (!missingImageFields.length) return;
+
+    const updated = await runGraphql<{
+      metaobjectDefinitionUpdate: {
+        metaobjectDefinition?: { id: string } | null;
+        userErrors: GraphQLUserError[];
+      };
+    }>(
+      admin,
+      `#graphql
+        mutation UpdateCampaignDefinition($id: ID!, $definition: MetaobjectDefinitionUpdateInput!) {
+          metaobjectDefinitionUpdate(id: $id, definition: $definition) {
+            metaobjectDefinition {
+              id
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      `,
+      {
+        id: existing.metaobjectDefinitionByType.id,
+        definition: {
+          fieldDefinitions: missingImageFields.map((field) => ({
+            create: field,
+          })),
+        },
+      },
+    );
+
+    const errors = updated.metaobjectDefinitionUpdate.userErrors as GraphQLUserError[];
+    if (errors.length) {
+      throw new Error(errors.map((error) => error.message).join(" "));
+    }
+
+    return;
+  }
 
   const created = await runGraphql<{
     metaobjectDefinitionCreate: {
@@ -192,7 +244,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   try {
     await ensureCampaignDefinition(admin);
 
-    const fields = fieldDefinitions.map((field) => ({
+    const editableFieldDefinitions = fieldDefinitions.filter((field) => !field.key.endsWith("_image"));
+    const fields = editableFieldDefinitions.map((field) => ({
       key: field.key,
       value: String(formData.get(field.key) || "").trim(),
     }));
@@ -298,9 +351,9 @@ export default function CampaignsPage() {
           <span className="pd-home-kicker">Campaign Manager</span>
           <h2>Campagna globale</h2>
           <p>
-            Per ora inserisci URL immagini gia&apos; online, per esempio immagini
-            caricate in Shopify Files/CDN. Il caricamento file diretto dentro
-            l&apos;app lo possiamo aggiungere come step successivo.
+            Puoi selezionare le immagini direttamente da Shopify Metaobjects
+            usando i campi Desktop image e Mobile image. Gli URL restano come
+            fallback se vuoi incollare un link CDN.
           </p>
         </div>
 

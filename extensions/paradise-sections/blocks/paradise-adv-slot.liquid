@@ -4,6 +4,8 @@
   {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[block.settings.slot_code] %}
 {% endif %}
 
+{% assign global_desktop_image = global_campaign.desktop_image.value %}
+{% assign global_mobile_image = global_campaign.mobile_image.value | default: global_desktop_image %}
 {% assign global_desktop_image_url = global_campaign.desktop_image_url.value %}
 {% assign global_mobile_image_url = global_campaign.mobile_image_url.value | default: global_desktop_image_url %}
 {% assign global_kicker = global_campaign.kicker.value %}
@@ -21,7 +23,7 @@
 {% assign adv_button_link = global_button_link | default: block.settings.banner_link %}
 {% assign adv_alt = block.settings.accessibility_label | default: adv_title | default: block.settings.slot_code %}
 {% assign has_global_image = false %}
-{% if global_desktop_image_url != blank %}
+{% if global_desktop_image != blank or global_desktop_image_url != blank %}
   {% assign has_global_image = true %}
 {% endif %}
 {% assign can_render_adv = false %}
@@ -71,10 +73,16 @@
     {% endif %}
       <picture class="pas-picture">
         {% if has_global_image %}
-          {% if global_mobile_image_url != blank %}
+          {% if global_mobile_image != blank %}
+            <source media="(max-width: 749px)" srcset="{{ global_mobile_image | image_url: width: 1200 }}">
+          {% elsif global_mobile_image_url != blank %}
             <source media="(max-width: 749px)" srcset="{{ global_mobile_image_url | escape }}">
           {% endif %}
-          <img src="{{ global_desktop_image_url | escape }}" alt="{{ adv_alt | escape }}" loading="lazy" width="2400" height="1200">
+          {% if global_desktop_image != blank %}
+            {{ global_desktop_image | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750, 1100, 1500, 2000, 2400', sizes: '100vw', alt: adv_alt }}
+          {% else %}
+            <img src="{{ global_desktop_image_url | escape }}" alt="{{ adv_alt | escape }}" loading="lazy" width="2400" height="1200">
+          {% endif %}
         {% else %}
           {% if adv_mobile_image != blank %}
             <source media="(max-width: 749px)" srcset="{{ adv_mobile_image | image_url: width: 1200 }}">
