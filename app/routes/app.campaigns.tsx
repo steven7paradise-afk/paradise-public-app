@@ -26,14 +26,14 @@ type MetaobjectNode = {
 const fieldDefinitions = [
   { key: "desktop_image", name: "Desktop image", type: "file_reference" },
   { key: "mobile_image", name: "Mobile image", type: "file_reference" },
-  { key: "desktop_image_url", name: "Desktop image URL", type: "single_line_text_field" },
-  { key: "mobile_image_url", name: "Mobile image URL", type: "single_line_text_field" },
   { key: "kicker", name: "Kicker", type: "single_line_text_field" },
   { key: "title", name: "Title", type: "single_line_text_field" },
   { key: "text", name: "Text", type: "multi_line_text_field" },
   { key: "button_label", name: "Button label", type: "single_line_text_field" },
   { key: "button_link_url", name: "Button link URL", type: "url" },
 ];
+
+const legacyFieldKeys = ["desktop_image_url", "mobile_image_url"];
 
 function normalizeHandle(value: FormDataEntryValue | null) {
   const raw = String(value || "collection-adv-1").trim().toLowerCase();
@@ -94,8 +94,9 @@ async function ensureCampaignDefinition(admin: Awaited<ReturnType<typeof authent
     const missingImageFields = fieldDefinitions
       .filter((field) => field.key === "desktop_image" || field.key === "mobile_image")
       .filter((field) => !existingKeys.has(field.key));
+    const legacyFields = legacyFieldKeys.filter((key) => existingKeys.has(key));
 
-    if (!missingImageFields.length) return;
+    if (!missingImageFields.length && !legacyFields.length) return;
 
     const updated = await runGraphql<{
       metaobjectDefinitionUpdate: {
@@ -120,9 +121,14 @@ async function ensureCampaignDefinition(admin: Awaited<ReturnType<typeof authent
       {
         id: existing.metaobjectDefinitionByType.id,
         definition: {
-          fieldDefinitions: missingImageFields.map((field) => ({
-            create: field,
-          })),
+          fieldDefinitions: [
+            ...missingImageFields.map((field) => ({
+              create: field,
+            })),
+            ...legacyFields.map((key) => ({
+              delete: { key },
+            })),
+          ],
         },
       },
     );
@@ -352,8 +358,7 @@ export default function CampaignsPage() {
           <h2>Campagna globale</h2>
           <p>
             Puoi selezionare le immagini direttamente da Shopify Metaobjects
-            usando i campi Desktop image e Mobile image. Gli URL restano come
-            fallback se vuoi incollare un link CDN.
+            usando i campi Desktop image e Mobile image.
           </p>
         </div>
 
@@ -368,14 +373,6 @@ export default function CampaignsPage() {
           <label>
             Codice slot
             <input name="handle" defaultValue={firstCampaign?.handle || "collection-adv-1"} placeholder="collection-adv-1" />
-          </label>
-          <label>
-            Immagine desktop URL
-            <input name="desktop_image_url" defaultValue={firstCampaign?.fields.desktop_image_url || ""} placeholder="https://cdn.shopify.com/..." />
-          </label>
-          <label>
-            Immagine mobile URL
-            <input name="mobile_image_url" defaultValue={firstCampaign?.fields.mobile_image_url || ""} placeholder="https://cdn.shopify.com/..." />
           </label>
           <label>
             Sopratitolo
