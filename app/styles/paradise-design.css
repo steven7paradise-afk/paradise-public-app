@@ -412,6 +412,26 @@
   color: #5f5a54;
 }
 
+.pd-preview-grid {
+  align-items: start;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+}
+
+.pd-preview-grid article {
+  display: grid;
+  gap: 8px;
+}
+
+.pd-preview-label {
+  color: #796269;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 .pd-campaign-preview {
   align-content: end;
   aspect-ratio: 16 / 6;
@@ -423,6 +443,12 @@
   gap: 10px;
   min-height: 260px;
   padding: clamp(18px, 4vw, 42px);
+}
+
+.pd-campaign-preview--mobile {
+  aspect-ratio: 9 / 14;
+  min-height: 520px;
+  padding: 24px;
 }
 
 .pd-campaign-preview--has-image {
@@ -479,6 +505,10 @@
   line-height: 0.95;
 }
 
+.pd-campaign-preview--mobile h3 {
+  font-size: clamp(34px, 6vw, 52px);
+}
+
 .pd-campaign-preview p {
   color: #604f52;
   font-size: 16px;
@@ -514,6 +544,7 @@
   .pd-home-sections,
   .pd-home-adv-grid,
   .pd-control-grid,
+  .pd-preview-grid,
   .pd-workflow-grid,
   .pd-campaign-form {
     grid-template-columns: 1fr;

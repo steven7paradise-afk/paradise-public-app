@@ -386,6 +386,16 @@ export default function CampaignsPage() {
     selectedCampaign?.fields.desktop_image_preview_url ||
     selectedCampaign?.fields.mobile_image_preview_url ||
     "";
+  const selectedMobilePreviewImage =
+    selectedCampaign?.fields.mobile_image_preview_url ||
+    selectedCampaign?.fields.desktop_image_preview_url ||
+    "";
+  const selectedPreviewStyle = (image: string) =>
+    image
+      ? {
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)), url("${image}")`,
+        }
+      : undefined;
 
   return (
     <main className="pd-home pd-campaigns" aria-label="Paradise ADV Campaign Manager">
@@ -533,20 +543,35 @@ export default function CampaignsPage() {
             <span className="pd-home-kicker">Preview</span>
             <h2>Anteprima {selectedCampaign.handle}</h2>
           </div>
-          <div
-            className={`pd-campaign-preview pd-campaign-preview--${textPositionTone(selectedCampaign.fields.text_position)} ${
-              selectedPreviewImage ? "pd-campaign-preview--has-image" : ""
-            }`}
-            style={
-              selectedPreviewImage
-                ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)), url("${selectedPreviewImage}")` }
-                : undefined
-            }
-          >
-            {selectedCampaign.fields.kicker ? <span>{selectedCampaign.fields.kicker}</span> : null}
-            {selectedCampaign.fields.title ? <h3>{selectedCampaign.fields.title}</h3> : <h3>Solo immagine</h3>}
-            {selectedCampaign.fields.text ? <p>{selectedCampaign.fields.text}</p> : <p>Nessuna descrizione impostata.</p>}
-            {selectedCampaign.fields.button_label ? <strong>{selectedCampaign.fields.button_label}</strong> : null}
+          <div className="pd-preview-grid">
+            <article>
+              <span className="pd-preview-label">Desktop</span>
+              <div
+                className={`pd-campaign-preview pd-campaign-preview--${textPositionTone(selectedCampaign.fields.text_position)} ${
+                  selectedPreviewImage ? "pd-campaign-preview--has-image" : ""
+                }`}
+                style={selectedPreviewStyle(selectedPreviewImage)}
+              >
+                {selectedCampaign.fields.kicker ? <span>{selectedCampaign.fields.kicker}</span> : null}
+                {selectedCampaign.fields.title ? <h3>{selectedCampaign.fields.title}</h3> : <h3>Solo immagine</h3>}
+                {selectedCampaign.fields.text ? <p>{selectedCampaign.fields.text}</p> : <p>Nessuna descrizione impostata.</p>}
+                {selectedCampaign.fields.button_label ? <strong>{selectedCampaign.fields.button_label}</strong> : null}
+              </div>
+            </article>
+            <article>
+              <span className="pd-preview-label">Mobile</span>
+              <div
+                className={`pd-campaign-preview pd-campaign-preview--mobile pd-campaign-preview--${textPositionTone(
+                  selectedCampaign.fields.text_position,
+                )} ${selectedMobilePreviewImage ? "pd-campaign-preview--has-image" : ""}`}
+                style={selectedPreviewStyle(selectedMobilePreviewImage)}
+              >
+                {selectedCampaign.fields.kicker ? <span>{selectedCampaign.fields.kicker}</span> : null}
+                {selectedCampaign.fields.title ? <h3>{selectedCampaign.fields.title}</h3> : <h3>Solo immagine</h3>}
+                {selectedCampaign.fields.text ? <p>{selectedCampaign.fields.text}</p> : <p>Nessuna descrizione impostata.</p>}
+                {selectedCampaign.fields.button_label ? <strong>{selectedCampaign.fields.button_label}</strong> : null}
+              </div>
+            </article>
           </div>
         </section>
       ) : null}
