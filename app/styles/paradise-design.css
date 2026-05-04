@@ -227,7 +227,8 @@
 }
 
 .pd-campaign-form input,
-.pd-campaign-form textarea {
+.pd-campaign-form textarea,
+.pd-campaign-form select {
   background: transparent;
   border: 1px solid rgba(34, 24, 22, 0.16);
   border-radius: 8px;
@@ -367,6 +368,36 @@
   gap: 10px;
   min-height: 260px;
   padding: clamp(18px, 4vw, 42px);
+}
+
+.pd-campaign-preview--center {
+  justify-items: center;
+  text-align: center;
+}
+
+.pd-campaign-preview--right {
+  justify-items: end;
+  text-align: right;
+}
+
+.pd-campaign-preview--top-left {
+  align-content: start;
+}
+
+.pd-campaign-preview--top-center {
+  align-content: start;
+  justify-items: center;
+  text-align: center;
+}
+
+.pd-campaign-preview--top-right {
+  align-content: start;
+  justify-items: end;
+  text-align: right;
+}
+
+.pd-campaign-preview--hidden > * {
+  display: none;
 }
 
 .pd-campaign-preview span {

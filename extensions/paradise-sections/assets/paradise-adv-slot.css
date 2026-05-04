@@ -57,6 +57,11 @@
   text-align: center;
 }
 
+.paradise-adv-slot--bottom-right .pas-content {
+  justify-content: flex-end;
+  text-align: right;
+}
+
 .paradise-adv-slot--center .pas-content {
   align-items: center;
   justify-content: center;
@@ -71,6 +76,12 @@
   align-items: flex-start;
   justify-content: center;
   text-align: center;
+}
+
+.paradise-adv-slot--top-right .pas-content {
+  align-items: flex-start;
+  justify-content: flex-end;
+  text-align: right;
 }
 
 .paradise-adv-slot--hidden .pas-content {

@@ -34,6 +34,7 @@ const fieldDefinitions = [
   { key: "text", name: "Descrizione", type: "multi_line_text_field" },
   { key: "button_label", name: "Testo bottone", type: "single_line_text_field" },
   { key: "button_link_url", name: "Link bottone", type: "url" },
+  { key: "text_position", name: "Posizione testo", type: "single_line_text_field" },
 ];
 
 const legacyFieldKeys = ["desktop_image_url", "mobile_image_url"];
@@ -63,6 +64,19 @@ function campaignStatus(fields: Record<string, string>) {
   if (startsAt && now < startsAt) return { label: "Programmata", tone: "scheduled" };
   if (endsAt && now > endsAt) return { label: "Scaduta", tone: "off" };
   return { label: "Attiva", tone: "active" };
+}
+
+function textPositionTone(value = "") {
+  const normalized = value.trim().toLowerCase();
+
+  if (["destra", "right", "basso destra", "bottom-right", "bottom right"].includes(normalized)) return "right";
+  if (["centro", "center", "basso centro", "bottom-center", "bottom center"].includes(normalized)) return "center";
+  if (["alto destra", "top-right", "top right"].includes(normalized)) return "top-right";
+  if (["alto centro", "top-center", "top center"].includes(normalized)) return "top-center";
+  if (["alto sinistra", "top-left", "top left"].includes(normalized)) return "top-left";
+  if (["nascosto", "hidden", "solo immagine"].includes(normalized)) return "hidden";
+
+  return "left";
 }
 
 async function runGraphql<TData extends Record<string, unknown>>(
@@ -263,7 +277,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   try {
     await ensureCampaignDefinition(admin);
 
-    const appFormFieldKeys = ["kicker", "title", "text", "button_label", "button_link_url"];
+    const appFormFieldKeys = ["kicker", "title", "text", "button_label", "button_link_url", "text_position"];
     const editableFieldDefinitions = fieldDefinitions.filter((field) => appFormFieldKeys.includes(field.key));
     const fields = editableFieldDefinitions.map((field) => ({
       key: field.key,
@@ -409,6 +423,18 @@ export default function CampaignsPage() {
             Link bottone
             <input name="button_link_url" defaultValue={firstCampaign?.fields.button_link_url || ""} placeholder="https://..." />
           </label>
+          <label>
+            Posizione testo
+            <select name="text_position" defaultValue={firstCampaign?.fields.text_position || "sinistra"}>
+              <option value="sinistra">Sinistra</option>
+              <option value="centro">Centro</option>
+              <option value="destra">Destra</option>
+              <option value="alto sinistra">Alto sinistra</option>
+              <option value="alto centro">Alto centro</option>
+              <option value="alto destra">Alto destra</option>
+              <option value="nascosto">Solo immagine</option>
+            </select>
+          </label>
           <button className="pd-home-button" type="submit">Salva campagna globale</button>
         </Form>
       </section>
@@ -469,7 +495,7 @@ export default function CampaignsPage() {
             <span className="pd-home-kicker">Preview</span>
             <h2>Anteprima testo campagna</h2>
           </div>
-          <div className="pd-campaign-preview">
+          <div className={`pd-campaign-preview pd-campaign-preview--${textPositionTone(firstCampaign.fields.text_position)}`}>
             {firstCampaign.fields.kicker ? <span>{firstCampaign.fields.kicker}</span> : null}
             {firstCampaign.fields.title ? <h3>{firstCampaign.fields.title}</h3> : <h3>Solo immagine</h3>}
             {firstCampaign.fields.text ? <p>{firstCampaign.fields.text}</p> : <p>Nessuna descrizione impostata.</p>}

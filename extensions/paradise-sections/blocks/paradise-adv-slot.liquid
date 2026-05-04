@@ -42,6 +42,26 @@
 {% assign global_text = global_campaign.text.value %}
 {% assign global_button_label = global_campaign.button_label.value %}
 {% assign global_button_link = global_campaign.button_link_url.value %}
+{% assign global_text_position_raw = global_campaign.text_position.value | downcase | strip %}
+{% assign adv_content_position = block.settings.content_position %}
+{% if has_global_campaign and global_text_position_raw != blank %}
+  {% case global_text_position_raw %}
+    {% when 'destra', 'right', 'basso destra', 'bottom-right', 'bottom right' %}
+      {% assign adv_content_position = 'bottom-right' %}
+    {% when 'centro', 'center', 'basso centro', 'bottom-center', 'bottom center' %}
+      {% assign adv_content_position = 'bottom-center' %}
+    {% when 'sinistra', 'left', 'basso sinistra', 'bottom-left', 'bottom left' %}
+      {% assign adv_content_position = 'bottom-left' %}
+    {% when 'alto destra', 'top-right', 'top right' %}
+      {% assign adv_content_position = 'top-right' %}
+    {% when 'alto centro', 'top-center', 'top center' %}
+      {% assign adv_content_position = 'top-center' %}
+    {% when 'alto sinistra', 'top-left', 'top left' %}
+      {% assign adv_content_position = 'top-left' %}
+    {% when 'nascosto', 'hidden', 'solo immagine' %}
+      {% assign adv_content_position = 'hidden' %}
+  {% endcase %}
+{% endif %}
 
 {% assign adv_image = block.settings.desktop_image %}
 {% assign adv_mobile_image = block.settings.mobile_image | default: adv_image %}
@@ -80,7 +100,7 @@
 {% if can_render_adv %}
   <section
     id="{{ adv_id }}"
-    class="paradise-adv-slot paradise-adv-slot--{{ block.settings.content_position }}"
+    class="paradise-adv-slot paradise-adv-slot--{{ adv_content_position }}"
     data-adv-slot="{{ block.settings.slot_code | escape }}"
     style="
       --pas-height: {{ block.settings.desktop_height }}px;
@@ -261,9 +281,11 @@
       "options": [
         { "value": "bottom-left", "label": "Basso sinistra" },
         { "value": "bottom-center", "label": "Basso centro" },
+        { "value": "bottom-right", "label": "Basso destra" },
         { "value": "center", "label": "Centro" },
         { "value": "top-left", "label": "Alto sinistra" },
         { "value": "top-center", "label": "Alto centro" },
+        { "value": "top-right", "label": "Alto destra" },
         { "value": "hidden", "label": "Solo immagine" }
       ]
     },
