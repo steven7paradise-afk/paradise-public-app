@@ -366,6 +366,8 @@ export default function CampaignsPage() {
             Usa lo stesso codice, per esempio <strong>collection-adv-1</strong>,
             in tutti i blocchi Paradise ADV Slot. Quando salvi qui, ogni blocco
             con quel codice prende la nuova immagine e i nuovi testi.
+            Per le collezioni puoi anche usare il codice automatico{" "}
+            <strong>collection-handle-collezione</strong>.
           </p>
         </div>
         <div className="pd-home-checklist">
@@ -374,6 +376,7 @@ export default function CampaignsPage() {
             <li>Crea o modifica la campagna qui sotto.</li>
             <li>Nel Theme Editor aggiungi Paradise ADV Slot.</li>
             <li>Scrivi lo stesso codice slot.</li>
+            <li>Per una collezione attiva “Usa campagna della collezione corrente”.</li>
             <li>Lascia attivo “Usa campagna globale dall&apos;app”.</li>
             <li>Salva: tutti gli slot uguali si aggiornano insieme.</li>
           </ol>
@@ -388,6 +391,8 @@ export default function CampaignsPage() {
             Puoi selezionare le immagini direttamente da Shopify Metaobjects
             usando i campi Desktop image e Mobile image. Usa Active, Start date
             ed End date per attivare, disattivare o programmare la campagna.
+            Per una pagina collezione crea un handle tipo{" "}
+            <strong>collection-extension-clip-paradise</strong>.
           </p>
         </div>
 
@@ -452,8 +457,8 @@ export default function CampaignsPage() {
           </article>
           <article>
             <span>02</span>
-            <h3>Copia handle</h3>
-            <p>Usa lo stesso handle nel campo Codice slot del blocco ADV.</p>
+            <h3>Scegli sorgente</h3>
+            <p>Usa codice manuale oppure attiva la campagna automatica della collezione.</p>
           </article>
           <article>
             <span>03</span>

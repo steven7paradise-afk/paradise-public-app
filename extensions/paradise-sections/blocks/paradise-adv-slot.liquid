@@ -1,7 +1,11 @@
 {% assign adv_id = 'paradise-adv-slot-' | append: block.id %}
+{% assign resolved_slot_code = block.settings.slot_code %}
+{% if block.settings.use_collection_campaign and collection.handle != blank %}
+  {% assign resolved_slot_code = 'collection-' | append: collection.handle %}
+{% endif %}
 {% assign global_campaign = blank %}
-{% if block.settings.use_global_campaign and block.settings.slot_code != blank %}
-  {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[block.settings.slot_code] %}
+{% if block.settings.use_global_campaign and resolved_slot_code != blank %}
+  {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[resolved_slot_code] %}
 {% endif %}
 
 {% assign has_global_campaign = false %}
@@ -78,7 +82,7 @@
   {% assign adv_button_label = block.settings.button_label %}
   {% assign adv_button_link = block.settings.banner_link %}
 {% endif %}
-{% assign adv_alt = block.settings.accessibility_label | default: adv_title | default: block.settings.slot_code %}
+{% assign adv_alt = block.settings.accessibility_label | default: adv_title | default: resolved_slot_code %}
 {% assign has_global_image = false %}
 {% if global_campaign_active %}
   {% if global_desktop_image != blank or global_desktop_image_url != blank %}
@@ -101,7 +105,7 @@
   <section
     id="{{ adv_id }}"
     class="paradise-adv-slot paradise-adv-slot--{{ adv_content_position }}"
-    data-adv-slot="{{ block.settings.slot_code | escape }}"
+    data-adv-slot="{{ resolved_slot_code | escape }}"
     style="
       --pas-height: {{ block.settings.desktop_height }}px;
       --pas-mobile-height: {{ block.settings.mobile_height }}px;
@@ -177,19 +181,19 @@
     {% endif %}
   </section>
 {% elsif request.design_mode %}
-  <div class="paradise-adv-slot-placeholder" data-adv-slot="{{ block.settings.slot_code | escape }}" {{ block.shopify_attributes }}>
+  <div class="paradise-adv-slot-placeholder" data-adv-slot="{{ resolved_slot_code | escape }}" {{ block.shopify_attributes }}>
     {% if has_global_campaign and global_campaign_status == 'disabled' %}
       <strong>Campagna ADV disattivata</strong>
-      <span>Codice slot: {{ block.settings.slot_code }}. Attiva la campagna nel metaobject per mostrarla.</span>
+      <span>Codice slot: {{ resolved_slot_code }}. Attiva la campagna nel metaobject per mostrarla.</span>
     {% elsif has_global_campaign and global_campaign_status == 'scheduled' %}
       <strong>Campagna ADV programmata</strong>
-      <span>Codice slot: {{ block.settings.slot_code }}. Apparira' alla data di inizio impostata.</span>
+      <span>Codice slot: {{ resolved_slot_code }}. Apparira' alla data di inizio impostata.</span>
     {% elsif has_global_campaign and global_campaign_status == 'expired' %}
       <strong>Campagna ADV scaduta</strong>
-      <span>Codice slot: {{ block.settings.slot_code }}. Modifica la data fine o riattivala.</span>
+      <span>Codice slot: {{ resolved_slot_code }}. Modifica la data fine o riattivala.</span>
     {% else %}
       <strong>Paradise ADV Slot vuoto</strong>
-      <span>Codice slot: {{ block.settings.slot_code | default: 'collection-adv-1' }}. Carica immagine desktop/mobile per mostrarlo nel sito.</span>
+      <span>Codice slot: {{ resolved_slot_code | default: 'collection-adv-1' }}. Carica immagine desktop/mobile per mostrarlo nel sito.</span>
     {% endif %}
   </div>
 {% endif %}
@@ -219,6 +223,13 @@
       "label": "Usa campagna globale dall'app",
       "default": true,
       "info": "Se attivo, tutti i blocchi con lo stesso codice slot leggono la stessa campagna salvata nell'app."
+    },
+    {
+      "type": "checkbox",
+      "id": "use_collection_campaign",
+      "label": "Usa campagna della collezione corrente",
+      "default": false,
+      "info": "Nelle pagine collezione usa automaticamente il codice collection-handle-collezione, per esempio collection-extension-clip-paradise."
     },
     {
       "type": "header",
