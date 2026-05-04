@@ -358,6 +358,51 @@
   color: #5f5a54;
 }
 
+.pd-campaign-preview {
+  align-content: end;
+  aspect-ratio: 16 / 6;
+  border: 1px solid rgba(23, 19, 19, 0.12);
+  border-radius: 6px;
+  display: grid;
+  gap: 10px;
+  min-height: 260px;
+  padding: clamp(18px, 4vw, 42px);
+}
+
+.pd-campaign-preview span {
+  color: #796269;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pd-campaign-preview h3 {
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 0.95;
+}
+
+.pd-campaign-preview p {
+  color: #604f52;
+  font-size: 16px;
+  line-height: 1.5;
+  max-width: 620px;
+}
+
+.pd-campaign-preview strong {
+  background: #171313;
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 850;
+  justify-self: start;
+  letter-spacing: 0.08em;
+  min-height: 40px;
+  padding: 13px 18px;
+  text-transform: uppercase;
+}
+
 @media (max-width: 760px) {
   .pd-home {
     padding: 14px;

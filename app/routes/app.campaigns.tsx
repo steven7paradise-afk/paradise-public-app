@@ -391,19 +391,19 @@ export default function CampaignsPage() {
           </label>
           <label>
             Sopratitolo
-            <input name="kicker" defaultValue={firstCampaign?.fields.kicker || "New edit"} />
+            <input name="kicker" defaultValue={firstCampaign?.fields.kicker || ""} placeholder="Es. Promo, New drop, Limited edition" />
           </label>
           <label>
             Titolo
-            <input name="title" defaultValue={firstCampaign?.fields.title || "Spring flush."} />
+            <input name="title" defaultValue={firstCampaign?.fields.title || ""} placeholder="Titolo campagna" />
           </label>
           <label>
             Descrizione
-            <textarea name="text" defaultValue={firstCampaign?.fields.text || "Campagna editoriale per collezioni, landing e pagine prodotto."} rows={4} />
+            <textarea name="text" defaultValue={firstCampaign?.fields.text || ""} rows={4} placeholder="Descrizione opzionale" />
           </label>
           <label>
             Testo bottone
-            <input name="button_label" defaultValue={firstCampaign?.fields.button_label || "Shop now"} />
+            <input name="button_label" defaultValue={firstCampaign?.fields.button_label || ""} placeholder="Es. Acquista ora" />
           </label>
           <label>
             Link bottone
@@ -462,6 +462,21 @@ export default function CampaignsPage() {
           )}
         </div>
       </section>
+
+      {firstCampaign ? (
+        <section className="pd-home-panel">
+          <div className="pd-home-panel-head">
+            <span className="pd-home-kicker">Preview</span>
+            <h2>Anteprima testo campagna</h2>
+          </div>
+          <div className="pd-campaign-preview">
+            {firstCampaign.fields.kicker ? <span>{firstCampaign.fields.kicker}</span> : null}
+            {firstCampaign.fields.title ? <h3>{firstCampaign.fields.title}</h3> : <h3>Solo immagine</h3>}
+            {firstCampaign.fields.text ? <p>{firstCampaign.fields.text}</p> : <p>Nessuna descrizione impostata.</p>}
+            {firstCampaign.fields.button_label ? <strong>{firstCampaign.fields.button_label}</strong> : null}
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }

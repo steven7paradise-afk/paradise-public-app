@@ -45,11 +45,19 @@
 
 {% assign adv_image = block.settings.desktop_image %}
 {% assign adv_mobile_image = block.settings.mobile_image | default: adv_image %}
-{% assign adv_kicker = global_kicker | default: block.settings.kicker %}
-{% assign adv_title = global_title | default: block.settings.title %}
-{% assign adv_text = global_text | default: block.settings.text %}
-{% assign adv_button_label = global_button_label | default: block.settings.button_label %}
-{% assign adv_button_link = global_button_link | default: block.settings.banner_link %}
+{% if has_global_campaign %}
+  {% assign adv_kicker = global_kicker %}
+  {% assign adv_title = global_title %}
+  {% assign adv_text = global_text %}
+  {% assign adv_button_label = global_button_label %}
+  {% assign adv_button_link = global_button_link %}
+{% else %}
+  {% assign adv_kicker = block.settings.kicker %}
+  {% assign adv_title = block.settings.title %}
+  {% assign adv_text = block.settings.text %}
+  {% assign adv_button_label = block.settings.button_label %}
+  {% assign adv_button_link = block.settings.banner_link %}
+{% endif %}
 {% assign adv_alt = block.settings.accessibility_label | default: adv_title | default: block.settings.slot_code %}
 {% assign has_global_image = false %}
 {% if global_campaign_active %}
@@ -224,26 +232,22 @@
     {
       "type": "text",
       "id": "kicker",
-      "label": "Sopratitolo",
-      "default": "New edit"
+      "label": "Sopratitolo"
     },
     {
       "type": "text",
       "id": "title",
-      "label": "Titolo",
-      "default": "Spring flush."
+      "label": "Titolo"
     },
     {
       "type": "richtext",
       "id": "text",
-      "label": "Descrizione",
-      "default": "<p>Campagna editoriale per collezioni, landing e pagine prodotto.</p>"
+      "label": "Descrizione"
     },
     {
       "type": "text",
       "id": "button_label",
-      "label": "Testo bottone",
-      "default": "Shop now"
+      "label": "Testo bottone"
     },
     {
       "type": "header",
