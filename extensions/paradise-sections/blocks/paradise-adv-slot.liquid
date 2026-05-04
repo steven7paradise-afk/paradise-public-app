@@ -68,6 +68,8 @@
 {% assign global_mobile_padding_bottom = global_campaign.mobile_padding_bottom.value %}
 {% assign global_text_position_x = global_campaign.text_position_x.value %}
 {% assign global_text_position_y = global_campaign.text_position_y.value %}
+{% assign global_mobile_text_position_x = global_campaign.mobile_text_position_x.value %}
+{% assign global_mobile_text_position_y = global_campaign.mobile_text_position_y.value %}
 {% assign global_text_position_raw = global_campaign.text_position.value | downcase | strip %}
 {% assign adv_content_position = block.settings.content_position %}
 {% if has_global_campaign and global_text_position_raw != blank %}
@@ -128,6 +130,8 @@
 {% assign adv_mobile_padding_bottom = global_mobile_padding_bottom | default: block.settings.mobile_padding_bottom %}
 {% assign adv_text_position_x = global_text_position_x | default: 18 %}
 {% assign adv_text_position_y = global_text_position_y | default: 72 %}
+{% assign adv_mobile_text_position_x = global_mobile_text_position_x | default: adv_text_position_x %}
+{% assign adv_mobile_text_position_y = global_mobile_text_position_y | default: adv_text_position_y %}
 {% assign has_global_image = false %}
 {% if global_campaign_active %}
   {% if global_desktop_image != blank or global_desktop_image_url != blank %}
@@ -173,6 +177,8 @@
       --pas-mobile-padding-bottom: {{ adv_mobile_padding_bottom }}px;
       --pas-text-x: {{ adv_text_position_x }}%;
       --pas-text-y: {{ adv_text_position_y }}%;
+      --pas-mobile-text-x: {{ adv_mobile_text_position_x }}%;
+      --pas-mobile-text-y: {{ adv_mobile_text_position_y }}%;
     "
     {{ block.shopify_attributes }}
   >

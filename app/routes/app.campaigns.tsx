@@ -47,6 +47,8 @@ const fieldDefinitions = [
   { key: "text_position", name: "Posizione testo", type: "single_line_text_field" },
   { key: "text_position_x", name: "Posizione testo X", type: "single_line_text_field" },
   { key: "text_position_y", name: "Posizione testo Y", type: "single_line_text_field" },
+  { key: "mobile_text_position_x", name: "Posizione testo mobile X", type: "single_line_text_field" },
+  { key: "mobile_text_position_y", name: "Posizione testo mobile Y", type: "single_line_text_field" },
   { key: "desktop_height", name: "Altezza desktop", type: "single_line_text_field" },
   { key: "mobile_height", name: "Altezza mobile", type: "single_line_text_field" },
   { key: "desktop_image_position", name: "Posizione immagine desktop", type: "single_line_text_field" },
@@ -79,6 +81,8 @@ const livePreviewFieldKeys = [
   "text_position",
   "text_position_x",
   "text_position_y",
+  "mobile_text_position_x",
+  "mobile_text_position_y",
   "desktop_height",
   "mobile_height",
   "desktop_image_position",
@@ -494,6 +498,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       "text_position",
       "text_position_x",
       "text_position_y",
+      "mobile_text_position_x",
+      "mobile_text_position_y",
       "desktop_height",
       "mobile_height",
       "desktop_image_position",
@@ -515,7 +521,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       "mobile_padding_bottom",
     ];
     const editableFieldDefinitions = fieldDefinitions.filter((field) => appFormFieldKeys.includes(field.key));
-    const shouldUseFreePosition = Boolean(fieldValue(formData, "text_position_x") && fieldValue(formData, "text_position_y"));
+    const shouldUseFreePosition = Boolean(
+      (fieldValue(formData, "text_position_x") && fieldValue(formData, "text_position_y")) ||
+        (fieldValue(formData, "mobile_text_position_x") && fieldValue(formData, "mobile_text_position_y")),
+    );
     const fields = editableFieldDefinitions.map((field) => ({
       key: field.key,
       value: field.key === "text_position" && shouldUseFreePosition ? "custom" : fieldValue(formData, field.key),
@@ -646,7 +655,7 @@ export default function CampaignsPage() {
   const liveTextPosition = textPositionTone(liveFields.text_position);
   const isLiveTextFree = liveTextPosition === "free";
   const hasLiveCopy = Boolean(liveFields.kicker || liveFields.title || liveFields.text || liveFields.button_label);
-  const liveCopyStyle: CSSProperties = {
+  const liveDesktopCopyStyle: CSSProperties = {
     color: liveTextColor,
     maxWidth: `${Math.max(240, Math.min(760, Number(liveFields.content_max_width || "520")))}px`,
     ...(isLiveTextFree
@@ -656,7 +665,17 @@ export default function CampaignsPage() {
         }
       : {}),
   };
-  const moveTextToPointer = (event: PointerEvent<HTMLDivElement>) => {
+  const liveMobileCopyStyle: CSSProperties = {
+    color: liveTextColor,
+    maxWidth: `${Math.max(180, Math.min(360, Number(liveFields.content_max_width || "520")))}px`,
+    ...(isLiveTextFree
+      ? {
+          left: `${liveFields.mobile_text_position_x || liveFields.text_position_x || "18"}%`,
+          top: `${liveFields.mobile_text_position_y || liveFields.text_position_y || "72"}%`,
+        }
+      : {}),
+  };
+  const moveTextToPointer = (event: PointerEvent<HTMLDivElement>, target: "desktop" | "mobile") => {
     if (!hasLiveCopy) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const x = clampPercent(((event.clientX - bounds.left) / bounds.width) * 100);
@@ -665,17 +684,24 @@ export default function CampaignsPage() {
     setLiveFields((current) => ({
       ...current,
       text_position: "custom",
-      text_position_x: x,
-      text_position_y: y,
+      ...(target === "desktop"
+        ? {
+            text_position_x: x,
+            text_position_y: y,
+          }
+        : {
+            mobile_text_position_x: x,
+            mobile_text_position_y: y,
+          }),
     }));
   };
-  const handlePreviewPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    moveTextToPointer(event);
+  const handlePreviewPointerDown = (event: PointerEvent<HTMLDivElement>, target: "desktop" | "mobile") => {
+    moveTextToPointer(event, target);
     event.currentTarget.setPointerCapture(event.pointerId);
   };
-  const handlePreviewPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+  const handlePreviewPointerMove = (event: PointerEvent<HTMLDivElement>, target: "desktop" | "mobile") => {
     if (event.buttons !== 1) return;
-    moveTextToPointer(event);
+    moveTextToPointer(event, target);
   };
   const resetFreePosition = () => {
     setLiveFields((current) => ({
@@ -683,6 +709,8 @@ export default function CampaignsPage() {
       text_position: "sinistra",
       text_position_x: "",
       text_position_y: "",
+      mobile_text_position_x: "",
+      mobile_text_position_y: "",
     }));
   };
   const handleLivePreviewChange = (event: ChangeEvent<HTMLFormElement>) => {
@@ -712,31 +740,6 @@ export default function CampaignsPage() {
 
   return (
     <main className="pd-home pd-campaigns" aria-label="Paradise ADV Campaign Manager">
-      <section className="pd-home-hero">
-        <div>
-          <span className="pd-home-kicker">Global ADV Campaigns</span>
-          <h1>Modifica una campagna, aggiorna tutti gli slot.</h1>
-          <p>
-            Usa lo stesso codice, per esempio <strong>collection-adv-1</strong>,
-            in tutti i blocchi Paradise ADV Slot. Quando salvi qui, ogni blocco
-            con quel codice prende la nuova immagine e i nuovi testi.
-            Per le collezioni puoi anche usare il codice automatico{" "}
-            <strong>collection-handle-collezione</strong>.
-          </p>
-        </div>
-        <div className="pd-home-checklist">
-          <h2>Come funziona</h2>
-          <ol>
-            <li>Crea o modifica la campagna qui sotto.</li>
-            <li>Nel Theme Editor aggiungi Paradise ADV Slot.</li>
-            <li>Scrivi lo stesso codice slot.</li>
-            <li>Per una collezione attiva “Usa campagna della collezione corrente”.</li>
-            <li>Lascia attivo “Usa campagna globale dall&apos;app”.</li>
-            <li>Salva: tutti gli slot uguali si aggiornano insieme.</li>
-          </ol>
-        </div>
-      </section>
-
       <section className="pd-home-panel" id="campaign-form">
         <div className="pd-home-panel-head">
           <span className="pd-home-kicker">Campaign Manager</span>
@@ -872,8 +875,26 @@ export default function CampaignsPage() {
           </label>
           <input name="text_position_x" type="hidden" value={isLiveTextFree ? liveFields.text_position_x || "18" : ""} readOnly />
           <input name="text_position_y" type="hidden" value={isLiveTextFree ? liveFields.text_position_y || "72" : ""} readOnly />
+          <input
+            name="mobile_text_position_x"
+            type="hidden"
+            value={isLiveTextFree ? liveFields.mobile_text_position_x || liveFields.text_position_x || "18" : ""}
+            readOnly
+          />
+          <input
+            name="mobile_text_position_y"
+            type="hidden"
+            value={isLiveTextFree ? liveFields.mobile_text_position_y || liveFields.text_position_y || "72" : ""}
+            readOnly
+          />
           <div className="pd-position-status">
-            <span>{isLiveTextFree ? "Posizione libera attiva" : "Posizione predefinita"}</span>
+            <span>
+              {isLiveTextFree
+                ? `Libera: desktop X ${liveFields.text_position_x || "18"} Y ${liveFields.text_position_y || "72"} / mobile X ${
+                    liveFields.mobile_text_position_x || liveFields.text_position_x || "18"
+                  } Y ${liveFields.mobile_text_position_y || liveFields.text_position_y || "72"}`
+                : "Posizione predefinita"}
+            </span>
             <button type="button" onClick={resetFreePosition}>Reset posizione</button>
           </div>
           <label>
@@ -999,7 +1020,7 @@ export default function CampaignsPage() {
                 <h3>{selectedCampaign.handle}</h3>
               </div>
               <span className={`pd-preview-mode ${isLiveTextFree ? "pd-preview-mode--free" : ""}`}>
-                {isLiveTextFree ? `X ${liveFields.text_position_x || "18"} / Y ${liveFields.text_position_y || "72"}` : "Preset"}
+                {isLiveTextFree ? "Libera" : "Preset"}
               </span>
             </div>
             <p className="pd-live-hint">
@@ -1015,11 +1036,11 @@ export default function CampaignsPage() {
                     livePreviewImage ? "pd-campaign-preview--has-image" : ""
                   }`}
                   style={selectedPreviewStyle(livePreviewImage, liveFields.desktop_image_position || "center center")}
-                  onPointerDown={handlePreviewPointerDown}
-                  onPointerMove={handlePreviewPointerMove}
+                  onPointerDown={(event) => handlePreviewPointerDown(event, "desktop")}
+                  onPointerMove={(event) => handlePreviewPointerMove(event, "desktop")}
                 >
                   {hasLiveCopy ? (
-                    <div className={`pd-preview-copy ${isLiveTextFree ? "pd-preview-copy--free" : ""}`} style={liveCopyStyle}>
+                    <div className={`pd-preview-copy ${isLiveTextFree ? "pd-preview-copy--free" : ""}`} style={liveDesktopCopyStyle}>
                       {liveFields.kicker ? <span>{liveFields.kicker}</span> : null}
                       {liveFields.title ? <h3>{liveFields.title}</h3> : null}
                       {liveFields.text ? <p>{liveFields.text}</p> : null}
@@ -1035,11 +1056,11 @@ export default function CampaignsPage() {
                     liveMobilePreviewImage ? "pd-campaign-preview--has-image" : ""
                   }`}
                   style={selectedPreviewStyle(liveMobilePreviewImage, liveFields.mobile_image_position || "center center")}
-                  onPointerDown={handlePreviewPointerDown}
-                  onPointerMove={handlePreviewPointerMove}
+                  onPointerDown={(event) => handlePreviewPointerDown(event, "mobile")}
+                  onPointerMove={(event) => handlePreviewPointerMove(event, "mobile")}
                 >
                   {hasLiveCopy ? (
-                    <div className={`pd-preview-copy ${isLiveTextFree ? "pd-preview-copy--free" : ""}`} style={liveCopyStyle}>
+                    <div className={`pd-preview-copy ${isLiveTextFree ? "pd-preview-copy--free" : ""}`} style={liveMobileCopyStyle}>
                       {liveFields.kicker ? <span>{liveFields.kicker}</span> : null}
                       {liveFields.title ? <h3>{liveFields.title}</h3> : null}
                       {liveFields.text ? <p>{liveFields.text}</p> : null}

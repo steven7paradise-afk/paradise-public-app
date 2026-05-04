@@ -213,6 +213,15 @@
     padding: 18px;
   }
 
+  .paradise-adv-slot--custom .pas-content {
+    padding: 0;
+  }
+
+  .paradise-adv-slot--custom .pas-copy {
+    left: var(--pas-mobile-text-x);
+    top: var(--pas-mobile-text-y);
+  }
+
   .pas-title {
     font-size: clamp(30px, 12vw, 52px);
   }

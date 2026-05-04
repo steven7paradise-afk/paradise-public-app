@@ -273,7 +273,7 @@
   align-items: start;
   display: grid;
   gap: 22px;
-  grid-template-columns: minmax(0, 660px) minmax(320px, 520px);
+  grid-template-columns: minmax(0, 660px) minmax(420px, 620px);
   justify-content: center;
 }
 
@@ -386,7 +386,7 @@
   border-radius: 8px;
   display: grid;
   gap: 14px;
-  max-width: 520px;
+  max-width: 620px;
   min-width: 0;
   overflow: hidden;
   padding: 16px;
@@ -594,14 +594,15 @@
 }
 
 .pd-preview-grid--stacked .pd-campaign-preview {
-  min-height: 210px;
+  aspect-ratio: 16 / 7;
+  min-height: 300px;
   width: 100%;
 }
 
 .pd-preview-grid--stacked .pd-campaign-preview--mobile {
   justify-self: start;
-  max-width: 190px;
-  min-height: 300px;
+  max-width: 230px;
+  min-height: 360px;
 }
 
 .pd-preview-grid article {
