@@ -286,6 +286,76 @@
   padding: 16px;
 }
 
+.pd-collection-manager {
+  border: 1px solid rgba(23, 19, 19, 0.1);
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 16px;
+}
+
+.pd-collection-manager h3 {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 18px;
+  font-weight: 850;
+}
+
+.pd-collection-manager p,
+.pd-empty-note {
+  color: #6c5958;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.pd-collection-list {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-height: 260px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.pd-collection-chip {
+  background: #ffffff;
+  border: 1px solid rgba(23, 19, 19, 0.12);
+  border-radius: 8px;
+  color: #171313;
+  display: grid;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 850;
+  padding: 12px;
+  text-decoration: none;
+}
+
+.pd-collection-chip:hover,
+.pd-collection-chip--active {
+  border-color: rgba(184, 154, 97, 0.72);
+  box-shadow: 0 0 0 3px rgba(184, 154, 97, 0.12);
+}
+
+.pd-collection-chip span {
+  color: #b89a61;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pd-collection-chip small {
+  color: #796269;
+  font-size: 12px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
 .pd-form-section--full {
   grid-column: 1 / -1;
 }
@@ -767,6 +837,7 @@
   .pd-home-sections,
   .pd-home-adv-grid,
   .pd-control-grid,
+  .pd-collection-list,
   .pd-preview-grid,
   .pd-editor-grid,
   .pd-workflow-grid,

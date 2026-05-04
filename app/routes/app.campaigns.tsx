@@ -13,6 +13,11 @@ type Campaign = {
   fields: Record<string, string>;
 };
 
+type CollectionOption = {
+  handle: string;
+  title: string;
+};
+
 type GraphQLUserError = {
   field?: string[];
   message: string;
@@ -477,7 +482,33 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     setupError = error instanceof Error ? error.message : "Errore durante il setup delle campagne.";
   }
 
-  return { campaigns, selectedHandle, setupError };
+  let collections: CollectionOption[] = [];
+
+  try {
+    const collectionData = await runGraphql<{
+      collections: {
+        nodes: CollectionOption[];
+      };
+    }>(
+      admin,
+      `#graphql
+        query ParadiseCollections {
+          collections(first: 50, sortKey: TITLE) {
+            nodes {
+              handle
+              title
+            }
+          }
+        }
+      `,
+    );
+
+    collections = collectionData.collections.nodes;
+  } catch {
+    collections = [];
+  }
+
+  return { campaigns, collections, selectedHandle, setupError };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -615,10 +646,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function CampaignsPage() {
-  const { campaigns, selectedHandle, setupError } = useLoaderData<typeof loader>();
+  const { campaigns, collections, selectedHandle, setupError } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const firstCampaign = campaigns[0];
-  const selectedCampaign = campaigns.find((campaign) => campaign.handle === selectedHandle) || firstCampaign;
+  const selectedCampaign = selectedHandle
+    ? campaigns.find((campaign) => campaign.handle === selectedHandle)
+    : firstCampaign;
+  const selectedFormHandle = selectedCampaign?.handle || selectedHandle || "collection-adv-1";
   const [liveFields, setLiveFields] = useState<Record<string, string>>(selectedCampaign?.fields || {});
   const [desktopFilePreview, setDesktopFilePreview] = useState("");
   const [mobileFilePreview, setMobileFilePreview] = useState("");
@@ -736,20 +770,17 @@ export default function CampaignsPage() {
     setLiveFields(selectedCampaign?.fields || {});
     setDesktopFilePreview("");
     setMobileFilePreview("");
-  }, [selectedCampaign]);
+  }, [selectedCampaign, selectedFormHandle]);
 
   return (
     <main className="pd-home pd-campaigns" aria-label="Paradise ADV Campaign Manager">
       <section className="pd-home-panel" id="campaign-form">
         <div className="pd-home-panel-head">
           <span className="pd-home-kicker">Campaign Manager</span>
-          <h2>{selectedCampaign ? `Modifica ${selectedCampaign.handle}` : "Campagna globale"}</h2>
+          <h2>{selectedCampaign ? `Modifica ${selectedCampaign.handle}` : `Crea ${selectedFormHandle}`}</h2>
           <p>
-            Puoi selezionare le immagini direttamente da Shopify Metaobjects
-            usando i campi Desktop image e Mobile image. Usa Active, Start date
-            ed End date per attivare, disattivare o programmare la campagna.
-            Per una pagina collezione crea un handle tipo{" "}
-            <strong>collection-extension-clip-paradise</strong>.
+            Scegli una collezione sotto per creare il codice automatico corretto.
+            Per le pagine collezione il codice deve iniziare con <strong>collection-</strong>.
           </p>
         </div>
 
@@ -759,6 +790,34 @@ export default function CampaignsPage() {
             {actionData.message}
           </p>
         ) : null}
+
+        <div className="pd-collection-manager">
+          <div>
+            <span className="pd-home-kicker">Collezioni</span>
+            <h3>Crea o modifica ADV per collezione</h3>
+            <p>Seleziona una collezione: l&apos;app prepara il codice giusto per la griglia prodotti.</p>
+          </div>
+          <div className="pd-collection-list">
+            {collections.length ? collections.map((collection) => {
+              const collectionCode = `collection-${collection.handle}`;
+              const exists = campaigns.some((campaign) => campaign.handle === collectionCode);
+
+              return (
+                <Link
+                  className={`pd-collection-chip ${selectedFormHandle === collectionCode ? "pd-collection-chip--active" : ""}`}
+                  key={collection.handle}
+                  to={`/app/campaigns?handle=${encodeURIComponent(collectionCode)}#campaign-form`}
+                >
+                  <span>{exists ? "Modifica" : "Crea"}</span>
+                  {collection.title}
+                  <small>{collectionCode}</small>
+                </Link>
+              );
+            }) : (
+              <p className="pd-empty-note">Non riesco a leggere le collezioni. Puoi comunque scrivere manualmente un codice tipo collection-nome-collezione.</p>
+            )}
+          </div>
+        </div>
 
         <div className="pd-editor-grid">
         <Form
@@ -778,7 +837,7 @@ export default function CampaignsPage() {
             </div>
           <label>
             Codice slot
-            <input name="handle" defaultValue={selectedCampaign?.handle || "collection-adv-1"} placeholder="collection-adv-1" />
+            <input name="handle" defaultValue={selectedFormHandle} placeholder="collection-adv-1" />
           </label>
           <label>
             Testo accessibilita immagine
@@ -1012,12 +1071,12 @@ export default function CampaignsPage() {
           </div>
           <button className="pd-home-button" type="submit">Salva campagna globale</button>
         </Form>
-        {selectedCampaign ? (
+        {selectedFormHandle ? (
           <aside className="pd-live-preview" aria-label="Anteprima live">
             <div className="pd-live-preview-head">
               <div>
                 <span className="pd-home-kicker">Preview live</span>
-                <h3>{selectedCampaign.handle}</h3>
+                <h3>{selectedFormHandle}</h3>
               </div>
               <span className={`pd-preview-mode ${isLiveTextFree ? "pd-preview-mode--free" : ""}`}>
                 {isLiveTextFree ? "Libera" : "Preset"}
