@@ -626,17 +626,28 @@ export default function CampaignsPage() {
     liveFields.desktop_image_preview_url ||
     "";
   const liveOverlayOpacity = Math.max(0, Math.min(80, Number(liveFields.overlay_opacity || "22"))) / 100;
+  const liveTextColor = liveFields.text_color || "#ffffff";
+  const liveButtonBackground = liveFields.button_background || "#ffffff";
+  const liveButtonBackgroundOpacity = Math.max(0, Math.min(100, Number(liveFields.button_background_opacity || "0"))) / 100;
+  const liveButtonStyle: CSSProperties = {
+    backgroundColor: `color-mix(in srgb, ${liveButtonBackground} ${liveButtonBackgroundOpacity * 100}%, transparent)`,
+    borderColor: liveFields.button_border_color || "#ffffff",
+    borderRadius: `${Math.max(0, Math.min(40, Number(liveFields.button_radius || "18")))}px`,
+    color: liveFields.button_text_color || "#ffffff",
+  };
   const selectedPreviewStyle = (image: string, position: string): CSSProperties | undefined =>
     image
       ? {
           backgroundImage: `linear-gradient(rgba(0, 0, 0, ${liveOverlayOpacity}), rgba(0, 0, 0, ${liveOverlayOpacity})), url("${image}")`,
           backgroundPosition: position,
+          borderRadius: `${Math.max(0, Math.min(40, Number(liveFields.card_radius || "8")))}px`,
         }
       : undefined;
   const liveTextPosition = textPositionTone(liveFields.text_position);
   const isLiveTextFree = liveTextPosition === "free";
   const hasLiveCopy = Boolean(liveFields.kicker || liveFields.title || liveFields.text || liveFields.button_label);
   const liveCopyStyle: CSSProperties = {
+    color: liveTextColor,
     maxWidth: `${Math.max(240, Math.min(760, Number(liveFields.content_max_width || "520")))}px`,
     ...(isLiveTextFree
       ? {
@@ -665,6 +676,14 @@ export default function CampaignsPage() {
   const handlePreviewPointerMove = (event: PointerEvent<HTMLDivElement>) => {
     if (event.buttons !== 1) return;
     moveTextToPointer(event);
+  };
+  const resetFreePosition = () => {
+    setLiveFields((current) => ({
+      ...current,
+      text_position: "sinistra",
+      text_position_x: "",
+      text_position_y: "",
+    }));
   };
   const handleLivePreviewChange = (event: ChangeEvent<HTMLFormElement>) => {
     const formData = new FormData(event.currentTarget);
@@ -746,6 +765,14 @@ export default function CampaignsPage() {
           key={selectedCampaign?.handle || "new-campaign"}
           onChange={handleLivePreviewChange}
         >
+          <div className="pd-form-section pd-form-section--full">
+            <div className="pd-form-section-head">
+              <span>01</span>
+              <div>
+                <h3>Media e codice</h3>
+                <p>Il codice collega questa campagna a tutti gli slot uguali nel Theme Editor.</p>
+              </div>
+            </div>
           <label>
             Codice slot
             <input name="handle" defaultValue={selectedCampaign?.handle || "collection-adv-1"} placeholder="collection-adv-1" />
@@ -758,6 +785,15 @@ export default function CampaignsPage() {
               placeholder="Paradise promotional banner"
             />
           </label>
+          </div>
+          <div className="pd-form-section pd-form-section--full">
+            <div className="pd-form-section-head">
+              <span>02</span>
+              <div>
+                <h3>Immagini</h3>
+                <p>Carica desktop e mobile. La preview si aggiorna subito prima del salvataggio.</p>
+              </div>
+            </div>
           <label className="pd-file-field">
             Immagine desktop
             {selectedCampaign?.fields.desktop_image_preview_url ? (
@@ -772,6 +808,15 @@ export default function CampaignsPage() {
             ) : null}
             <input name="mobile_image_file" type="file" accept="image/*" />
           </label>
+          </div>
+          <div className="pd-form-section pd-form-section--full">
+            <div className="pd-form-section-head">
+              <span>03</span>
+              <div>
+                <h3>Testi</h3>
+                <p>Lascia vuoti i campi che non vuoi mostrare. Nessun testo automatico verrà pubblicato.</p>
+              </div>
+            </div>
           <label>
             Sopratitolo
             <input name="kicker" defaultValue={selectedCampaign?.fields.kicker || ""} placeholder="Es. Promo, New drop, Limited edition" />
@@ -792,6 +837,15 @@ export default function CampaignsPage() {
             Link bottone
             <input name="button_link_url" defaultValue={selectedCampaign?.fields.button_link_url || ""} placeholder="https://..." />
           </label>
+          </div>
+          <div className="pd-form-section pd-form-section--full">
+            <div className="pd-form-section-head">
+              <span>04</span>
+              <div>
+                <h3>Layout</h3>
+                <p>Scegli una posizione pronta oppure trascina il testo nella preview per una posizione libera.</p>
+              </div>
+            </div>
           <label>
             Posizione testo
             <select
@@ -818,6 +872,10 @@ export default function CampaignsPage() {
           </label>
           <input name="text_position_x" type="hidden" value={isLiveTextFree ? liveFields.text_position_x || "18" : ""} readOnly />
           <input name="text_position_y" type="hidden" value={isLiveTextFree ? liveFields.text_position_y || "72" : ""} readOnly />
+          <div className="pd-position-status">
+            <span>{isLiveTextFree ? "Posizione libera attiva" : "Posizione predefinita"}</span>
+            <button type="button" onClick={resetFreePosition}>Reset posizione</button>
+          </div>
           <label>
             Altezza desktop
             <input name="desktop_height" type="number" min="240" max="900" defaultValue={selectedCampaign?.fields.desktop_height || "520"} />
@@ -854,6 +912,15 @@ export default function CampaignsPage() {
             Angoli immagine
             <input name="card_radius" type="number" min="0" max="40" defaultValue={selectedCampaign?.fields.card_radius || "8"} />
           </label>
+          </div>
+          <div className="pd-form-section pd-form-section--full">
+            <div className="pd-form-section-head">
+              <span>05</span>
+              <div>
+                <h3>Colori e CTA</h3>
+                <p>Controlla leggibilita, bottone e stile editoriale della campagna.</p>
+              </div>
+            </div>
           <label>
             Larghezza massima testo
             <input name="content_max_width" type="number" min="240" max="760" defaultValue={selectedCampaign?.fields.content_max_width || "520"} />
@@ -896,6 +963,15 @@ export default function CampaignsPage() {
             Angoli bottone
             <input name="button_radius" type="number" min="0" max="40" defaultValue={selectedCampaign?.fields.button_radius || "18"} />
           </label>
+          </div>
+          <div className="pd-form-section pd-form-section--full">
+            <div className="pd-form-section-head">
+              <span>06</span>
+              <div>
+                <h3>Spaziatura</h3>
+                <p>Gestisci il respiro sopra e sotto il banner su desktop e mobile.</p>
+              </div>
+            </div>
           <label>
             Spazio sopra desktop
             <input name="padding_top" type="number" min="0" max="120" defaultValue={selectedCampaign?.fields.padding_top || "24"} />
@@ -912,13 +988,25 @@ export default function CampaignsPage() {
             Spazio sotto mobile
             <input name="mobile_padding_bottom" type="number" min="0" max="80" defaultValue={selectedCampaign?.fields.mobile_padding_bottom || "16"} />
           </label>
+          </div>
           <button className="pd-home-button" type="submit">Salva campagna globale</button>
         </Form>
         {selectedCampaign ? (
           <aside className="pd-live-preview" aria-label="Anteprima live">
-            <span className="pd-home-kicker">Preview live</span>
-            <h3>{selectedCampaign.handle}</h3>
-            <p className="pd-live-hint">Trascina il testo sull&apos;anteprima per posizionarlo liberamente. Poi salva la campagna.</p>
+            <div className="pd-live-preview-head">
+              <div>
+                <span className="pd-home-kicker">Preview live</span>
+                <h3>{selectedCampaign.handle}</h3>
+              </div>
+              <span className={`pd-preview-mode ${isLiveTextFree ? "pd-preview-mode--free" : ""}`}>
+                {isLiveTextFree ? `X ${liveFields.text_position_x || "18"} / Y ${liveFields.text_position_y || "72"}` : "Preset"}
+              </span>
+            </div>
+            <p className="pd-live-hint">
+              {hasLiveCopy
+                ? "Clicca e trascina il testo dentro la preview per decidere la posizione."
+                : "Aggiungi titolo, testo o bottone per vedere e posizionare il contenuto."}
+            </p>
             <div className="pd-preview-grid pd-preview-grid--stacked">
               <article>
                 <span className="pd-preview-label">Desktop</span>
@@ -935,7 +1023,7 @@ export default function CampaignsPage() {
                       {liveFields.kicker ? <span>{liveFields.kicker}</span> : null}
                       {liveFields.title ? <h3>{liveFields.title}</h3> : null}
                       {liveFields.text ? <p>{liveFields.text}</p> : null}
-                      {liveFields.button_label ? <strong>{liveFields.button_label}</strong> : null}
+                      {liveFields.button_label ? <strong style={liveButtonStyle}>{liveFields.button_label}</strong> : null}
                     </div>
                   ) : null}
                 </div>
@@ -955,7 +1043,7 @@ export default function CampaignsPage() {
                       {liveFields.kicker ? <span>{liveFields.kicker}</span> : null}
                       {liveFields.title ? <h3>{liveFields.title}</h3> : null}
                       {liveFields.text ? <p>{liveFields.text}</p> : null}
-                      {liveFields.button_label ? <strong>{liveFields.button_label}</strong> : null}
+                      {liveFields.button_label ? <strong style={liveButtonStyle}>{liveFields.button_label}</strong> : null}
                     </div>
                   ) : null}
                 </div>
