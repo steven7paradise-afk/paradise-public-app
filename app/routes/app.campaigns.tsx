@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, HeadersFunction, LoaderFunctionArgs } from "react-router";
-import { useEffect, useState, type CSSProperties, type ChangeEvent } from "react";
+import { useEffect, useState, type CSSProperties, type ChangeEvent, type PointerEvent } from "react";
 import { Form, Link, useActionData, useLoaderData } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
@@ -45,6 +45,8 @@ const fieldDefinitions = [
   { key: "button_label", name: "Testo bottone", type: "single_line_text_field" },
   { key: "button_link_url", name: "Link bottone", type: "url" },
   { key: "text_position", name: "Posizione testo", type: "single_line_text_field" },
+  { key: "text_position_x", name: "Posizione testo X", type: "single_line_text_field" },
+  { key: "text_position_y", name: "Posizione testo Y", type: "single_line_text_field" },
   { key: "desktop_height", name: "Altezza desktop", type: "single_line_text_field" },
   { key: "mobile_height", name: "Altezza mobile", type: "single_line_text_field" },
   { key: "desktop_image_position", name: "Posizione immagine desktop", type: "single_line_text_field" },
@@ -75,6 +77,8 @@ const livePreviewFieldKeys = [
   "button_label",
   "button_link_url",
   "text_position",
+  "text_position_x",
+  "text_position_y",
   "desktop_height",
   "mobile_height",
   "desktop_image_position",
@@ -129,6 +133,7 @@ function campaignStatus(fields: Record<string, string>) {
 function textPositionTone(value = "") {
   const normalized = value.trim().toLowerCase();
 
+  if (["custom", "libera", "free", "drag"].includes(normalized)) return "free";
   if (["destra", "right", "basso destra", "bottom-right", "bottom right"].includes(normalized)) return "right";
   if (["centro", "center", "basso centro", "bottom-center", "bottom center"].includes(normalized)) return "center";
   if (["alto destra", "top-right", "top right"].includes(normalized)) return "top-right";
@@ -157,6 +162,10 @@ function formFile(formData: FormData, key: string) {
 
 function fieldValue(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
+}
+
+function clampPercent(value: number) {
+  return String(Math.max(0, Math.min(100, Math.round(value))));
 }
 
 async function runGraphql<TData extends Record<string, unknown>>(
@@ -483,6 +492,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       "button_label",
       "button_link_url",
       "text_position",
+      "text_position_x",
+      "text_position_y",
       "desktop_height",
       "mobile_height",
       "desktop_image_position",
@@ -504,9 +515,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       "mobile_padding_bottom",
     ];
     const editableFieldDefinitions = fieldDefinitions.filter((field) => appFormFieldKeys.includes(field.key));
+    const shouldUseFreePosition = Boolean(fieldValue(formData, "text_position_x") && fieldValue(formData, "text_position_y"));
     const fields = editableFieldDefinitions.map((field) => ({
       key: field.key,
-      value: fieldValue(formData, field.key),
+      value: field.key === "text_position" && shouldUseFreePosition ? "custom" : fieldValue(formData, field.key),
     }));
     const desktopImage = formFile(formData, "desktop_image_file");
     const mobileImage = formFile(formData, "mobile_image_file");
@@ -621,6 +633,39 @@ export default function CampaignsPage() {
           backgroundPosition: position,
         }
       : undefined;
+  const liveTextPosition = textPositionTone(liveFields.text_position);
+  const isLiveTextFree = liveTextPosition === "free";
+  const hasLiveCopy = Boolean(liveFields.kicker || liveFields.title || liveFields.text || liveFields.button_label);
+  const liveCopyStyle: CSSProperties = {
+    maxWidth: `${Math.max(240, Math.min(760, Number(liveFields.content_max_width || "520")))}px`,
+    ...(isLiveTextFree
+      ? {
+          left: `${liveFields.text_position_x || "18"}%`,
+          top: `${liveFields.text_position_y || "72"}%`,
+        }
+      : {}),
+  };
+  const moveTextToPointer = (event: PointerEvent<HTMLDivElement>) => {
+    if (!hasLiveCopy) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = clampPercent(((event.clientX - bounds.left) / bounds.width) * 100);
+    const y = clampPercent(((event.clientY - bounds.top) / bounds.height) * 100);
+
+    setLiveFields((current) => ({
+      ...current,
+      text_position: "custom",
+      text_position_x: x,
+      text_position_y: y,
+    }));
+  };
+  const handlePreviewPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    moveTextToPointer(event);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const handlePreviewPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.buttons !== 1) return;
+    moveTextToPointer(event);
+  };
   const handleLivePreviewChange = (event: ChangeEvent<HTMLFormElement>) => {
     const formData = new FormData(event.currentTarget);
 
@@ -749,16 +794,30 @@ export default function CampaignsPage() {
           </label>
           <label>
             Posizione testo
-            <select name="text_position" defaultValue={selectedCampaign?.fields.text_position || "sinistra"}>
+            <select
+              name="text_position"
+              value={liveFields.text_position || selectedCampaign?.fields.text_position || "sinistra"}
+              onChange={(event) => {
+                setLiveFields((current) => ({
+                  ...current,
+                  text_position: event.target.value,
+                  text_position_x: event.target.value === "custom" ? current.text_position_x || "18" : "",
+                  text_position_y: event.target.value === "custom" ? current.text_position_y || "72" : "",
+                }));
+              }}
+            >
               <option value="sinistra">Sinistra</option>
               <option value="centro">Centro</option>
               <option value="destra">Destra</option>
               <option value="alto sinistra">Alto sinistra</option>
               <option value="alto centro">Alto centro</option>
               <option value="alto destra">Alto destra</option>
+              <option value="custom">Libera: trascina nella preview</option>
               <option value="nascosto">Solo immagine</option>
             </select>
           </label>
+          <input name="text_position_x" type="hidden" value={isLiveTextFree ? liveFields.text_position_x || "18" : ""} readOnly />
+          <input name="text_position_y" type="hidden" value={isLiveTextFree ? liveFields.text_position_y || "72" : ""} readOnly />
           <label>
             Altezza desktop
             <input name="desktop_height" type="number" min="240" max="900" defaultValue={selectedCampaign?.fields.desktop_height || "520"} />
@@ -859,33 +918,46 @@ export default function CampaignsPage() {
           <aside className="pd-live-preview" aria-label="Anteprima live">
             <span className="pd-home-kicker">Preview live</span>
             <h3>{selectedCampaign.handle}</h3>
+            <p className="pd-live-hint">Trascina il testo sull&apos;anteprima per posizionarlo liberamente. Poi salva la campagna.</p>
             <div className="pd-preview-grid pd-preview-grid--stacked">
               <article>
                 <span className="pd-preview-label">Desktop</span>
                 <div
-                  className={`pd-campaign-preview pd-campaign-preview--${textPositionTone(liveFields.text_position)} ${
+                  className={`pd-campaign-preview pd-campaign-preview--${liveTextPosition} ${
                     livePreviewImage ? "pd-campaign-preview--has-image" : ""
                   }`}
                   style={selectedPreviewStyle(livePreviewImage, liveFields.desktop_image_position || "center center")}
+                  onPointerDown={handlePreviewPointerDown}
+                  onPointerMove={handlePreviewPointerMove}
                 >
-                  {liveFields.kicker ? <span>{liveFields.kicker}</span> : null}
-                  {liveFields.title ? <h3>{liveFields.title}</h3> : <h3>Solo immagine</h3>}
-                  {liveFields.text ? <p>{liveFields.text}</p> : <p>Nessuna descrizione impostata.</p>}
-                  {liveFields.button_label ? <strong>{liveFields.button_label}</strong> : null}
+                  {hasLiveCopy ? (
+                    <div className={`pd-preview-copy ${isLiveTextFree ? "pd-preview-copy--free" : ""}`} style={liveCopyStyle}>
+                      {liveFields.kicker ? <span>{liveFields.kicker}</span> : null}
+                      {liveFields.title ? <h3>{liveFields.title}</h3> : null}
+                      {liveFields.text ? <p>{liveFields.text}</p> : null}
+                      {liveFields.button_label ? <strong>{liveFields.button_label}</strong> : null}
+                    </div>
+                  ) : null}
                 </div>
               </article>
               <article>
                 <span className="pd-preview-label">Mobile</span>
                 <div
-                  className={`pd-campaign-preview pd-campaign-preview--mobile pd-campaign-preview--${textPositionTone(
-                    liveFields.text_position,
-                  )} ${liveMobilePreviewImage ? "pd-campaign-preview--has-image" : ""}`}
+                  className={`pd-campaign-preview pd-campaign-preview--mobile pd-campaign-preview--${liveTextPosition} ${
+                    liveMobilePreviewImage ? "pd-campaign-preview--has-image" : ""
+                  }`}
                   style={selectedPreviewStyle(liveMobilePreviewImage, liveFields.mobile_image_position || "center center")}
+                  onPointerDown={handlePreviewPointerDown}
+                  onPointerMove={handlePreviewPointerMove}
                 >
-                  {liveFields.kicker ? <span>{liveFields.kicker}</span> : null}
-                  {liveFields.title ? <h3>{liveFields.title}</h3> : <h3>Solo immagine</h3>}
-                  {liveFields.text ? <p>{liveFields.text}</p> : <p>Nessuna descrizione impostata.</p>}
-                  {liveFields.button_label ? <strong>{liveFields.button_label}</strong> : null}
+                  {hasLiveCopy ? (
+                    <div className={`pd-preview-copy ${isLiveTextFree ? "pd-preview-copy--free" : ""}`} style={liveCopyStyle}>
+                      {liveFields.kicker ? <span>{liveFields.kicker}</span> : null}
+                      {liveFields.title ? <h3>{liveFields.title}</h3> : null}
+                      {liveFields.text ? <p>{liveFields.text}</p> : null}
+                      {liveFields.button_label ? <strong>{liveFields.button_label}</strong> : null}
+                    </div>
+                  ) : null}
                 </div>
               </article>
             </div>

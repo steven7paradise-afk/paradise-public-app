@@ -88,6 +88,21 @@
   display: none;
 }
 
+.paradise-adv-slot--custom .pas-content {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.paradise-adv-slot--custom .pas-copy {
+  left: var(--pas-text-x);
+  max-width: min(var(--pas-content-width), calc(100% - 32px));
+  position: absolute;
+  top: var(--pas-text-y);
+  transform: translate(-50%, -50%);
+  width: max-content;
+}
+
 .pas-copy {
   max-width: var(--pas-content-width);
 }

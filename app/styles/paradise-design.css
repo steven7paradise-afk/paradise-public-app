@@ -339,6 +339,12 @@
   overflow-wrap: anywhere;
 }
 
+.pd-live-hint {
+  color: #6c5958;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .pd-campaign-form textarea,
 .pd-campaign-form .pd-home-button {
   grid-column: 1 / -1;
@@ -500,6 +506,9 @@
   gap: 10px;
   min-height: 260px;
   padding: clamp(18px, 4vw, 42px);
+  position: relative;
+  touch-action: none;
+  user-select: none;
 }
 
 .pd-campaign-preview--mobile {
@@ -539,8 +548,34 @@
   text-align: right;
 }
 
+.pd-campaign-preview--free {
+  align-content: unset;
+  cursor: crosshair;
+  justify-items: unset;
+  padding: 0;
+  text-align: left;
+}
+
 .pd-campaign-preview--hidden > * {
   display: none;
+}
+
+.pd-preview-copy {
+  display: grid;
+  gap: 10px;
+  max-width: min(100%, 620px);
+}
+
+.pd-preview-copy--free {
+  cursor: grab;
+  max-width: min(78%, 620px);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: max-content;
+}
+
+.pd-preview-copy--free:active {
+  cursor: grabbing;
 }
 
 .pd-campaign-preview--has-image span,
