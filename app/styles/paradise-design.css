@@ -195,7 +195,8 @@
   line-height: 1.55;
 }
 
-.pd-home-adv-card strong {
+.pd-home-adv-card strong,
+.pd-code-link {
   align-self: end;
   background: #171313;
   border-radius: 999px;
@@ -207,6 +208,7 @@
   letter-spacing: 0.08em;
   min-height: 32px;
   padding: 10px 12px;
+  text-decoration: none;
   text-transform: uppercase;
 }
 

@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, HeadersFunction, LoaderFunctionArgs } from "react-router";
-import { Form, useActionData, useLoaderData } from "react-router";
+import { Form, Link, useActionData, useLoaderData } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 import { authenticate } from "../shopify.server";
@@ -229,6 +229,7 @@ async function getCampaign(admin: Awaited<ReturnType<typeof authenticate.admin>>
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
+  const selectedHandle = new URL(request.url).searchParams.get("handle") || "";
 
   let campaigns: Campaign[] = [];
   let setupError = "";
@@ -266,7 +267,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     setupError = error instanceof Error ? error.message : "Errore durante il setup delle campagne.";
   }
 
-  return { campaigns, setupError };
+  return { campaigns, selectedHandle, setupError };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -352,9 +353,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function CampaignsPage() {
-  const { campaigns, setupError } = useLoaderData<typeof loader>();
+  const { campaigns, selectedHandle, setupError } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const firstCampaign = campaigns[0];
+  const selectedCampaign = campaigns.find((campaign) => campaign.handle === selectedHandle) || firstCampaign;
 
   return (
     <main className="pd-home pd-campaigns" aria-label="Paradise ADV Campaign Manager">
@@ -383,10 +385,10 @@ export default function CampaignsPage() {
         </div>
       </section>
 
-      <section className="pd-home-panel">
+      <section className="pd-home-panel" id="campaign-form">
         <div className="pd-home-panel-head">
           <span className="pd-home-kicker">Campaign Manager</span>
-          <h2>Campagna globale</h2>
+          <h2>{selectedCampaign ? `Modifica ${selectedCampaign.handle}` : "Campagna globale"}</h2>
           <p>
             Puoi selezionare le immagini direttamente da Shopify Metaobjects
             usando i campi Desktop image e Mobile image. Usa Active, Start date
@@ -403,34 +405,34 @@ export default function CampaignsPage() {
           </p>
         ) : null}
 
-        <Form method="post" className="pd-campaign-form">
+        <Form method="post" className="pd-campaign-form" key={selectedCampaign?.handle || "new-campaign"}>
           <label>
             Codice slot
-            <input name="handle" defaultValue={firstCampaign?.handle || "collection-adv-1"} placeholder="collection-adv-1" />
+            <input name="handle" defaultValue={selectedCampaign?.handle || "collection-adv-1"} placeholder="collection-adv-1" />
           </label>
           <label>
             Sopratitolo
-            <input name="kicker" defaultValue={firstCampaign?.fields.kicker || ""} placeholder="Es. Promo, New drop, Limited edition" />
+            <input name="kicker" defaultValue={selectedCampaign?.fields.kicker || ""} placeholder="Es. Promo, New drop, Limited edition" />
           </label>
           <label>
             Titolo
-            <input name="title" defaultValue={firstCampaign?.fields.title || ""} placeholder="Titolo campagna" />
+            <input name="title" defaultValue={selectedCampaign?.fields.title || ""} placeholder="Titolo campagna" />
           </label>
           <label>
             Descrizione
-            <textarea name="text" defaultValue={firstCampaign?.fields.text || ""} rows={4} placeholder="Descrizione opzionale" />
+            <textarea name="text" defaultValue={selectedCampaign?.fields.text || ""} rows={4} placeholder="Descrizione opzionale" />
           </label>
           <label>
             Testo bottone
-            <input name="button_label" defaultValue={firstCampaign?.fields.button_label || ""} placeholder="Es. Acquista ora" />
+            <input name="button_label" defaultValue={selectedCampaign?.fields.button_label || ""} placeholder="Es. Acquista ora" />
           </label>
           <label>
             Link bottone
-            <input name="button_link_url" defaultValue={firstCampaign?.fields.button_link_url || ""} placeholder="https://..." />
+            <input name="button_link_url" defaultValue={selectedCampaign?.fields.button_link_url || ""} placeholder="https://..." />
           </label>
           <label>
             Posizione testo
-            <select name="text_position" defaultValue={firstCampaign?.fields.text_position || "sinistra"}>
+            <select name="text_position" defaultValue={selectedCampaign?.fields.text_position || "sinistra"}>
               <option value="sinistra">Sinistra</option>
               <option value="centro">Centro</option>
               <option value="destra">Destra</option>
@@ -481,7 +483,9 @@ export default function CampaignsPage() {
               </span>
               <h3>{campaign.handle}</h3>
               <p>{campaign.fields.title || "Campagna senza titolo"}</p>
-              <strong>Usa questo codice</strong>
+              <Link className="pd-code-link" to={`/app/campaigns?handle=${encodeURIComponent(campaign.handle)}#campaign-form`}>
+                Modifica codice
+              </Link>
             </article>
           )) : (
             <article className="pd-home-adv-card">
@@ -494,17 +498,17 @@ export default function CampaignsPage() {
         </div>
       </section>
 
-      {firstCampaign ? (
+      {selectedCampaign ? (
         <section className="pd-home-panel">
           <div className="pd-home-panel-head">
             <span className="pd-home-kicker">Preview</span>
-            <h2>Anteprima testo campagna</h2>
+            <h2>Anteprima {selectedCampaign.handle}</h2>
           </div>
-          <div className={`pd-campaign-preview pd-campaign-preview--${textPositionTone(firstCampaign.fields.text_position)}`}>
-            {firstCampaign.fields.kicker ? <span>{firstCampaign.fields.kicker}</span> : null}
-            {firstCampaign.fields.title ? <h3>{firstCampaign.fields.title}</h3> : <h3>Solo immagine</h3>}
-            {firstCampaign.fields.text ? <p>{firstCampaign.fields.text}</p> : <p>Nessuna descrizione impostata.</p>}
-            {firstCampaign.fields.button_label ? <strong>{firstCampaign.fields.button_label}</strong> : null}
+          <div className={`pd-campaign-preview pd-campaign-preview--${textPositionTone(selectedCampaign.fields.text_position)}`}>
+            {selectedCampaign.fields.kicker ? <span>{selectedCampaign.fields.kicker}</span> : null}
+            {selectedCampaign.fields.title ? <h3>{selectedCampaign.fields.title}</h3> : <h3>Solo immagine</h3>}
+            {selectedCampaign.fields.text ? <p>{selectedCampaign.fields.text}</p> : <p>Nessuna descrizione impostata.</p>}
+            {selectedCampaign.fields.button_label ? <strong>{selectedCampaign.fields.button_label}</strong> : null}
           </div>
         </section>
       ) : null}
