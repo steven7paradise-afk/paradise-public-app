@@ -196,6 +196,37 @@
   font-size: 13px;
 }
 
+.paradise-adv-grid-tile-host {
+  background: transparent;
+  display: block;
+  grid-column: span var(--pas-grid-span, 1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.paradise-adv-grid-tile-host[hidden] {
+  display: none;
+}
+
+.paradise-adv-grid-tile-host .paradise-adv-slot {
+  height: 100%;
+  padding: 0;
+}
+
+.paradise-adv-grid-tile-host .pas-frame {
+  min-height: var(--pas-tile-height, var(--pas-height));
+}
+
+.paradise-adv-grid-tile-host .pas-title {
+  font-size: clamp(30px, 4vw, 54px);
+}
+
+.paradise-adv-grid-tile-host .pas-text {
+  font-size: clamp(13px, 1.2vw, 16px);
+}
+
 @media (max-width: 749px) {
   .paradise-adv-slot {
     padding: var(--pas-mobile-padding-top) 0 var(--pas-mobile-padding-bottom);
@@ -229,5 +260,13 @@
   .pas-button {
     min-height: 38px;
     padding: 0 15px;
+  }
+
+  .paradise-adv-grid-tile-host {
+    grid-column: span var(--pas-mobile-grid-span, 1);
+  }
+
+  .paradise-adv-grid-tile-host .pas-frame {
+    min-height: var(--pas-mobile-tile-height, var(--pas-mobile-height));
   }
 }
