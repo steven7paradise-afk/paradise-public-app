@@ -55,6 +55,66 @@ const advSlots = [
   },
 ];
 
+const advControlGroups = [
+  {
+    title: "Sorgente",
+    controls: [
+      "Mostra ADV",
+      "Codice slot",
+      "Usa campagna globale dall'app",
+      "Usa campagna della collezione corrente",
+    ],
+  },
+  {
+    title: "Media",
+    controls: [
+      "Immagine desktop",
+      "Immagine mobile",
+      "Testo accessibilita immagine",
+      "Link banner",
+    ],
+  },
+  {
+    title: "Testi",
+    controls: ["Sopratitolo", "Titolo", "Descrizione", "Testo bottone"],
+  },
+  {
+    title: "Layout",
+    controls: [
+      "Posizione testo",
+      "Altezza desktop",
+      "Altezza mobile",
+      "Posizione immagine desktop",
+      "Posizione immagine mobile",
+      "Trasparenza overlay",
+      "Angoli immagine",
+      "Larghezza massima testo",
+    ],
+  },
+  {
+    title: "Colori e CTA",
+    controls: [
+      "Colore testo",
+      "Sfondo bottone",
+      "Trasparenza sfondo bottone",
+      "Testo bottone",
+      "Bordo bottone",
+      "Sfondo bottone hover",
+      "Testo bottone hover",
+      "Angoli bottone",
+    ],
+  },
+  {
+    title: "Spaziatura",
+    controls: [
+      "Spazio sopra desktop",
+      "Spazio sotto desktop",
+      "Spazio sopra mobile",
+      "Spazio sotto mobile",
+    ],
+  },
+];
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
 
@@ -114,6 +174,31 @@ export default function Index() {
               <p>{slot.note}</p>
               <strong>Apri Theme Editor</strong>
             </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="pd-home-panel" aria-label="Controlli Paradise ADV Slot">
+        <div className="pd-home-panel-head">
+          <span className="pd-home-kicker">Paradise ADV Slot</span>
+          <h2>Controlli disponibili nel Theme Editor</h2>
+          <p>
+            Questa e&apos; la mappa completa dei campi del blocco. Le immagini,
+            altezze, colori e spaziature si regolano nel Theme Editor; la
+            campagna globale gestisce testi, immagini, date e posizione testo
+            quando vuoi aggiornare piu&apos; slot insieme.
+          </p>
+        </div>
+        <div className="pd-control-grid">
+          {advControlGroups.map((group) => (
+            <article className="pd-control-group" key={group.title}>
+              <h3>{group.title}</h3>
+              <ul>
+                {group.controls.map((control) => (
+                  <li key={control}>{control}</li>
+                ))}
+              </ul>
+            </article>
           ))}
         </div>
       </section>
