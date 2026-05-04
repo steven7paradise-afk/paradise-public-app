@@ -1,12 +1,21 @@
 {% assign tile_id = 'paradise-adv-grid-tile-' | append: block.id %}
-{% assign resolved_slot_code = block.settings.slot_code %}
+{% assign manual_slot_code = block.settings.slot_code %}
+{% assign collection_slot_code = blank %}
+{% assign resolved_slot_code = manual_slot_code %}
 {% if block.settings.use_collection_campaign and collection.handle != blank %}
-  {% assign resolved_slot_code = 'collection-' | append: collection.handle %}
+  {% assign collection_slot_code = 'collection-' | append: collection.handle %}
+  {% assign resolved_slot_code = collection_slot_code %}
 {% endif %}
 
 {% assign global_campaign = blank %}
-{% if block.settings.use_global_campaign and resolved_slot_code != blank %}
-  {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[resolved_slot_code] %}
+{% if block.settings.use_global_campaign %}
+  {% if collection_slot_code != blank %}
+    {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[collection_slot_code] %}
+  {% endif %}
+  {% if global_campaign == blank and manual_slot_code != blank %}
+    {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[manual_slot_code] %}
+    {% assign resolved_slot_code = manual_slot_code %}
+  {% endif %}
 {% endif %}
 
 {% assign has_global_campaign = false %}
@@ -173,17 +182,31 @@
     </section>
   </div>
 {% elsif request.design_mode %}
-  <div class="paradise-adv-slot-placeholder" data-adv-slot="{{ resolved_slot_code | escape }}" {{ block.shopify_attributes }}>
-    <strong>Paradise ADV Collection Tile</strong>
-    {% if global_campaign_status == 'disabled' %}
-      <span>Campagna disattivata: {{ resolved_slot_code }}.</span>
-    {% elsif global_campaign_status == 'scheduled' %}
-      <span>Campagna programmata: {{ resolved_slot_code }}.</span>
-    {% elsif global_campaign_status == 'expired' %}
-      <span>Campagna scaduta: {{ resolved_slot_code }}.</span>
-    {% else %}
-      <span>Crea una campagna attiva con immagine per il codice {{ resolved_slot_code | default: 'collection-handle' }}.</span>
-    {% endif %}
+  <div
+    class="paradise-adv-grid-tile-host"
+    hidden
+    data-insert-after="{{ block.settings.insert_after }}"
+    data-adv-slot="{{ resolved_slot_code | escape }}"
+    style="
+      --pas-grid-span: {{ block.settings.desktop_column_span }};
+      --pas-mobile-grid-span: {{ block.settings.mobile_column_span }};
+    "
+    {{ block.shopify_attributes }}
+  >
+    <div class="paradise-adv-slot-placeholder">
+      <strong>Paradise ADV Grid Tile</strong>
+      {% if global_campaign_status == 'disabled' %}
+        <span>Campagna disattivata: {{ resolved_slot_code }}.</span>
+      {% elsif global_campaign_status == 'scheduled' %}
+        <span>Campagna programmata: {{ resolved_slot_code }}.</span>
+      {% elsif global_campaign_status == 'expired' %}
+        <span>Campagna scaduta: {{ resolved_slot_code }}.</span>
+      {% elsif collection_slot_code != blank and manual_slot_code != blank %}
+        <span>Nessuna campagna per {{ collection_slot_code }}. Fallback manuale: {{ manual_slot_code }}.</span>
+      {% else %}
+        <span>Crea una campagna attiva con immagine per il codice {{ resolved_slot_code | default: 'collection-handle' }}.</span>
+      {% endif %}
+    </div>
   </div>
 {% endif %}
 
