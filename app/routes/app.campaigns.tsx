@@ -20,7 +20,15 @@ type GraphQLUserError = {
 type MetaobjectNode = {
   id?: string;
   handle: string;
-  fields: Array<{ key: string; value: string | null }>;
+  fields: Array<{
+    key: string;
+    value: string | null;
+    reference?: {
+      image?: {
+        url?: string | null;
+      } | null;
+    } | null;
+  }>;
 };
 
 const fieldDefinitions = [
@@ -47,9 +55,12 @@ function normalizeHandle(value: FormDataEntryValue | null) {
     .slice(0, 80) || "collection-adv-1";
 }
 
-function fieldMap(fields: Array<{ key: string; value: string | null }>) {
+function fieldMap(fields: MetaobjectNode["fields"]) {
   return fields.reduce<Record<string, string>>((acc, field) => {
     acc[field.key] = field.value || "";
+    if (field.reference?.image?.url) {
+      acc[`${field.key}_preview_url`] = field.reference.image.url;
+    }
     return acc;
   }, {});
 }
@@ -217,6 +228,13 @@ async function getCampaign(admin: Awaited<ReturnType<typeof authenticate.admin>>
           fields {
             key
             value
+            reference {
+              ... on MediaImage {
+                image {
+                  url
+                }
+              }
+            }
           }
         }
       }
@@ -251,6 +269,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
               fields {
                 key
                 value
+                reference {
+                  ... on MediaImage {
+                    image {
+                      url
+                    }
+                  }
+                }
               }
             }
           }
@@ -357,6 +382,10 @@ export default function CampaignsPage() {
   const actionData = useActionData<typeof action>();
   const firstCampaign = campaigns[0];
   const selectedCampaign = campaigns.find((campaign) => campaign.handle === selectedHandle) || firstCampaign;
+  const selectedPreviewImage =
+    selectedCampaign?.fields.desktop_image_preview_url ||
+    selectedCampaign?.fields.mobile_image_preview_url ||
+    "";
 
   return (
     <main className="pd-home pd-campaigns" aria-label="Paradise ADV Campaign Manager">
@@ -504,7 +533,16 @@ export default function CampaignsPage() {
             <span className="pd-home-kicker">Preview</span>
             <h2>Anteprima {selectedCampaign.handle}</h2>
           </div>
-          <div className={`pd-campaign-preview pd-campaign-preview--${textPositionTone(selectedCampaign.fields.text_position)}`}>
+          <div
+            className={`pd-campaign-preview pd-campaign-preview--${textPositionTone(selectedCampaign.fields.text_position)} ${
+              selectedPreviewImage ? "pd-campaign-preview--has-image" : ""
+            }`}
+            style={
+              selectedPreviewImage
+                ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)), url("${selectedPreviewImage}")` }
+                : undefined
+            }
+          >
             {selectedCampaign.fields.kicker ? <span>{selectedCampaign.fields.kicker}</span> : null}
             {selectedCampaign.fields.title ? <h3>{selectedCampaign.fields.title}</h3> : <h3>Solo immagine</h3>}
             {selectedCampaign.fields.text ? <p>{selectedCampaign.fields.text}</p> : <p>Nessuna descrizione impostata.</p>}
