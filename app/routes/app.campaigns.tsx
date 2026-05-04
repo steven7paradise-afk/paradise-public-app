@@ -1,4 +1,5 @@
 import type { ActionFunctionArgs, HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { useEffect, useState, type CSSProperties, type ChangeEvent } from "react";
 import { Form, Link, useActionData, useLoaderData } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
@@ -66,6 +67,34 @@ const fieldDefinitions = [
 ];
 
 const legacyFieldKeys = ["desktop_image_url", "mobile_image_url"];
+const livePreviewFieldKeys = [
+  "accessibility_label",
+  "kicker",
+  "title",
+  "text",
+  "button_label",
+  "button_link_url",
+  "text_position",
+  "desktop_height",
+  "mobile_height",
+  "desktop_image_position",
+  "mobile_image_position",
+  "overlay_opacity",
+  "card_radius",
+  "content_max_width",
+  "text_color",
+  "button_background",
+  "button_background_opacity",
+  "button_text_color",
+  "button_border_color",
+  "button_hover_background",
+  "button_hover_text_color",
+  "button_radius",
+  "padding_top",
+  "padding_bottom",
+  "mobile_padding_top",
+  "mobile_padding_bottom",
+];
 
 function normalizeHandle(value: FormDataEntryValue | null) {
   const raw = String(value || "collection-adv-1").trim().toLowerCase();
@@ -569,20 +598,53 @@ export default function CampaignsPage() {
   const actionData = useActionData<typeof action>();
   const firstCampaign = campaigns[0];
   const selectedCampaign = campaigns.find((campaign) => campaign.handle === selectedHandle) || firstCampaign;
-  const selectedPreviewImage =
-    selectedCampaign?.fields.desktop_image_preview_url ||
-    selectedCampaign?.fields.mobile_image_preview_url ||
+  const [liveFields, setLiveFields] = useState<Record<string, string>>(selectedCampaign?.fields || {});
+  const [desktopFilePreview, setDesktopFilePreview] = useState("");
+  const [mobileFilePreview, setMobileFilePreview] = useState("");
+  const livePreviewImage =
+    desktopFilePreview ||
+    liveFields.desktop_image_preview_url ||
+    mobileFilePreview ||
+    liveFields.mobile_image_preview_url ||
     "";
-  const selectedMobilePreviewImage =
-    selectedCampaign?.fields.mobile_image_preview_url ||
-    selectedCampaign?.fields.desktop_image_preview_url ||
+  const liveMobilePreviewImage =
+    mobileFilePreview ||
+    liveFields.mobile_image_preview_url ||
+    desktopFilePreview ||
+    liveFields.desktop_image_preview_url ||
     "";
-  const selectedPreviewStyle = (image: string) =>
+  const liveOverlayOpacity = Math.max(0, Math.min(80, Number(liveFields.overlay_opacity || "22"))) / 100;
+  const selectedPreviewStyle = (image: string, position: string): CSSProperties | undefined =>
     image
       ? {
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)), url("${image}")`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, ${liveOverlayOpacity}), rgba(0, 0, 0, ${liveOverlayOpacity})), url("${image}")`,
+          backgroundPosition: position,
         }
       : undefined;
+  const handleLivePreviewChange = (event: ChangeEvent<HTMLFormElement>) => {
+    const formData = new FormData(event.currentTarget);
+
+    setLiveFields((current) => {
+      const next = { ...current };
+      livePreviewFieldKeys.forEach((key) => {
+        next[key] = String(formData.get(key) || "");
+      });
+      return next;
+    });
+
+    const target = event.target as HTMLInputElement;
+    if (target.type === "file" && target.files?.[0]) {
+      const previewUrl = URL.createObjectURL(target.files[0]);
+      if (target.name === "desktop_image_file") setDesktopFilePreview(previewUrl);
+      if (target.name === "mobile_image_file") setMobileFilePreview(previewUrl);
+    }
+  };
+
+  useEffect(() => {
+    setLiveFields(selectedCampaign?.fields || {});
+    setDesktopFilePreview("");
+    setMobileFilePreview("");
+  }, [selectedCampaign]);
 
   return (
     <main className="pd-home pd-campaigns" aria-label="Paradise ADV Campaign Manager">
@@ -631,7 +693,14 @@ export default function CampaignsPage() {
           </p>
         ) : null}
 
-        <Form method="post" encType="multipart/form-data" className="pd-campaign-form" key={selectedCampaign?.handle || "new-campaign"}>
+        <div className="pd-editor-grid">
+        <Form
+          method="post"
+          encType="multipart/form-data"
+          className="pd-campaign-form"
+          key={selectedCampaign?.handle || "new-campaign"}
+          onChange={handleLivePreviewChange}
+        >
           <label>
             Codice slot
             <input name="handle" defaultValue={selectedCampaign?.handle || "collection-adv-1"} placeholder="collection-adv-1" />
@@ -786,6 +855,43 @@ export default function CampaignsPage() {
           </label>
           <button className="pd-home-button" type="submit">Salva campagna globale</button>
         </Form>
+        {selectedCampaign ? (
+          <aside className="pd-live-preview" aria-label="Anteprima live">
+            <span className="pd-home-kicker">Preview live</span>
+            <h3>{selectedCampaign.handle}</h3>
+            <div className="pd-preview-grid pd-preview-grid--stacked">
+              <article>
+                <span className="pd-preview-label">Desktop</span>
+                <div
+                  className={`pd-campaign-preview pd-campaign-preview--${textPositionTone(liveFields.text_position)} ${
+                    livePreviewImage ? "pd-campaign-preview--has-image" : ""
+                  }`}
+                  style={selectedPreviewStyle(livePreviewImage, liveFields.desktop_image_position || "center center")}
+                >
+                  {liveFields.kicker ? <span>{liveFields.kicker}</span> : null}
+                  {liveFields.title ? <h3>{liveFields.title}</h3> : <h3>Solo immagine</h3>}
+                  {liveFields.text ? <p>{liveFields.text}</p> : <p>Nessuna descrizione impostata.</p>}
+                  {liveFields.button_label ? <strong>{liveFields.button_label}</strong> : null}
+                </div>
+              </article>
+              <article>
+                <span className="pd-preview-label">Mobile</span>
+                <div
+                  className={`pd-campaign-preview pd-campaign-preview--mobile pd-campaign-preview--${textPositionTone(
+                    liveFields.text_position,
+                  )} ${liveMobilePreviewImage ? "pd-campaign-preview--has-image" : ""}`}
+                  style={selectedPreviewStyle(liveMobilePreviewImage, liveFields.mobile_image_position || "center center")}
+                >
+                  {liveFields.kicker ? <span>{liveFields.kicker}</span> : null}
+                  {liveFields.title ? <h3>{liveFields.title}</h3> : <h3>Solo immagine</h3>}
+                  {liveFields.text ? <p>{liveFields.text}</p> : <p>Nessuna descrizione impostata.</p>}
+                  {liveFields.button_label ? <strong>{liveFields.button_label}</strong> : null}
+                </div>
+              </article>
+            </div>
+          </aside>
+        ) : null}
+        </div>
       </section>
 
       <section className="pd-home-panel">
@@ -840,44 +946,6 @@ export default function CampaignsPage() {
         </div>
       </section>
 
-      {selectedCampaign ? (
-        <section className="pd-home-panel">
-          <div className="pd-home-panel-head">
-            <span className="pd-home-kicker">Preview</span>
-            <h2>Anteprima {selectedCampaign.handle}</h2>
-          </div>
-          <div className="pd-preview-grid">
-            <article>
-              <span className="pd-preview-label">Desktop</span>
-              <div
-                className={`pd-campaign-preview pd-campaign-preview--${textPositionTone(selectedCampaign.fields.text_position)} ${
-                  selectedPreviewImage ? "pd-campaign-preview--has-image" : ""
-                }`}
-                style={selectedPreviewStyle(selectedPreviewImage)}
-              >
-                {selectedCampaign.fields.kicker ? <span>{selectedCampaign.fields.kicker}</span> : null}
-                {selectedCampaign.fields.title ? <h3>{selectedCampaign.fields.title}</h3> : <h3>Solo immagine</h3>}
-                {selectedCampaign.fields.text ? <p>{selectedCampaign.fields.text}</p> : <p>Nessuna descrizione impostata.</p>}
-                {selectedCampaign.fields.button_label ? <strong>{selectedCampaign.fields.button_label}</strong> : null}
-              </div>
-            </article>
-            <article>
-              <span className="pd-preview-label">Mobile</span>
-              <div
-                className={`pd-campaign-preview pd-campaign-preview--mobile pd-campaign-preview--${textPositionTone(
-                  selectedCampaign.fields.text_position,
-                )} ${selectedMobilePreviewImage ? "pd-campaign-preview--has-image" : ""}`}
-                style={selectedPreviewStyle(selectedMobilePreviewImage)}
-              >
-                {selectedCampaign.fields.kicker ? <span>{selectedCampaign.fields.kicker}</span> : null}
-                {selectedCampaign.fields.title ? <h3>{selectedCampaign.fields.title}</h3> : <h3>Solo immagine</h3>}
-                {selectedCampaign.fields.text ? <p>{selectedCampaign.fields.text}</p> : <p>Nessuna descrizione impostata.</p>}
-                {selectedCampaign.fields.button_label ? <strong>{selectedCampaign.fields.button_label}</strong> : null}
-              </div>
-            </article>
-          </div>
-        </section>
-      ) : null}
     </main>
   );
 }

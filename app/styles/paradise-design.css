@@ -269,6 +269,13 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.pd-editor-grid {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+}
+
 .pd-campaign-form label {
   color: #604f52;
   display: grid;
@@ -276,6 +283,7 @@
   font-weight: 800;
   gap: 7px;
   letter-spacing: 0.05em;
+  min-width: 0;
   text-transform: uppercase;
 }
 
@@ -307,6 +315,28 @@
   display: block;
   object-fit: cover;
   width: 100%;
+}
+
+.pd-live-preview {
+  border: 1px solid rgba(23, 19, 19, 0.12);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  position: sticky;
+  top: 18px;
+}
+
+.pd-live-preview h3 {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 16px;
+  font-weight: 850;
+  overflow-wrap: anywhere;
 }
 
 .pd-campaign-form textarea,
@@ -431,6 +461,19 @@
   display: grid;
   gap: 14px;
   grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+}
+
+.pd-preview-grid--stacked {
+  grid-template-columns: 1fr;
+}
+
+.pd-preview-grid--stacked .pd-campaign-preview {
+  min-height: 220px;
+}
+
+.pd-preview-grid--stacked .pd-campaign-preview--mobile {
+  max-width: 220px;
+  min-height: 340px;
 }
 
 .pd-preview-grid article {
@@ -559,6 +602,7 @@
   .pd-home-adv-grid,
   .pd-control-grid,
   .pd-preview-grid,
+  .pd-editor-grid,
   .pd-workflow-grid,
   .pd-campaign-form {
     grid-template-columns: 1fr;
