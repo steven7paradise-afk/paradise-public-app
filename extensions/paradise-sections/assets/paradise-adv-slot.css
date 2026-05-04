@@ -127,7 +127,7 @@
 
 .pas-button {
   align-items: center;
-  background: rgba(var(--pas-button-bg-rgb), var(--pas-button-bg-opacity));
+  background: color-mix(in srgb, var(--pas-button-bg-color) var(--pas-button-bg-opacity-percent), transparent);
   border: 1px solid var(--pas-button-border);
   border-radius: var(--pas-button-radius);
   color: var(--pas-button-text);

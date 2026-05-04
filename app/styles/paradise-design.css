@@ -295,6 +295,20 @@
   width: 100%;
 }
 
+.pd-campaign-form input[type="color"] {
+  min-height: 44px;
+  padding: 5px;
+}
+
+.pd-file-field img {
+  aspect-ratio: 16 / 7;
+  border: 1px solid rgba(34, 24, 22, 0.12);
+  border-radius: 8px;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
 .pd-campaign-form textarea,
 .pd-campaign-form .pd-home-button {
   grid-column: 1 / -1;

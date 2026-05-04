@@ -37,12 +37,32 @@ const fieldDefinitions = [
   { key: "ends_at", name: "Data fine", type: "date_time" },
   { key: "desktop_image", name: "Immagine desktop", type: "file_reference" },
   { key: "mobile_image", name: "Immagine mobile", type: "file_reference" },
+  { key: "accessibility_label", name: "Testo accessibilita immagine", type: "single_line_text_field" },
   { key: "kicker", name: "Sopratitolo", type: "single_line_text_field" },
   { key: "title", name: "Titolo", type: "single_line_text_field" },
   { key: "text", name: "Descrizione", type: "multi_line_text_field" },
   { key: "button_label", name: "Testo bottone", type: "single_line_text_field" },
   { key: "button_link_url", name: "Link bottone", type: "url" },
   { key: "text_position", name: "Posizione testo", type: "single_line_text_field" },
+  { key: "desktop_height", name: "Altezza desktop", type: "single_line_text_field" },
+  { key: "mobile_height", name: "Altezza mobile", type: "single_line_text_field" },
+  { key: "desktop_image_position", name: "Posizione immagine desktop", type: "single_line_text_field" },
+  { key: "mobile_image_position", name: "Posizione immagine mobile", type: "single_line_text_field" },
+  { key: "overlay_opacity", name: "Trasparenza overlay", type: "single_line_text_field" },
+  { key: "card_radius", name: "Angoli immagine", type: "single_line_text_field" },
+  { key: "content_max_width", name: "Larghezza massima testo", type: "single_line_text_field" },
+  { key: "text_color", name: "Colore testo", type: "single_line_text_field" },
+  { key: "button_background", name: "Sfondo bottone", type: "single_line_text_field" },
+  { key: "button_background_opacity", name: "Trasparenza sfondo bottone", type: "single_line_text_field" },
+  { key: "button_text_color", name: "Testo bottone", type: "single_line_text_field" },
+  { key: "button_border_color", name: "Bordo bottone", type: "single_line_text_field" },
+  { key: "button_hover_background", name: "Sfondo bottone hover", type: "single_line_text_field" },
+  { key: "button_hover_text_color", name: "Testo bottone hover", type: "single_line_text_field" },
+  { key: "button_radius", name: "Angoli bottone", type: "single_line_text_field" },
+  { key: "padding_top", name: "Spazio sopra desktop", type: "single_line_text_field" },
+  { key: "padding_bottom", name: "Spazio sotto desktop", type: "single_line_text_field" },
+  { key: "mobile_padding_top", name: "Spazio sopra mobile", type: "single_line_text_field" },
+  { key: "mobile_padding_bottom", name: "Spazio sotto mobile", type: "single_line_text_field" },
 ];
 
 const legacyFieldKeys = ["desktop_image_url", "mobile_image_url"];
@@ -88,6 +108,26 @@ function textPositionTone(value = "") {
   if (["nascosto", "hidden", "solo immagine"].includes(normalized)) return "hidden";
 
   return "left";
+}
+
+function formFile(formData: FormData, key: string) {
+  const value = formData.get(key);
+
+  if (
+    value &&
+    typeof value === "object" &&
+    "arrayBuffer" in value &&
+    "size" in value &&
+    Number(value.size) > 0
+  ) {
+    return value as File;
+  }
+
+  return null;
+}
+
+function fieldValue(formData: FormData, key: string) {
+  return String(formData.get(key) || "").trim();
 }
 
 async function runGraphql<TData extends Record<string, unknown>>(
@@ -245,6 +285,109 @@ async function getCampaign(admin: Awaited<ReturnType<typeof authenticate.admin>>
   return data.metaobjectByHandle;
 }
 
+async function uploadImageFile(
+  admin: Awaited<ReturnType<typeof authenticate.admin>>["admin"],
+  file: File,
+  alt: string,
+) {
+  const staged = await runGraphql<{
+    stagedUploadsCreate: {
+      stagedTargets: Array<{
+        url: string;
+        resourceUrl: string;
+        parameters: Array<{ name: string; value: string }>;
+      }>;
+      userErrors: GraphQLUserError[];
+    };
+  }>(
+    admin,
+    `#graphql
+      mutation StagedUpload($input: [StagedUploadInput!]!) {
+        stagedUploadsCreate(input: $input) {
+          stagedTargets {
+            url
+            resourceUrl
+            parameters {
+              name
+              value
+            }
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `,
+    {
+      input: [
+        {
+          filename: file.name,
+          mimeType: file.type || "image/jpeg",
+          httpMethod: "POST",
+          resource: "FILE",
+        },
+      ],
+    },
+  );
+
+  const stagedErrors = staged.stagedUploadsCreate.userErrors;
+  if (stagedErrors.length) throw new Error(stagedErrors.map((error) => error.message).join(" "));
+
+  const target = staged.stagedUploadsCreate.stagedTargets[0];
+  const uploadForm = new FormData();
+  target.parameters.forEach((parameter) => uploadForm.append(parameter.name, parameter.value));
+  uploadForm.append("file", file);
+
+  const uploadResponse = await fetch(target.url, {
+    method: "POST",
+    body: uploadForm,
+  });
+
+  if (!uploadResponse.ok) {
+    throw new Error(`Upload immagine fallito (${uploadResponse.status}).`);
+  }
+
+  const created = await runGraphql<{
+    fileCreate: {
+      files: Array<{ id?: string | null }>;
+      userErrors: GraphQLUserError[];
+    };
+  }>(
+    admin,
+    `#graphql
+      mutation CreateFile($files: [FileCreateInput!]!) {
+        fileCreate(files: $files) {
+          files {
+            id
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `,
+    {
+      files: [
+        {
+          alt,
+          contentType: "IMAGE",
+          originalSource: target.resourceUrl,
+        },
+      ],
+    },
+  );
+
+  const createErrors = created.fileCreate.userErrors;
+  if (createErrors.length) throw new Error(createErrors.map((error) => error.message).join(" "));
+
+  const id = created.fileCreate.files[0]?.id;
+  if (!id) throw new Error("Shopify non ha restituito l'ID del file immagine.");
+
+  return id;
+}
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
   const selectedHandle = new URL(request.url).searchParams.get("handle") || "";
@@ -303,12 +446,56 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   try {
     await ensureCampaignDefinition(admin);
 
-    const appFormFieldKeys = ["kicker", "title", "text", "button_label", "button_link_url", "text_position"];
+    const appFormFieldKeys = [
+      "accessibility_label",
+      "kicker",
+      "title",
+      "text",
+      "button_label",
+      "button_link_url",
+      "text_position",
+      "desktop_height",
+      "mobile_height",
+      "desktop_image_position",
+      "mobile_image_position",
+      "overlay_opacity",
+      "card_radius",
+      "content_max_width",
+      "text_color",
+      "button_background",
+      "button_background_opacity",
+      "button_text_color",
+      "button_border_color",
+      "button_hover_background",
+      "button_hover_text_color",
+      "button_radius",
+      "padding_top",
+      "padding_bottom",
+      "mobile_padding_top",
+      "mobile_padding_bottom",
+    ];
     const editableFieldDefinitions = fieldDefinitions.filter((field) => appFormFieldKeys.includes(field.key));
     const fields = editableFieldDefinitions.map((field) => ({
       key: field.key,
-      value: String(formData.get(field.key) || "").trim(),
+      value: fieldValue(formData, field.key),
     }));
+    const desktopImage = formFile(formData, "desktop_image_file");
+    const mobileImage = formFile(formData, "mobile_image_file");
+    const imageAlt = fieldValue(formData, "accessibility_label") || fieldValue(formData, "title") || handle;
+
+    if (desktopImage) {
+      fields.push({
+        key: "desktop_image",
+        value: await uploadImageFile(admin, desktopImage, imageAlt),
+      });
+    }
+
+    if (mobileImage) {
+      fields.push({
+        key: "mobile_image",
+        value: await uploadImageFile(admin, mobileImage, imageAlt),
+      });
+    }
 
     const existing = await getCampaign(admin, handle);
 
@@ -444,10 +631,32 @@ export default function CampaignsPage() {
           </p>
         ) : null}
 
-        <Form method="post" className="pd-campaign-form" key={selectedCampaign?.handle || "new-campaign"}>
+        <Form method="post" encType="multipart/form-data" className="pd-campaign-form" key={selectedCampaign?.handle || "new-campaign"}>
           <label>
             Codice slot
             <input name="handle" defaultValue={selectedCampaign?.handle || "collection-adv-1"} placeholder="collection-adv-1" />
+          </label>
+          <label>
+            Testo accessibilita immagine
+            <input
+              name="accessibility_label"
+              defaultValue={selectedCampaign?.fields.accessibility_label || ""}
+              placeholder="Paradise promotional banner"
+            />
+          </label>
+          <label className="pd-file-field">
+            Immagine desktop
+            {selectedCampaign?.fields.desktop_image_preview_url ? (
+              <img src={selectedCampaign.fields.desktop_image_preview_url} alt="" />
+            ) : null}
+            <input name="desktop_image_file" type="file" accept="image/*" />
+          </label>
+          <label className="pd-file-field">
+            Immagine mobile
+            {selectedCampaign?.fields.mobile_image_preview_url ? (
+              <img src={selectedCampaign.fields.mobile_image_preview_url} alt="" />
+            ) : null}
+            <input name="mobile_image_file" type="file" accept="image/*" />
           </label>
           <label>
             Sopratitolo
@@ -480,6 +689,100 @@ export default function CampaignsPage() {
               <option value="alto destra">Alto destra</option>
               <option value="nascosto">Solo immagine</option>
             </select>
+          </label>
+          <label>
+            Altezza desktop
+            <input name="desktop_height" type="number" min="240" max="900" defaultValue={selectedCampaign?.fields.desktop_height || "520"} />
+          </label>
+          <label>
+            Altezza mobile
+            <input name="mobile_height" type="number" min="220" max="720" defaultValue={selectedCampaign?.fields.mobile_height || "420"} />
+          </label>
+          <label>
+            Posizione immagine desktop
+            <select name="desktop_image_position" defaultValue={selectedCampaign?.fields.desktop_image_position || "center center"}>
+              <option value="center center">Centro</option>
+              <option value="center top">Alto</option>
+              <option value="center bottom">Basso</option>
+              <option value="left center">Sinistra</option>
+              <option value="right center">Destra</option>
+            </select>
+          </label>
+          <label>
+            Posizione immagine mobile
+            <select name="mobile_image_position" defaultValue={selectedCampaign?.fields.mobile_image_position || "center center"}>
+              <option value="center center">Centro</option>
+              <option value="center top">Alto</option>
+              <option value="center bottom">Basso</option>
+              <option value="left center">Sinistra</option>
+              <option value="right center">Destra</option>
+            </select>
+          </label>
+          <label>
+            Trasparenza overlay
+            <input name="overlay_opacity" type="number" min="0" max="80" defaultValue={selectedCampaign?.fields.overlay_opacity || "20"} />
+          </label>
+          <label>
+            Angoli immagine
+            <input name="card_radius" type="number" min="0" max="40" defaultValue={selectedCampaign?.fields.card_radius || "8"} />
+          </label>
+          <label>
+            Larghezza massima testo
+            <input name="content_max_width" type="number" min="240" max="760" defaultValue={selectedCampaign?.fields.content_max_width || "520"} />
+          </label>
+          <label>
+            Colore testo
+            <input name="text_color" type="color" defaultValue={selectedCampaign?.fields.text_color || "#ffffff"} />
+          </label>
+          <label>
+            Sfondo bottone
+            <input name="button_background" type="color" defaultValue={selectedCampaign?.fields.button_background || "#ffffff"} />
+          </label>
+          <label>
+            Trasparenza sfondo bottone
+            <input
+              name="button_background_opacity"
+              type="number"
+              min="0"
+              max="100"
+              defaultValue={selectedCampaign?.fields.button_background_opacity || "0"}
+            />
+          </label>
+          <label>
+            Testo bottone colore
+            <input name="button_text_color" type="color" defaultValue={selectedCampaign?.fields.button_text_color || "#ffffff"} />
+          </label>
+          <label>
+            Bordo bottone
+            <input name="button_border_color" type="color" defaultValue={selectedCampaign?.fields.button_border_color || "#ffffff"} />
+          </label>
+          <label>
+            Sfondo bottone hover
+            <input name="button_hover_background" type="color" defaultValue={selectedCampaign?.fields.button_hover_background || "#ffffff"} />
+          </label>
+          <label>
+            Testo bottone hover
+            <input name="button_hover_text_color" type="color" defaultValue={selectedCampaign?.fields.button_hover_text_color || "#171313"} />
+          </label>
+          <label>
+            Angoli bottone
+            <input name="button_radius" type="number" min="0" max="40" defaultValue={selectedCampaign?.fields.button_radius || "18"} />
+          </label>
+          <label>
+            Spazio sopra desktop
+            <input name="padding_top" type="number" min="0" max="120" defaultValue={selectedCampaign?.fields.padding_top || "24"} />
+          </label>
+          <label>
+            Spazio sotto desktop
+            <input name="padding_bottom" type="number" min="0" max="120" defaultValue={selectedCampaign?.fields.padding_bottom || "24"} />
+          </label>
+          <label>
+            Spazio sopra mobile
+            <input name="mobile_padding_top" type="number" min="0" max="80" defaultValue={selectedCampaign?.fields.mobile_padding_top || "16"} />
+          </label>
+          <label>
+            Spazio sotto mobile
+            <input name="mobile_padding_bottom" type="number" min="0" max="80" defaultValue={selectedCampaign?.fields.mobile_padding_bottom || "16"} />
           </label>
           <button className="pd-home-button" type="submit">Salva campagna globale</button>
         </Form>

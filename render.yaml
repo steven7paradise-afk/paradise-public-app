@@ -11,7 +11,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: SCOPES
-        value: write_metaobject_definitions,write_metaobjects,write_products
+        value: write_metaobject_definitions,write_metaobjects,write_products,write_files
       - key: DATABASE_URL
         value: file:/data/production.sqlite
       - key: SHOPIFY_API_KEY

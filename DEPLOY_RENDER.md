@@ -18,7 +18,7 @@ Se la dashboard mostra `Example Domain`, significa che `application_url` punta a
 SHOPIFY_API_KEY=client id della app
 SHOPIFY_API_SECRET=client secret della app
 SHOPIFY_APP_URL=https://URL-RENDER.onrender.com
-SCOPES=write_metaobject_definitions,write_metaobjects,write_products
+SCOPES=write_metaobject_definitions,write_metaobjects,write_products,write_files
 DATABASE_URL=file:/data/production.sqlite
 ```
 
