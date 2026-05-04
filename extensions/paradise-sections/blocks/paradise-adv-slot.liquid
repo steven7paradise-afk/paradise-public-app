@@ -8,21 +8,28 @@
 {% if global_campaign != blank %}
   {% assign has_global_campaign = true %}
 {% endif %}
+{% assign global_campaign_status = 'missing' %}
 {% assign global_campaign_active = true %}
+{% if has_global_campaign %}
+  {% assign global_campaign_status = 'active' %}
+{% endif %}
 {% if global_campaign.is_active.value == false or global_campaign.is_active.value == 'false' %}
   {% assign global_campaign_active = false %}
+  {% assign global_campaign_status = 'disabled' %}
 {% endif %}
 {% assign now_timestamp = 'now' | date: '%s' | plus: 0 %}
 {% if global_campaign.starts_at.value != blank %}
   {% assign start_timestamp = global_campaign.starts_at.value | date: '%s' | plus: 0 %}
   {% if now_timestamp < start_timestamp %}
     {% assign global_campaign_active = false %}
+    {% assign global_campaign_status = 'scheduled' %}
   {% endif %}
 {% endif %}
 {% if global_campaign.ends_at.value != blank %}
   {% assign end_timestamp = global_campaign.ends_at.value | date: '%s' | plus: 0 %}
   {% if now_timestamp > end_timestamp %}
     {% assign global_campaign_active = false %}
+    {% assign global_campaign_status = 'expired' %}
   {% endif %}
 {% endif %}
 
@@ -143,8 +150,19 @@
   </section>
 {% elsif request.design_mode %}
   <div class="paradise-adv-slot-placeholder" data-adv-slot="{{ block.settings.slot_code | escape }}" {{ block.shopify_attributes }}>
-    <strong>Paradise ADV Slot vuoto</strong>
-    <span>Codice slot: {{ block.settings.slot_code | default: 'collection-adv-1' }}. Carica immagine desktop/mobile per mostrarlo nel sito.</span>
+    {% if has_global_campaign and global_campaign_status == 'disabled' %}
+      <strong>Campagna ADV disattivata</strong>
+      <span>Codice slot: {{ block.settings.slot_code }}. Attiva la campagna nel metaobject per mostrarla.</span>
+    {% elsif has_global_campaign and global_campaign_status == 'scheduled' %}
+      <strong>Campagna ADV programmata</strong>
+      <span>Codice slot: {{ block.settings.slot_code }}. Apparira' alla data di inizio impostata.</span>
+    {% elsif has_global_campaign and global_campaign_status == 'expired' %}
+      <strong>Campagna ADV scaduta</strong>
+      <span>Codice slot: {{ block.settings.slot_code }}. Modifica la data fine o riattivala.</span>
+    {% else %}
+      <strong>Paradise ADV Slot vuoto</strong>
+      <span>Codice slot: {{ block.settings.slot_code | default: 'collection-adv-1' }}. Carica immagine desktop/mobile per mostrarlo nel sito.</span>
+    {% endif %}
   </div>
 {% endif %}
 

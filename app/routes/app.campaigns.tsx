@@ -24,16 +24,16 @@ type MetaobjectNode = {
 };
 
 const fieldDefinitions = [
-  { key: "is_active", name: "Active", type: "boolean" },
-  { key: "starts_at", name: "Start date", type: "date_time" },
-  { key: "ends_at", name: "End date", type: "date_time" },
-  { key: "desktop_image", name: "Desktop image", type: "file_reference" },
-  { key: "mobile_image", name: "Mobile image", type: "file_reference" },
-  { key: "kicker", name: "Kicker", type: "single_line_text_field" },
-  { key: "title", name: "Title", type: "single_line_text_field" },
-  { key: "text", name: "Text", type: "multi_line_text_field" },
-  { key: "button_label", name: "Button label", type: "single_line_text_field" },
-  { key: "button_link_url", name: "Button link URL", type: "url" },
+  { key: "is_active", name: "Attiva", type: "boolean" },
+  { key: "starts_at", name: "Data inizio", type: "date_time" },
+  { key: "ends_at", name: "Data fine", type: "date_time" },
+  { key: "desktop_image", name: "Immagine desktop", type: "file_reference" },
+  { key: "mobile_image", name: "Immagine mobile", type: "file_reference" },
+  { key: "kicker", name: "Sopratitolo", type: "single_line_text_field" },
+  { key: "title", name: "Titolo", type: "single_line_text_field" },
+  { key: "text", name: "Descrizione", type: "multi_line_text_field" },
+  { key: "button_label", name: "Testo bottone", type: "single_line_text_field" },
+  { key: "button_link_url", name: "Link bottone", type: "url" },
 ];
 
 const legacyFieldKeys = ["desktop_image_url", "mobile_image_url"];
@@ -51,6 +51,18 @@ function fieldMap(fields: Array<{ key: string; value: string | null }>) {
     acc[field.key] = field.value || "";
     return acc;
   }, {});
+}
+
+function campaignStatus(fields: Record<string, string>) {
+  const now = Date.now();
+  const isActive = fields.is_active !== "false";
+  const startsAt = fields.starts_at ? Date.parse(fields.starts_at) : null;
+  const endsAt = fields.ends_at ? Date.parse(fields.ends_at) : null;
+
+  if (!isActive) return { label: "Disattivata", tone: "off" };
+  if (startsAt && now < startsAt) return { label: "Programmata", tone: "scheduled" };
+  if (endsAt && now > endsAt) return { label: "Scaduta", tone: "off" };
+  return { label: "Attiva", tone: "active" };
 }
 
 async function runGraphql<TData extends Record<string, unknown>>(
@@ -403,13 +415,39 @@ export default function CampaignsPage() {
 
       <section className="pd-home-panel">
         <div className="pd-home-panel-head">
+          <span className="pd-home-kicker">Workflow consigliato</span>
+          <h2>Un codice, tanti blocchi</h2>
+        </div>
+        <div className="pd-workflow-grid">
+          <article>
+            <span>01</span>
+            <h3>Crea campagna</h3>
+            <p>Da Metaobjects scegli immagini, date, testi e stato attivo.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Copia handle</h3>
+            <p>Usa lo stesso handle nel campo Codice slot del blocco ADV.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Aggiorna ovunque</h3>
+            <p>Ogni blocco con quel codice cambia insieme alla campagna.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="pd-home-panel">
+        <div className="pd-home-panel-head">
           <span className="pd-home-kicker">Campagne salvate</span>
           <h2>Codici disponibili</h2>
         </div>
         <div className="pd-home-adv-grid">
           {campaigns.length ? campaigns.map((campaign) => (
             <article className="pd-home-adv-card" key={campaign.handle}>
-              <span>Globale</span>
+              <span className={`pd-status pd-status--${campaignStatus(campaign.fields).tone}`}>
+                {campaignStatus(campaign.fields).label}
+              </span>
               <h3>{campaign.handle}</h3>
               <p>{campaign.fields.title || "Campagna senza titolo"}</p>
               <strong>Usa questo codice</strong>

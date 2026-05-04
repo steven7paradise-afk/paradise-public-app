@@ -298,6 +298,66 @@
   text-transform: uppercase;
 }
 
+.pd-workflow-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.pd-workflow-grid article {
+  border: 1px solid rgba(23, 19, 19, 0.12);
+  border-radius: 6px;
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+}
+
+.pd-workflow-grid span {
+  color: #b89a61;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.pd-workflow-grid h3 {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 16px;
+  font-weight: 850;
+}
+
+.pd-workflow-grid p {
+  color: #6c5958;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.pd-status {
+  border: 1px solid rgba(23, 19, 19, 0.12);
+  border-radius: 999px;
+  justify-self: start;
+  padding: 6px 9px;
+}
+
+.pd-status--active {
+  background: #edf7ef;
+  color: #1f5d32;
+}
+
+.pd-status--scheduled {
+  background: #f3f0ff;
+  color: #4b347d;
+}
+
+.pd-status--off {
+  background: #f4f4f4;
+  color: #5f5a54;
+}
+
 @media (max-width: 760px) {
   .pd-home {
     padding: 14px;
@@ -306,6 +366,7 @@
   .pd-home-hero,
   .pd-home-sections,
   .pd-home-adv-grid,
+  .pd-workflow-grid,
   .pd-campaign-form {
     grid-template-columns: 1fr;
   }
