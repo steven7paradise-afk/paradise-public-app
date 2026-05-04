@@ -119,6 +119,9 @@
 {% assign adv_text_color = global_text_color | default: block.settings.text_color %}
 {% assign adv_button_background = global_button_background | default: block.settings.button_background %}
 {% assign adv_button_background_opacity = global_button_background_opacity | default: block.settings.button_background_opacity %}
+{% if adv_button_label != blank and adv_button_background_opacity == 0 %}
+  {% assign adv_button_background_opacity = 100 %}
+{% endif %}
 {% assign adv_button_text_color = global_button_text_color | default: block.settings.button_text_color %}
 {% assign adv_button_border_color = global_button_border_color | default: block.settings.button_border_color %}
 {% assign adv_button_hover_background = global_button_hover_background | default: block.settings.button_hover_background %}

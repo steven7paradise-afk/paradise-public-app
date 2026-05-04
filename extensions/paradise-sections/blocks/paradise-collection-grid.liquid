@@ -1,0 +1,533 @@
+{{ 'paradise-adv-slot.css' | asset_url | stylesheet_tag }}
+
+{% assign grid_collection = collection %}
+{% if block.settings.use_current_collection == false and block.settings.collection != blank %}
+  {% assign grid_collection = block.settings.collection %}
+{% endif %}
+{% if grid_collection == blank and block.settings.collection != blank %}
+  {% assign grid_collection = block.settings.collection %}
+{% endif %}
+
+{% assign adv_slot_code = block.settings.adv_slot_code %}
+{% assign collection_slot_code = blank %}
+{% if block.settings.use_collection_campaign and grid_collection.handle != blank %}
+  {% assign collection_slot_code = 'collection-' | append: grid_collection.handle %}
+{% endif %}
+{% assign resolved_slot_code = collection_slot_code | default: adv_slot_code %}
+
+{% assign global_campaign = blank %}
+{% if block.settings.show_adv and block.settings.use_global_campaign %}
+  {% if collection_slot_code != blank %}
+    {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[collection_slot_code] %}
+  {% endif %}
+  {% if global_campaign == blank and adv_slot_code != blank %}
+    {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[adv_slot_code] %}
+    {% assign resolved_slot_code = adv_slot_code %}
+  {% endif %}
+{% endif %}
+
+{% assign has_global_campaign = false %}
+{% if global_campaign != blank %}
+  {% assign has_global_campaign = true %}
+{% endif %}
+{% assign global_campaign_active = true %}
+{% if global_campaign.is_active.value == false or global_campaign.is_active.value == 'false' %}
+  {% assign global_campaign_active = false %}
+{% endif %}
+{% assign now_timestamp = 'now' | date: '%s' | plus: 0 %}
+{% if global_campaign.starts_at.value != blank %}
+  {% assign start_timestamp = global_campaign.starts_at.value | date: '%s' | plus: 0 %}
+  {% if now_timestamp < start_timestamp %}
+    {% assign global_campaign_active = false %}
+  {% endif %}
+{% endif %}
+{% if global_campaign.ends_at.value != blank %}
+  {% assign end_timestamp = global_campaign.ends_at.value | date: '%s' | plus: 0 %}
+  {% if now_timestamp > end_timestamp %}
+    {% assign global_campaign_active = false %}
+  {% endif %}
+{% endif %}
+
+{% assign global_desktop_image = global_campaign.desktop_image.value %}
+{% assign global_mobile_image = global_campaign.mobile_image.value | default: global_desktop_image %}
+{% assign global_kicker = global_campaign.kicker.value %}
+{% assign global_title = global_campaign.title.value %}
+{% assign global_text = global_campaign.text.value %}
+{% assign global_button_label = global_campaign.button_label.value %}
+{% assign global_button_link = global_campaign.button_link_url.value %}
+{% assign global_accessibility_label = global_campaign.accessibility_label.value %}
+{% assign global_desktop_image_position = global_campaign.desktop_image_position.value | default: 'center center' %}
+{% assign global_mobile_image_position = global_campaign.mobile_image_position.value | default: global_desktop_image_position %}
+{% assign global_overlay_opacity = global_campaign.overlay_opacity.value | default: 20 %}
+{% assign global_card_radius = global_campaign.card_radius.value | default: block.settings.card_radius %}
+{% assign global_content_max_width = global_campaign.content_max_width.value | default: 520 %}
+{% assign global_text_color = global_campaign.text_color.value | default: '#ffffff' %}
+{% assign global_button_background = global_campaign.button_background.value | default: '#ffffff' %}
+{% assign global_button_background_opacity = global_campaign.button_background_opacity.value | default: 100 %}
+{% if global_button_label != blank and global_button_background_opacity == '0' %}
+  {% assign global_button_background_opacity = 100 %}
+{% endif %}
+{% assign global_button_text_color = global_campaign.button_text_color.value | default: '#171313' %}
+{% assign global_button_border_color = global_campaign.button_border_color.value | default: '#ffffff' %}
+{% assign global_button_hover_background = global_campaign.button_hover_background.value | default: '#171313' %}
+{% assign global_button_hover_text_color = global_campaign.button_hover_text_color.value | default: '#ffffff' %}
+{% assign global_button_radius = global_campaign.button_radius.value | default: 18 %}
+{% assign global_text_position_raw = global_campaign.text_position.value | downcase | strip %}
+{% assign global_text_position_x = global_campaign.text_position_x.value | default: 18 %}
+{% assign global_text_position_y = global_campaign.text_position_y.value | default: 72 %}
+{% assign global_mobile_text_position_x = global_campaign.mobile_text_position_x.value | default: global_text_position_x %}
+{% assign global_mobile_text_position_y = global_campaign.mobile_text_position_y.value | default: global_text_position_y %}
+
+{% assign adv_position = 'bottom-left' %}
+{% if global_text_position_raw != blank %}
+  {% case global_text_position_raw %}
+    {% when 'custom', 'libera', 'free', 'drag' %}
+      {% assign adv_position = 'custom' %}
+    {% when 'destra', 'right', 'basso destra', 'bottom-right', 'bottom right' %}
+      {% assign adv_position = 'bottom-right' %}
+    {% when 'centro', 'center', 'basso centro', 'bottom-center', 'bottom center' %}
+      {% assign adv_position = 'bottom-center' %}
+    {% when 'alto destra', 'top-right', 'top right' %}
+      {% assign adv_position = 'top-right' %}
+    {% when 'alto centro', 'top-center', 'top center' %}
+      {% assign adv_position = 'top-center' %}
+    {% when 'alto sinistra', 'top-left', 'top left' %}
+      {% assign adv_position = 'top-left' %}
+    {% when 'nascosto', 'hidden', 'solo immagine' %}
+      {% assign adv_position = 'hidden' %}
+  {% endcase %}
+{% endif %}
+
+{% assign can_render_adv = false %}
+{% if block.settings.show_adv and has_global_campaign and global_campaign_active and global_desktop_image != blank %}
+  {% assign can_render_adv = true %}
+{% endif %}
+{% assign adv_has_copy = false %}
+{% if global_kicker != blank or global_title != blank or global_text != blank or global_button_label != blank %}
+  {% assign adv_has_copy = true %}
+{% endif %}
+{% assign adv_alt = global_accessibility_label | default: global_title | default: resolved_slot_code %}
+{% assign should_render_adv = false %}
+{% if can_render_adv %}
+  {% assign should_render_adv = true %}
+{% elsif request.design_mode and block.settings.show_adv %}
+  {% assign should_render_adv = true %}
+{% endif %}
+
+{% capture paradise_adv_card %}
+  {% if can_render_adv %}
+    <div class="pcg-adv-card" data-adv-slot="{{ resolved_slot_code | escape }}">
+      <section
+        class="paradise-adv-slot paradise-adv-slot--{{ adv_position }}"
+        style="
+          --pas-height: {{ block.settings.adv_desktop_height }}px;
+          --pas-mobile-height: {{ block.settings.adv_mobile_height }}px;
+          --pas-image-position: {{ global_desktop_image_position }};
+          --pas-mobile-image-position: {{ global_mobile_image_position }};
+          --pas-overlay-opacity: {{ global_overlay_opacity | divided_by: 100.0 }};
+          --pas-radius: {{ global_card_radius }}px;
+          --pas-content-width: {{ global_content_max_width }}px;
+          --pas-text: {{ global_text_color }};
+          --pas-button-bg-color: {{ global_button_background }};
+          --pas-button-bg-opacity-percent: {{ global_button_background_opacity }}%;
+          --pas-button-text: {{ global_button_text_color }};
+          --pas-button-border: {{ global_button_border_color }};
+          --pas-button-hover-bg: {{ global_button_hover_background }};
+          --pas-button-hover-text: {{ global_button_hover_text_color }};
+          --pas-button-radius: {{ global_button_radius }}px;
+          --pas-padding-top: 0px;
+          --pas-padding-bottom: 0px;
+          --pas-mobile-padding-top: 0px;
+          --pas-mobile-padding-bottom: 0px;
+          --pas-text-x: {{ global_text_position_x }}%;
+          --pas-text-y: {{ global_text_position_y }}%;
+          --pas-mobile-text-x: {{ global_mobile_text_position_x }}%;
+          --pas-mobile-text-y: {{ global_mobile_text_position_y }}%;
+        "
+      >
+        {% if global_button_link != blank %}
+          <a class="pas-frame" href="{{ global_button_link }}" aria-label="{{ adv_alt | escape }}">
+        {% else %}
+          <div class="pas-frame pas-frame--static" role="img" aria-label="{{ adv_alt | escape }}">
+        {% endif %}
+          <picture class="pas-picture">
+            {% if global_mobile_image != blank %}
+              <source media="(max-width: 749px)" srcset="{{ global_mobile_image | image_url: width: 1000 }}">
+            {% endif %}
+            {{ global_desktop_image | image_url: width: 1600 | image_tag: loading: 'lazy', widths: '450, 700, 900, 1200, 1600', sizes: '(max-width: 749px) 100vw, 50vw', alt: adv_alt }}
+          </picture>
+          <div class="pas-overlay" aria-hidden="true"></div>
+          {% if adv_has_copy %}
+            <div class="pas-content">
+              <div class="pas-copy">
+                {% if global_kicker != blank %}<p class="pas-kicker">{{ global_kicker }}</p>{% endif %}
+                {% if global_title != blank %}<h2 class="pas-title">{{ global_title }}</h2>{% endif %}
+                {% if global_text != blank %}<div class="pas-text">{{ global_text | newline_to_br }}</div>{% endif %}
+                {% if global_button_label != blank %}<span class="pas-button" role="button">{{ global_button_label }}</span>{% endif %}
+              </div>
+            </div>
+          {% endif %}
+        {% if global_button_link != blank %}
+          </a>
+        {% else %}
+          </div>
+        {% endif %}
+      </section>
+    </div>
+  {% elsif request.design_mode and block.settings.show_adv %}
+    <div class="pcg-adv-card">
+      <div class="paradise-adv-slot-placeholder">
+        <strong>ADV non trovata</strong>
+        <span>Crea una campagna attiva con immagine per {{ resolved_slot_code | default: 'collection-handle' }}.</span>
+      </div>
+    </div>
+  {% endif %}
+{% endcapture %}
+
+<section
+  class="paradise-collection-grid"
+  style="
+    --pcg-max-width: {{ block.settings.max_width }}px;
+    --pcg-side-padding: {{ block.settings.side_padding }}px;
+    --pcg-mobile-side-padding: {{ block.settings.mobile_side_padding }}px;
+    --pcg-columns: {{ block.settings.desktop_columns }};
+    --pcg-mobile-columns: {{ block.settings.mobile_columns }};
+    --pcg-gap: {{ block.settings.grid_gap }}px;
+    --pcg-mobile-gap: {{ block.settings.mobile_grid_gap }}px;
+    --pcg-radius: {{ block.settings.card_radius }}px;
+    --pcg-product-ratio: {{ block.settings.product_image_ratio }}%;
+    --pcg-heading-align: {{ block.settings.heading_alignment }};
+    --pcg-padding-top: {{ block.settings.padding_top }}px;
+    --pcg-padding-bottom: {{ block.settings.padding_bottom }}px;
+    --pcg-mobile-padding-top: {{ block.settings.mobile_padding_top }}px;
+    --pcg-mobile-padding-bottom: {{ block.settings.mobile_padding_bottom }}px;
+    --pcg-adv-span: {{ block.settings.adv_desktop_span }};
+    --pcg-mobile-adv-span: {{ block.settings.adv_mobile_span }};
+    --pcg-adv-height: {{ block.settings.adv_desktop_height }}px;
+    --pcg-mobile-adv-height: {{ block.settings.adv_mobile_height }}px;
+  "
+  {{ block.shopify_attributes }}
+>
+  <div class="pcg-inner">
+    {% if block.settings.kicker != blank or block.settings.heading != blank %}
+      <div class="pcg-heading">
+        {% if block.settings.kicker != blank %}<p>{{ block.settings.kicker }}</p>{% endif %}
+        {% if block.settings.heading != blank %}<h2>{{ block.settings.heading }}</h2>{% endif %}
+      </div>
+    {% endif %}
+
+    {% if grid_collection != blank and grid_collection.products_count > 0 %}
+      {% assign adv_rendered = false %}
+      <div class="pcg-grid">
+        {% for product in grid_collection.products limit: block.settings.product_limit %}
+          {% if adv_rendered == false and should_render_adv %}
+            {% if block.settings.adv_insert_after == 0 and forloop.first %}
+              {{ paradise_adv_card }}
+              {% assign adv_rendered = true %}
+            {% endif %}
+          {% endif %}
+
+          <a class="pcg-product-card" href="{{ product.url }}">
+            <span class="pcg-product-media">
+              {% if product.featured_image != blank %}
+                {{ product.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title }}
+              {% endif %}
+            </span>
+            <span class="pcg-product-info">
+              <span class="pcg-product-title">{{ product.title }}</span>
+              {% if block.settings.show_price %}
+                <span class="pcg-product-price">
+                  {% if product.compare_at_price > product.price %}
+                    <span class="pcg-product-compare">{{ product.compare_at_price | money }}</span>
+                  {% endif %}
+                  {{ product.price | money }}
+                </span>
+              {% endif %}
+              {% if block.settings.show_vendor and product.vendor != blank %}
+                <span class="pcg-product-vendor">{{ product.vendor }}</span>
+              {% endif %}
+            </span>
+          </a>
+
+          {% if adv_rendered == false and should_render_adv %}
+            {% if block.settings.adv_insert_after == forloop.index %}
+              {{ paradise_adv_card }}
+              {% assign adv_rendered = true %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% if adv_rendered == false and should_render_adv %}
+          {{ paradise_adv_card }}
+        {% endif %}
+      </div>
+    {% elsif request.design_mode %}
+      <div class="pcg-empty">Seleziona una collezione o apri questa sezione dentro una pagina collezione.</div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Paradise Collection Grid",
+  "target": "section",
+  "stylesheet": "paradise-collection-grid.css",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_current_collection",
+      "label": "Usa collezione corrente",
+      "default": true
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collezione manuale"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Sopratitolo",
+      "default": "Shop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titolo"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Allineamento titolo",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Sinistra" },
+        { "value": "center", "label": "Centro" },
+        { "value": "right", "label": "Destra" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 4,
+      "max": 48,
+      "step": 1,
+      "label": "Numero prodotti",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "desktop_columns",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Colonne desktop",
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "mobile_columns",
+      "label": "Colonne mobile",
+      "default": "2",
+      "options": [
+        { "value": "1", "label": "1 colonna" },
+        { "value": "2", "label": "2 colonne" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Mostra prezzo",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Mostra brand/vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_adv",
+      "label": "Inserisci ADV nella griglia",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "use_global_campaign",
+      "label": "Usa campagna globale dall'app",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "use_collection_campaign",
+      "label": "Usa campagna della collezione",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "adv_slot_code",
+      "label": "Codice ADV manuale",
+      "default": "collection-adv-1"
+    },
+    {
+      "type": "range",
+      "id": "adv_insert_after",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "label": "ADV dopo prodotto numero",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "adv_desktop_span",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": "Colonne ADV desktop",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "adv_mobile_span",
+      "label": "Colonne ADV mobile",
+      "default": "2",
+      "options": [
+        { "value": "1", "label": "1 colonna" },
+        { "value": "2", "label": "2 colonne" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "adv_desktop_height",
+      "min": 260,
+      "max": 760,
+      "step": 20,
+      "unit": "px",
+      "label": "Altezza ADV desktop",
+      "default": 520
+    },
+    {
+      "type": "range",
+      "id": "adv_mobile_height",
+      "min": 220,
+      "max": 620,
+      "step": 20,
+      "unit": "px",
+      "label": "Altezza ADV mobile",
+      "default": 420
+    },
+    {
+      "type": "range",
+      "id": "product_image_ratio",
+      "min": 90,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "label": "Rapporto immagine prodotto",
+      "default": 125
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "label": "Angoli card",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Spazio griglia desktop",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_grid_gap",
+      "min": 6,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "label": "Spazio griglia mobile",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 960,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "label": "Larghezza massima",
+      "default": 1600
+    },
+    {
+      "type": "range",
+      "id": "side_padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Margine laterale desktop",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_side_padding",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Margine laterale mobile",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Spazio sopra desktop",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Spazio sotto desktop",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Spazio sopra mobile",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Spazio sotto mobile",
+      "default": 20
+    }
+  ]
+}
+{% endschema %}

@@ -63,7 +63,10 @@
 {% assign global_content_max_width = global_campaign.content_max_width.value | default: 520 %}
 {% assign global_text_color = global_campaign.text_color.value | default: '#ffffff' %}
 {% assign global_button_background = global_campaign.button_background.value | default: '#ffffff' %}
-{% assign global_button_background_opacity = global_campaign.button_background_opacity.value | default: 0 %}
+{% assign global_button_background_opacity = global_campaign.button_background_opacity.value | default: 100 %}
+{% if global_button_label != blank and global_button_background_opacity == '0' %}
+  {% assign global_button_background_opacity = 100 %}
+{% endif %}
 {% assign global_button_text_color = global_campaign.button_text_color.value | default: '#ffffff' %}
 {% assign global_button_border_color = global_campaign.button_border_color.value | default: '#ffffff' %}
 {% assign global_button_hover_background = global_campaign.button_hover_background.value | default: '#ffffff' %}
@@ -170,7 +173,7 @@
               {% if global_kicker != blank %}<p class="pas-kicker">{{ global_kicker }}</p>{% endif %}
               {% if global_title != blank %}<h2 class="pas-title">{{ global_title }}</h2>{% endif %}
               {% if global_text != blank %}<div class="pas-text">{{ global_text | newline_to_br }}</div>{% endif %}
-              {% if global_button_label != blank %}<span class="pas-button">{{ global_button_label }}</span>{% endif %}
+              {% if global_button_label != blank %}<span class="pas-button" role="button">{{ global_button_label }}</span>{% endif %}
             </div>
           </div>
         {% endif %}

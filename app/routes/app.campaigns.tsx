@@ -177,6 +177,17 @@ function clampPercent(value: number) {
   return String(Math.max(0, Math.min(100, Math.round(value))));
 }
 
+function dateTimeInputValue(value = "") {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value.slice(0, 16);
+  const pad = (part: number) => String(part).padStart(2, "0");
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(
+    date.getMinutes(),
+  )}`;
+}
+
 async function runGraphql<TData extends Record<string, unknown>>(
   admin: Awaited<ReturnType<typeof authenticate.admin>>["admin"],
   query: string,
@@ -520,6 +531,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     await ensureCampaignDefinition(admin);
 
     const appFormFieldKeys = [
+      "is_active",
+      "starts_at",
+      "ends_at",
       "accessibility_label",
       "kicker",
       "title",
@@ -558,7 +572,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
     const fields = editableFieldDefinitions.map((field) => ({
       key: field.key,
-      value: field.key === "text_position" && shouldUseFreePosition ? "custom" : fieldValue(formData, field.key),
+      value:
+        field.key === "is_active"
+          ? formData.get("is_active")
+            ? "true"
+            : "false"
+          : field.key === "text_position" && shouldUseFreePosition
+            ? "custom"
+            : fieldValue(formData, field.key),
     }));
     const desktopImage = formFile(formData, "desktop_image_file");
     const mobileImage = formFile(formData, "mobile_image_file");
@@ -846,6 +867,18 @@ export default function CampaignsPage() {
               defaultValue={selectedCampaign?.fields.accessibility_label || ""}
               placeholder="Paradise promotional banner"
             />
+          </label>
+          <label className="pd-check-field">
+            <input name="is_active" type="checkbox" defaultChecked={selectedCampaign?.fields.is_active !== "false"} />
+            Campagna attiva
+          </label>
+          <label>
+            Data inizio
+            <input name="starts_at" type="datetime-local" defaultValue={dateTimeInputValue(selectedCampaign?.fields.starts_at || "")} />
+          </label>
+          <label>
+            Data fine
+            <input name="ends_at" type="datetime-local" defaultValue={dateTimeInputValue(selectedCampaign?.fields.ends_at || "")} />
           </label>
           </div>
           <div className="pd-form-section pd-form-section--full">
