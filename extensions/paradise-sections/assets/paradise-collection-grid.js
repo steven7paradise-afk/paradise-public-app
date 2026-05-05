@@ -61,6 +61,28 @@
     });
   }
 
+  function initQuickReveal(root) {
+    var cards = (root || document).querySelectorAll("[data-product-card]");
+
+    cards.forEach(function (card) {
+      if (card.dataset.paradiseRevealReady === "true") return;
+      card.dataset.paradiseRevealReady = "true";
+      if (!card.querySelector("[data-quick-add]")) return;
+
+      card.addEventListener("click", function (event) {
+        if (event.target.closest("[data-quick-add], button, input, select, textarea")) return;
+        if (card.classList.contains("is-quick-open")) return;
+
+        event.preventDefault();
+        var section = card.closest(".paradise-collection-grid") || document;
+        section.querySelectorAll(".pcg-product-card.is-quick-open").forEach(function (openCard) {
+          if (openCard !== card) openCard.classList.remove("is-quick-open");
+        });
+        card.classList.add("is-quick-open");
+      });
+    });
+  }
+
   function initGridToolbar(root) {
     var sections = (root || document).querySelectorAll(".paradise-collection-grid");
 
@@ -220,6 +242,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     initQuickAdd(document);
+    initQuickReveal(document);
     initGridToolbar(document);
     initLoadMore(document);
     initProductCarousel(document);
@@ -227,6 +250,7 @@
 
   document.addEventListener("shopify:section:load", function (event) {
     initQuickAdd(event.target);
+    initQuickReveal(event.target);
     initGridToolbar(event.target);
     initLoadMore(event.target);
     initProductCarousel(event.target);

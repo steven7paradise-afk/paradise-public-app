@@ -293,7 +293,8 @@
 }
 
 .pcg-product-card:hover .pcg-quick-add,
-.pcg-product-card:focus-within .pcg-quick-add {
+.pcg-product-card:focus-within .pcg-quick-add,
+.pcg-product-card.is-quick-open .pcg-quick-add {
   max-height: 96px;
   opacity: 1;
   transform: translateY(0);
@@ -527,13 +528,6 @@
     left: auto;
     right: 6px;
     top: auto;
-  }
-
-  .pcg-quick-add {
-    max-height: 96px;
-    opacity: 1;
-    transform: none;
-    visibility: visible;
   }
 
   .pcg-quantity {

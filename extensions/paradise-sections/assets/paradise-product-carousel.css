@@ -93,6 +93,36 @@
   width: 28px;
 }
 
+.ppc-link-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.ppc-link {
+  align-items: center;
+  background: #171313;
+  border: 1px solid #171313;
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 850;
+  justify-content: center;
+  letter-spacing: 0.08em;
+  min-height: 44px;
+  padding: 0 26px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.ppc-link:hover {
+  background: #ffffff;
+  color: #171313;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 749px) {
   .paradise-product-carousel {
     padding: var(--pcg-mobile-padding-top) 0 var(--pcg-mobile-padding-bottom);
