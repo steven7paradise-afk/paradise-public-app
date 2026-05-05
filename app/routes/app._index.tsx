@@ -5,5 +5,6 @@ import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
-  throw redirect("/app/campaigns");
+  const query = new URL(request.url).searchParams.toString();
+  throw redirect(`/app/campaigns${query ? `?${query}` : ""}`);
 };
