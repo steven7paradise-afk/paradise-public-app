@@ -61,11 +61,60 @@
     });
   }
 
+  function initGridToolbar(root) {
+    var sections = (root || document).querySelectorAll(".paradise-collection-grid");
+
+    sections.forEach(function (section) {
+      if (section.dataset.paradiseToolbarReady === "true") return;
+      section.dataset.paradiseToolbarReady = "true";
+
+      var buttons = section.querySelectorAll("[data-grid-columns]");
+      var isMobile = window.matchMedia("(max-width: 749px)");
+
+      function setActive(columns, mobileMode) {
+        buttons.forEach(function (button) {
+          var isButtonMobile = button.classList.contains("pcg-view-btn--mobile");
+          var sameMode = mobileMode ? isButtonMobile : !isButtonMobile;
+          button.classList.toggle("is-active", sameMode && button.getAttribute("data-grid-columns") === String(columns));
+        });
+      }
+
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          var columns = button.getAttribute("data-grid-columns");
+          var mobileButton = button.classList.contains("pcg-view-btn--mobile");
+
+          if (mobileButton) {
+            section.style.setProperty("--pcg-mobile-columns", columns);
+          } else {
+            section.style.setProperty("--pcg-columns", columns);
+          }
+
+          setActive(columns, mobileButton);
+        });
+      });
+
+      function syncActive() {
+        var mobileMode = isMobile.matches;
+        var property = mobileMode ? "--pcg-mobile-columns" : "--pcg-columns";
+        var columns = section.style.getPropertyValue(property).trim() || (mobileMode ? "2" : "3");
+        setActive(columns, mobileMode);
+      }
+
+      syncActive();
+      if (isMobile.addEventListener) {
+        isMobile.addEventListener("change", syncActive);
+      }
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initQuickAdd(document);
+    initGridToolbar(document);
   });
 
   document.addEventListener("shopify:section:load", function (event) {
     initQuickAdd(event.target);
+    initGridToolbar(event.target);
   });
 })();
