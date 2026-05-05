@@ -108,13 +108,40 @@
     });
   }
 
+  function initLoadMore(root) {
+    var sections = (root || document).querySelectorAll(".paradise-collection-grid");
+
+    sections.forEach(function (section) {
+      if (section.dataset.paradiseLoadMoreReady === "true") return;
+      section.dataset.paradiseLoadMoreReady = "true";
+
+      var button = section.querySelector("[data-load-more]");
+      if (!button) return;
+
+      button.addEventListener("click", function () {
+        var step = Math.max(1, Number(button.getAttribute("data-step") || 8));
+        var hidden = Array.prototype.slice.call(section.querySelectorAll(".pcg-product-card--hidden"));
+
+        hidden.slice(0, step).forEach(function (card) {
+          card.classList.remove("pcg-product-card--hidden");
+        });
+
+        if (!section.querySelector(".pcg-product-card--hidden")) {
+          button.parentElement.style.display = "none";
+        }
+      });
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initQuickAdd(document);
     initGridToolbar(document);
+    initLoadMore(document);
   });
 
   document.addEventListener("shopify:section:load", function (event) {
     initQuickAdd(event.target);
     initGridToolbar(event.target);
+    initLoadMore(event.target);
   });
 })();

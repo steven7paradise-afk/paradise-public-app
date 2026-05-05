@@ -51,6 +51,7 @@
 {% assign global_button_label = global_campaign.button_label.value %}
 {% assign global_button_link = global_campaign.button_link_url.value %}
 {% assign global_link_behavior = global_campaign.link_behavior.value | default: 'image' %}
+{% assign global_image_format = global_campaign.image_format.value | default: 'collection-portrait' %}
 {% assign global_accessibility_label = global_campaign.accessibility_label.value %}
 {% assign global_desktop_image_position = global_campaign.desktop_image_position.value | default: 'center center' %}
 {% assign global_mobile_image_position = global_campaign.mobile_image_position.value | default: global_desktop_image_position %}
@@ -101,18 +102,32 @@
 {% assign adv_has_copy = true %}
 {% endif %}
 {% assign adv_alt = global_accessibility_label | default: global_title | default: resolved_slot_code %}
+{% assign adv_image_ratio = block.settings.product_image_ratio %}
+{% case global_image_format %}
+{% when 'collection-square' %}
+{% assign adv_image_ratio = 100 %}
+{% when 'collection-portrait' %}
+{% assign adv_image_ratio = 125 %}
+{% when 'mobile-story' %}
+{% assign adv_image_ratio = 178 %}
+{% endcase %}
 {% assign should_render_adv = false %}
 {% if can_render_adv %}
 {% assign should_render_adv = true %}
 {% elsif request.design_mode and block.settings.show_adv %}
 {% assign should_render_adv = true %}
 {% endif %}
+{% assign adv_hidden_initial = false %}
+{% if block.settings.enable_load_more and block.settings.adv_insert_after > block.settings.initial_visible_products %}
+{% assign adv_hidden_initial = true %}
+{% endif %}
 {% capture paradise_adv_card %}
 {% if can_render_adv %}
-<div class="pcg-adv-card" data-adv-slot="{{ resolved_slot_code | escape }}">
+<div class="pcg-adv-card{% if adv_hidden_initial %} pcg-product-card--hidden{% endif %}" data-adv-slot="{{ resolved_slot_code | escape }}">
 <section
 class="paradise-adv-slot paradise-adv-slot--{{ adv_position }}"
 style="
+--pcg-adv-ratio: {{ adv_image_ratio }}%;
 --pas-height: {{ block.settings.adv_desktop_height }}px;
 --pas-mobile-height: {{ block.settings.adv_mobile_height }}px;
 --pas-image-position: {{ global_desktop_image_position }};
@@ -143,6 +158,7 @@ style="
 {% else %}
 <div class="pas-frame pas-frame--static" role="img" aria-label="{{ adv_alt | escape }}">
 {% endif %}
+<span class="pcg-adv-disclosure">ADV</span>
 <picture class="pas-picture">
 {% if global_mobile_image != blank %}
 <source media="(max-width: 749px)" srcset="{{ global_mobile_image | image_url: width: 1000 }}">
@@ -268,6 +284,7 @@ style="
 {% endif %}
 <div class="pcg-grid">
 {% for product in grid_collection.products limit: block.settings.product_limit %}
+{% assign product_number = forloop.index %}
 {% if adv_rendered == false and should_render_adv %}
 {% if block.settings.adv_insert_after == 0 and forloop.first %}
 {{ paradise_adv_card }}
@@ -275,7 +292,7 @@ style="
 {% endif %}
 {% endif %}
 {% assign product_variant = product.selected_or_first_available_variant %}
-<article class="pcg-product-card" data-product-card>
+<article class="pcg-product-card{% if block.settings.enable_load_more and product_number > block.settings.initial_visible_products %} pcg-product-card--hidden{% endif %}" data-product-card>
 <a class="pcg-product-media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
 {% if block.settings.show_discount_badge and product.compare_at_price > product.price %}
 {% assign discount_amount = product.compare_at_price | minus: product.price %}
@@ -365,6 +382,13 @@ Esaurito
 {{ paradise_adv_card }}
 {% endif %}
 </div>
+{% if block.settings.enable_load_more and grid_collection.products_count > block.settings.initial_visible_products %}
+<div class="pcg-load-more-wrap">
+<button class="pcg-load-more" type="button" data-load-more data-step="{{ block.settings.load_more_step }}">
+{{ block.settings.load_more_label }}
+</button>
+</div>
+{% endif %}
 {% elsif request.design_mode %}
 <div class="pcg-empty">Seleziona una collezione o apri questa sezione dentro una pagina collezione.</div>
 {% endif %}
@@ -409,15 +433,45 @@ Esaurito
 { "value": "right", "label": "Destra" }
 ]
 },
-{
-"type": "range",
-"id": "product_limit",
+    {
+      "type": "range",
+      "id": "product_limit",
 "min": 4,
 "max": 48,
 "step": 1,
 "label": "Numero prodotti",
-"default": 24
-},
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_load_more",
+      "label": "Mostra prodotti a pagine",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "initial_visible_products",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "label": "Prodotti visibili all'inizio",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "load_more_step",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "label": "Prodotti da mostrare ogni click",
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "load_more_label",
+      "label": "Testo bottone mostra altro",
+      "default": "Mostra altro"
+    },
 {
 "type": "select",
 "id": "desktop_columns",
