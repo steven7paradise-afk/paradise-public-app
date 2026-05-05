@@ -1,0 +1,117 @@
+.paradise-product-carousel {
+  background: transparent;
+  display: block;
+  padding: var(--pcg-padding-top) 0 var(--pcg-padding-bottom);
+}
+
+.ppc-header {
+  align-items: end;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 24px;
+}
+
+.ppc-header .pcg-heading {
+  margin-bottom: 0;
+}
+
+.ppc-arrows {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.ppc-arrow {
+  align-items: center;
+  appearance: none;
+  background: #ffffff;
+  border: 1px solid rgba(23, 19, 19, 0.14);
+  border-radius: 999px;
+  color: #171313;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 28px;
+  height: 44px;
+  justify-content: center;
+  line-height: 1;
+  transition: background 160ms ease, transform 160ms ease;
+  width: 44px;
+}
+
+.ppc-arrow:hover {
+  background: #171313;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.ppc-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.ppc-track {
+  display: flex;
+  gap: var(--pcg-gap);
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.ppc-track::-webkit-scrollbar {
+  display: none;
+}
+
+.ppc-slide {
+  flex: 0 0 calc((100% - (var(--pcg-gap) * (var(--ppc-desktop-slides) - 1))) / var(--ppc-desktop-slides));
+  scroll-snap-align: start;
+}
+
+.ppc-dots {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.ppc-dot {
+  appearance: none;
+  background: rgba(23, 19, 19, 0.24);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  height: 8px;
+  padding: 0;
+  transition: background 160ms ease, width 160ms ease;
+  width: 8px;
+}
+
+.ppc-dot.is-active {
+  background: #171313;
+  width: 28px;
+}
+
+@media (max-width: 749px) {
+  .paradise-product-carousel {
+    padding: var(--pcg-mobile-padding-top) 0 var(--pcg-mobile-padding-bottom);
+  }
+
+  .ppc-header {
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ppc-arrows {
+    justify-self: end;
+  }
+
+  .ppc-track {
+    gap: var(--pcg-mobile-gap);
+  }
+
+  .ppc-slide {
+    flex-basis: calc((100% - (var(--pcg-mobile-gap) * (var(--ppc-mobile-slides) - 1))) / var(--ppc-mobile-slides));
+  }
+}

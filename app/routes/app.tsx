@@ -18,7 +18,6 @@ export default function App() {
   return (
     <AppProvider embedded apiKey={apiKey}>
       <s-app-nav>
-        <s-link href="/app">Paradise Design</s-link>
         <s-link href="/app/campaigns">Campagne ADV</s-link>
       </s-app-nav>
       <Outlet />

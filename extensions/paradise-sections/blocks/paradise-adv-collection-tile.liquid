@@ -3,51 +3,47 @@
 {% assign collection_slot_code = blank %}
 {% assign resolved_slot_code = manual_slot_code %}
 {% if block.settings.use_collection_campaign and collection.handle != blank %}
-  {% assign collection_slot_code = 'collection-' | append: collection.handle %}
-  {% assign resolved_slot_code = collection_slot_code %}
+{% assign collection_slot_code = 'collection-' | append: collection.handle %}
+{% assign resolved_slot_code = collection_slot_code %}
 {% endif %}
-
 {% assign global_campaign = blank %}
 {% if block.settings.use_global_campaign %}
-  {% if collection_slot_code != blank %}
-    {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[collection_slot_code] %}
-  {% endif %}
-  {% if global_campaign == blank and manual_slot_code != blank %}
-    {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[manual_slot_code] %}
-    {% assign resolved_slot_code = manual_slot_code %}
-  {% endif %}
+{% if collection_slot_code != blank %}
+{% assign global_campaign = shop.metaobjects.paradise_adv_campaign[collection_slot_code] %}
 {% endif %}
-
+{% if global_campaign == blank and manual_slot_code != blank %}
+{% assign global_campaign = shop.metaobjects.paradise_adv_campaign[manual_slot_code] %}
+{% assign resolved_slot_code = manual_slot_code %}
+{% endif %}
+{% endif %}
 {% assign has_global_campaign = false %}
 {% if global_campaign != blank %}
-  {% assign has_global_campaign = true %}
+{% assign has_global_campaign = true %}
 {% endif %}
-
 {% assign global_campaign_active = true %}
 {% assign global_campaign_status = 'missing' %}
 {% if has_global_campaign %}
-  {% assign global_campaign_status = 'active' %}
+{% assign global_campaign_status = 'active' %}
 {% endif %}
 {% if global_campaign.is_active.value == false or global_campaign.is_active.value == 'false' %}
-  {% assign global_campaign_active = false %}
-  {% assign global_campaign_status = 'disabled' %}
+{% assign global_campaign_active = false %}
+{% assign global_campaign_status = 'disabled' %}
 {% endif %}
 {% assign now_timestamp = 'now' | date: '%s' | plus: 0 %}
 {% if global_campaign.starts_at.value != blank %}
-  {% assign start_timestamp = global_campaign.starts_at.value | date: '%s' | plus: 0 %}
-  {% if now_timestamp < start_timestamp %}
-    {% assign global_campaign_active = false %}
-    {% assign global_campaign_status = 'scheduled' %}
-  {% endif %}
+{% assign start_timestamp = global_campaign.starts_at.value | date: '%s' | plus: 0 %}
+{% if now_timestamp < start_timestamp %}
+{% assign global_campaign_active = false %}
+{% assign global_campaign_status = 'scheduled' %}
+{% endif %}
 {% endif %}
 {% if global_campaign.ends_at.value != blank %}
-  {% assign end_timestamp = global_campaign.ends_at.value | date: '%s' | plus: 0 %}
-  {% if now_timestamp > end_timestamp %}
-    {% assign global_campaign_active = false %}
-    {% assign global_campaign_status = 'expired' %}
-  {% endif %}
+{% assign end_timestamp = global_campaign.ends_at.value | date: '%s' | plus: 0 %}
+{% if now_timestamp > end_timestamp %}
+{% assign global_campaign_active = false %}
+{% assign global_campaign_status = 'expired' %}
 {% endif %}
-
+{% endif %}
 {% assign global_desktop_image = global_campaign.desktop_image.value %}
 {% assign global_mobile_image = global_campaign.mobile_image.value | default: global_desktop_image %}
 {% assign global_kicker = global_campaign.kicker.value %}
@@ -66,7 +62,7 @@
 {% assign global_button_background = global_campaign.button_background.value | default: '#ffffff' %}
 {% assign global_button_background_opacity = global_campaign.button_background_opacity.value | default: 100 %}
 {% if global_button_label != blank and global_button_background_opacity == '0' %}
-  {% assign global_button_background_opacity = 100 %}
+{% assign global_button_background_opacity = 100 %}
 {% endif %}
 {% assign global_button_text_color = global_campaign.button_text_color.value | default: '#ffffff' %}
 {% assign global_button_border_color = global_campaign.button_border_color.value | default: '#ffffff' %}
@@ -78,229 +74,225 @@
 {% assign global_text_position_y = global_campaign.text_position_y.value | default: 72 %}
 {% assign global_mobile_text_position_x = global_campaign.mobile_text_position_x.value | default: global_text_position_x %}
 {% assign global_mobile_text_position_y = global_campaign.mobile_text_position_y.value | default: global_text_position_y %}
-
 {% assign tile_position = 'bottom-left' %}
 {% if global_text_position_raw != blank %}
-  {% case global_text_position_raw %}
-    {% when 'custom', 'libera', 'free', 'drag' %}
-      {% assign tile_position = 'custom' %}
-    {% when 'destra', 'right', 'basso destra', 'bottom-right', 'bottom right' %}
-      {% assign tile_position = 'bottom-right' %}
-    {% when 'centro', 'center', 'basso centro', 'bottom-center', 'bottom center' %}
-      {% assign tile_position = 'bottom-center' %}
-    {% when 'alto destra', 'top-right', 'top right' %}
-      {% assign tile_position = 'top-right' %}
-    {% when 'alto centro', 'top-center', 'top center' %}
-      {% assign tile_position = 'top-center' %}
-    {% when 'alto sinistra', 'top-left', 'top left' %}
-      {% assign tile_position = 'top-left' %}
-    {% when 'nascosto', 'hidden', 'solo immagine' %}
-      {% assign tile_position = 'hidden' %}
-  {% endcase %}
+{% case global_text_position_raw %}
+{% when 'custom', 'libera', 'free', 'drag' %}
+{% assign tile_position = 'custom' %}
+{% when 'destra', 'right', 'basso destra', 'bottom-right', 'bottom right' %}
+{% assign tile_position = 'bottom-right' %}
+{% when 'centro', 'center', 'basso centro', 'bottom-center', 'bottom center' %}
+{% assign tile_position = 'bottom-center' %}
+{% when 'alto destra', 'top-right', 'top right' %}
+{% assign tile_position = 'top-right' %}
+{% when 'alto centro', 'top-center', 'top center' %}
+{% assign tile_position = 'top-center' %}
+{% when 'alto sinistra', 'top-left', 'top left' %}
+{% assign tile_position = 'top-left' %}
+{% when 'nascosto', 'hidden', 'solo immagine' %}
+{% assign tile_position = 'hidden' %}
+{% endcase %}
 {% endif %}
-
 {% assign has_global_image = false %}
 {% if global_campaign_active and global_desktop_image != blank %}
-  {% assign has_global_image = true %}
+{% assign has_global_image = true %}
 {% endif %}
 {% assign has_copy = false %}
 {% if global_kicker != blank or global_title != blank or global_text != blank or global_button_label != blank %}
-  {% assign has_copy = true %}
+{% assign has_copy = true %}
 {% endif %}
 {% assign can_render_tile = false %}
 {% if block.settings.enabled and has_global_image %}
-  {% assign can_render_tile = true %}
+{% assign can_render_tile = true %}
 {% endif %}
 {% assign tile_alt = global_accessibility_label | default: global_title | default: resolved_slot_code %}
-
 {% if can_render_tile %}
-  <div
-    class="paradise-adv-grid-tile-host"
-    hidden
-    data-insert-after="{{ block.settings.insert_after }}"
-    data-adv-slot="{{ resolved_slot_code | escape }}"
-    style="
-      --pas-grid-span: {{ block.settings.desktop_column_span }};
-      --pas-mobile-grid-span: {{ block.settings.mobile_column_span }};
-      --pas-tile-height: {{ block.settings.desktop_tile_height }}px;
-      --pas-mobile-tile-height: {{ block.settings.mobile_tile_height }}px;
-    "
-    {{ block.shopify_attributes }}
-  >
-    <section
-      id="{{ tile_id }}"
-      class="paradise-adv-slot paradise-adv-slot--{{ tile_position }}"
-      style="
-        --pas-height: {{ block.settings.desktop_tile_height }}px;
-        --pas-mobile-height: {{ block.settings.mobile_tile_height }}px;
-        --pas-image-position: {{ global_desktop_image_position }};
-        --pas-mobile-image-position: {{ global_mobile_image_position }};
-        --pas-overlay-opacity: {{ global_overlay_opacity | divided_by: 100.0 }};
-        --pas-radius: {{ global_card_radius }}px;
-        --pas-content-width: {{ global_content_max_width }}px;
-        --pas-text: {{ global_text_color }};
-        --pas-button-bg-color: {{ global_button_background }};
-        --pas-button-bg-opacity-percent: {{ global_button_background_opacity }}%;
-        --pas-button-text: {{ global_button_text_color }};
-        --pas-button-border: {{ global_button_border_color }};
-        --pas-button-hover-bg: {{ global_button_hover_background }};
-        --pas-button-hover-text: {{ global_button_hover_text_color }};
-        --pas-button-radius: {{ global_button_radius }}px;
-        --pas-padding-top: 0px;
-        --pas-padding-bottom: 0px;
-        --pas-mobile-padding-top: 0px;
-        --pas-mobile-padding-bottom: 0px;
-        --pas-text-x: {{ global_text_position_x }}%;
-        --pas-text-y: {{ global_text_position_y }}%;
-        --pas-mobile-text-x: {{ global_mobile_text_position_x }}%;
-        --pas-mobile-text-y: {{ global_mobile_text_position_y }}%;
-      "
-    >
-        {% if global_button_link != blank and global_link_behavior != 'button' %}
-          <a class="pas-frame" href="{{ global_button_link }}" aria-label="{{ tile_alt | escape }}">
-      {% else %}
-        <div class="pas-frame pas-frame--static" role="img" aria-label="{{ tile_alt | escape }}">
-      {% endif %}
-        <picture class="pas-picture">
-          {% if global_mobile_image != blank %}
-            <source media="(max-width: 749px)" srcset="{{ global_mobile_image | image_url: width: 900 }}">
-          {% endif %}
-          {{ global_desktop_image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '450, 700, 900, 1200, 1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: tile_alt }}
-        </picture>
-        <div class="pas-overlay" aria-hidden="true"></div>
-        {% if has_copy %}
-          <div class="pas-content">
-            <div class="pas-copy">
-              {% if global_kicker != blank %}<p class="pas-kicker">{{ global_kicker }}</p>{% endif %}
-              {% if global_title != blank %}<h2 class="pas-title">{{ global_title }}</h2>{% endif %}
-              {% if global_text != blank %}<div class="pas-text">{{ global_text | newline_to_br }}</div>{% endif %}
-              {% if global_button_label != blank %}
-                {% if global_button_link != blank and global_link_behavior == 'button' %}
-                  <a class="pas-button" href="{{ global_button_link }}">{{ global_button_label }}</a>
-                {% else %}
-                  <span class="pas-button" role="button">{{ global_button_label }}</span>
-                {% endif %}
-              {% endif %}
-            </div>
-          </div>
-        {% endif %}
-      {% if global_button_link != blank and global_link_behavior != 'button' %}
-        </a>
-      {% else %}
-        </div>
-      {% endif %}
-    </section>
-  </div>
-{% elsif request.design_mode %}
-  <div
-    class="paradise-adv-grid-tile-host"
-    hidden
-    data-insert-after="{{ block.settings.insert_after }}"
-    data-adv-slot="{{ resolved_slot_code | escape }}"
-    style="
-      --pas-grid-span: {{ block.settings.desktop_column_span }};
-      --pas-mobile-grid-span: {{ block.settings.mobile_column_span }};
-    "
-    {{ block.shopify_attributes }}
-  >
-    <div class="paradise-adv-slot-placeholder">
-      <strong>Paradise ADV Grid Tile</strong>
-      {% if global_campaign_status == 'disabled' %}
-        <span>Campagna disattivata: {{ resolved_slot_code }}.</span>
-      {% elsif global_campaign_status == 'scheduled' %}
-        <span>Campagna programmata: {{ resolved_slot_code }}.</span>
-      {% elsif global_campaign_status == 'expired' %}
-        <span>Campagna scaduta: {{ resolved_slot_code }}.</span>
-      {% elsif collection_slot_code != blank and manual_slot_code != blank %}
-        <span>Nessuna campagna per {{ collection_slot_code }}. Fallback manuale: {{ manual_slot_code }}.</span>
-      {% else %}
-        <span>Crea una campagna attiva con immagine per il codice {{ resolved_slot_code | default: 'collection-handle' }}.</span>
-      {% endif %}
-    </div>
-  </div>
+<div
+class="paradise-adv-grid-tile-host"
+hidden
+data-insert-after="{{ block.settings.insert_after }}"
+data-adv-slot="{{ resolved_slot_code | escape }}"
+style="
+--pas-grid-span: {{ block.settings.desktop_column_span }};
+--pas-mobile-grid-span: {{ block.settings.mobile_column_span }};
+--pas-tile-height: {{ block.settings.desktop_tile_height }}px;
+--pas-mobile-tile-height: {{ block.settings.mobile_tile_height }}px;
+"
+{{ block.shopify_attributes }}
+>
+<section
+id="{{ tile_id }}"
+class="paradise-adv-slot paradise-adv-slot--{{ tile_position }}"
+style="
+--pas-height: {{ block.settings.desktop_tile_height }}px;
+--pas-mobile-height: {{ block.settings.mobile_tile_height }}px;
+--pas-image-position: {{ global_desktop_image_position }};
+--pas-mobile-image-position: {{ global_mobile_image_position }};
+--pas-overlay-opacity: {{ global_overlay_opacity | divided_by: 100.0 }};
+--pas-radius: {{ global_card_radius }}px;
+--pas-content-width: {{ global_content_max_width }}px;
+--pas-text: {{ global_text_color }};
+--pas-button-bg-color: {{ global_button_background }};
+--pas-button-bg-opacity-percent: {{ global_button_background_opacity }}%;
+--pas-button-text: {{ global_button_text_color }};
+--pas-button-border: {{ global_button_border_color }};
+--pas-button-hover-bg: {{ global_button_hover_background }};
+--pas-button-hover-text: {{ global_button_hover_text_color }};
+--pas-button-radius: {{ global_button_radius }}px;
+--pas-padding-top: 0px;
+--pas-padding-bottom: 0px;
+--pas-mobile-padding-top: 0px;
+--pas-mobile-padding-bottom: 0px;
+--pas-text-x: {{ global_text_position_x }}%;
+--pas-text-y: {{ global_text_position_y }}%;
+--pas-mobile-text-x: {{ global_mobile_text_position_x }}%;
+--pas-mobile-text-y: {{ global_mobile_text_position_y }}%;
+"
+>
+{% if global_button_link != blank and global_link_behavior != 'button' %}
+<a class="pas-frame" href="{{ global_button_link }}" aria-label="{{ tile_alt | escape }}">
+{% else %}
+<div class="pas-frame pas-frame--static" role="img" aria-label="{{ tile_alt | escape }}">
 {% endif %}
-
+<picture class="pas-picture">
+{% if global_mobile_image != blank %}
+<source media="(max-width: 749px)" srcset="{{ global_mobile_image | image_url: width: 900 }}">
+{% endif %}
+{{ global_desktop_image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '450, 700, 900, 1200, 1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: tile_alt }}
+</picture>
+<div class="pas-overlay" aria-hidden="true"></div>
+{% if has_copy %}
+<div class="pas-content">
+<div class="pas-copy">
+{% if global_kicker != blank %}<p class="pas-kicker">{{ global_kicker }}</p>{% endif %}
+{% if global_title != blank %}<h2 class="pas-title">{{ global_title }}</h2>{% endif %}
+{% if global_text != blank %}<div class="pas-text">{{ global_text | newline_to_br }}</div>{% endif %}
+{% if global_button_label != blank %}
+{% if global_button_link != blank and global_link_behavior == 'button' %}
+<a class="pas-button" href="{{ global_button_link }}">{{ global_button_label }}</a>
+{% else %}
+<span class="pas-button" role="button">{{ global_button_label }}</span>
+{% endif %}
+{% endif %}
+</div>
+</div>
+{% endif %}
+{% if global_button_link != blank and global_link_behavior != 'button' %}
+</a>
+{% else %}
+</div>
+{% endif %}
+</section>
+</div>
+{% elsif request.design_mode %}
+<div
+class="paradise-adv-grid-tile-host"
+hidden
+data-insert-after="{{ block.settings.insert_after }}"
+data-adv-slot="{{ resolved_slot_code | escape }}"
+style="
+--pas-grid-span: {{ block.settings.desktop_column_span }};
+--pas-mobile-grid-span: {{ block.settings.mobile_column_span }};
+"
+{{ block.shopify_attributes }}
+>
+<div class="paradise-adv-slot-placeholder">
+<strong>Paradise ADV Grid Tile</strong>
+{% if global_campaign_status == 'disabled' %}
+<span>Campagna disattivata: {{ resolved_slot_code }}.</span>
+{% elsif global_campaign_status == 'scheduled' %}
+<span>Campagna programmata: {{ resolved_slot_code }}.</span>
+{% elsif global_campaign_status == 'expired' %}
+<span>Campagna scaduta: {{ resolved_slot_code }}.</span>
+{% elsif collection_slot_code != blank and manual_slot_code != blank %}
+<span>Nessuna campagna per {{ collection_slot_code }}. Fallback manuale: {{ manual_slot_code }}.</span>
+{% else %}
+<span>Crea una campagna attiva con immagine per il codice {{ resolved_slot_code | default: 'collection-handle' }}.</span>
+{% endif %}
+</div>
+</div>
+{% endif %}
 {% schema %}
 {
-  "name": "Paradise ADV Grid Tile",
-  "target": "section",
-  "stylesheet": "paradise-adv-slot.css",
-  "javascript": "paradise-adv-collection-tile.js",
-  "settings": [
-    {
-      "type": "checkbox",
-      "id": "enabled",
-      "label": "Mostra ADV",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "use_global_campaign",
-      "label": "Usa campagna globale dall'app",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "use_collection_campaign",
-      "label": "Usa campagna della collezione corrente",
-      "default": true,
-      "info": "Usa automaticamente collection-handle-collezione."
-    },
-    {
-      "type": "text",
-      "id": "slot_code",
-      "label": "Codice slot manuale",
-      "default": "collection-adv-1"
-    },
-    {
-      "type": "range",
-      "id": "insert_after",
-      "min": 0,
-      "max": 24,
-      "step": 1,
-      "label": "Inserisci dopo prodotto numero",
-      "default": 4,
-      "info": "0 lo mette all'inizio della griglia."
-    },
-    {
-      "type": "range",
-      "id": "desktop_column_span",
-      "min": 1,
-      "max": 4,
-      "step": 1,
-      "label": "Colonne occupate desktop",
-      "default": 1
-    },
-    {
-      "type": "select",
-      "id": "mobile_column_span",
-      "label": "Colonne occupate mobile",
-      "default": "1",
-      "options": [
-        { "value": "1", "label": "1 colonna" },
-        { "value": "2", "label": "2 colonne" }
-      ]
-    },
-    {
-      "type": "range",
-      "id": "desktop_tile_height",
-      "min": 260,
-      "max": 760,
-      "step": 20,
-      "unit": "px",
-      "label": "Altezza card desktop",
-      "default": 520
-    },
-    {
-      "type": "range",
-      "id": "mobile_tile_height",
-      "min": 220,
-      "max": 620,
-      "step": 20,
-      "unit": "px",
-      "label": "Altezza card mobile",
-      "default": 360
-    }
-  ]
+"name": "Paradise ADV Grid Tile",
+"target": "section",
+"stylesheet": "paradise-adv-slot.css",
+"javascript": "paradise-adv-collection-tile.js",
+"settings": [
+{
+"type": "checkbox",
+"id": "enabled",
+"label": "Mostra ADV",
+"default": true
+},
+{
+"type": "checkbox",
+"id": "use_global_campaign",
+"label": "Usa campagna globale dall'app",
+"default": true
+},
+{
+"type": "checkbox",
+"id": "use_collection_campaign",
+"label": "Usa campagna della collezione corrente",
+"default": true,
+"info": "Usa automaticamente collection-handle-collezione."
+},
+{
+"type": "text",
+"id": "slot_code",
+"label": "Codice slot manuale",
+"default": "collection-adv-1"
+},
+{
+"type": "range",
+"id": "insert_after",
+"min": 0,
+"max": 24,
+"step": 1,
+"label": "Inserisci dopo prodotto numero",
+"default": 4,
+"info": "0 lo mette all'inizio della griglia."
+},
+{
+"type": "range",
+"id": "desktop_column_span",
+"min": 1,
+"max": 4,
+"step": 1,
+"label": "Colonne occupate desktop",
+"default": 1
+},
+{
+"type": "select",
+"id": "mobile_column_span",
+"label": "Colonne occupate mobile",
+"default": "1",
+"options": [
+{ "value": "1", "label": "1 colonna" },
+{ "value": "2", "label": "2 colonne" }
+]
+},
+{
+"type": "range",
+"id": "desktop_tile_height",
+"min": 260,
+"max": 760,
+"step": 20,
+"unit": "px",
+"label": "Altezza card desktop",
+"default": 520
+},
+{
+"type": "range",
+"id": "mobile_tile_height",
+"min": 220,
+"max": 620,
+"step": 20,
+"unit": "px",
+"label": "Altezza card mobile",
+"default": 360
+}
+]
 }
 {% endschema %}

@@ -1,427 +1,421 @@
 {% assign section_id = 'photo-button-' | append: block.id %}
 {% assign active_cards = 0 %}
 {% if block.settings.card_1_enabled %}
-  {% assign active_cards = active_cards | plus: 1 %}
+{% assign active_cards = active_cards | plus: 1 %}
 {% endif %}
 {% if block.settings.card_2_enabled %}
-  {% assign active_cards = active_cards | plus: 1 %}
+{% assign active_cards = active_cards | plus: 1 %}
 {% endif %}
 {% if block.settings.card_3_enabled %}
-  {% assign active_cards = active_cards | plus: 1 %}
+{% assign active_cards = active_cards | plus: 1 %}
 {% endif %}
 {% if block.settings.card_4_enabled %}
-  {% assign active_cards = active_cards | plus: 1 %}
+{% assign active_cards = active_cards | plus: 1 %}
 {% endif %}
-
 {% if block.settings.enabled and active_cards > 0 %}
-  <section
-    id="{{ section_id }}"
-    class="paradise-photo-button"
-    style="
-      --ppb-bg: {{ block.settings.background_color }};
-      --ppb-text: {{ block.settings.text_color }};
-      --ppb-muted: {{ block.settings.description_color }};
-      --ppb-card-bg: {{ block.settings.card_background }};
-      --ppb-card-border: {{ block.settings.card_border_color }};
-      --ppb-radius: {{ block.settings.card_radius }}px;
-      --ppb-image-radius: {{ block.settings.image_radius }}px;
-      --ppb-image-height: {{ block.settings.image_height }}px;
-      --ppb-mobile-image-height: {{ block.settings.mobile_image_height }}px;
-      --ppb-padding-top: {{ block.settings.padding_top }}px;
-      --ppb-padding-bottom: {{ block.settings.padding_bottom }}px;
-      --ppb-mobile-padding-top: {{ block.settings.padding_top_mobile }}px;
-      --ppb-mobile-padding-bottom: {{ block.settings.padding_bottom_mobile }}px;
-    "
-    {{ block.shopify_attributes }}
-  >
-    <div class="ppb-shell">
-      {% if block.settings.heading != blank or block.settings.subheading != blank %}
-        <div class="ppb-header">
-          {% if block.settings.heading != blank %}
-            <h2 class="ppb-heading">{{ block.settings.heading }}</h2>
-          {% endif %}
-          {% if block.settings.subheading != blank %}
-            <div class="ppb-subheading">{{ block.settings.subheading }}</div>
-          {% endif %}
-        </div>
-      {% endif %}
-
-      <div class="ppb-grid ppb-grid--{{ active_cards }}">
-        {% if block.settings.card_1_enabled %}
-          {% assign card_image = block.settings.card_1_image %}
-          {% assign card_title = block.settings.card_1_title %}
-          {% assign card_text = block.settings.card_1_text %}
-          {% assign card_link = block.settings.card_1_link %}
-          {% assign card_alt = card_image.alt | default: card_title %}
-          <article class="ppb-card">
-            {% if card_link != blank %}<a class="ppb-card-link" href="{{ card_link }}" aria-label="{{ card_title | escape }}">{% endif %}
-              <div class="ppb-media">
-                {% if card_image != blank %}
-                  {{ card_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '360, 520, 720, 900, 1200', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw', alt: card_alt }}
-                {% else %}
-                  {{ 'collection-1' | placeholder_svg_tag }}
-                {% endif %}
-              </div>
-              {% if card_title != blank or card_text != blank %}
-                <div class="ppb-copy">
-                  {% if card_title != blank %}<h3 class="ppb-title">{{ card_title }}</h3>{% endif %}
-                  {% if card_text != blank %}<div class="ppb-text">{{ card_text }}</div>{% endif %}
-                </div>
-              {% endif %}
-            {% if card_link != blank %}</a>{% endif %}
-          </article>
-        {% endif %}
-
-        {% if block.settings.card_2_enabled %}
-          {% assign card_image = block.settings.card_2_image %}
-          {% assign card_title = block.settings.card_2_title %}
-          {% assign card_text = block.settings.card_2_text %}
-          {% assign card_link = block.settings.card_2_link %}
-          {% assign card_alt = card_image.alt | default: card_title %}
-          <article class="ppb-card">
-            {% if card_link != blank %}<a class="ppb-card-link" href="{{ card_link }}" aria-label="{{ card_title | escape }}">{% endif %}
-              <div class="ppb-media">
-                {% if card_image != blank %}
-                  {{ card_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '360, 520, 720, 900, 1200', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw', alt: card_alt }}
-                {% else %}
-                  {{ 'collection-2' | placeholder_svg_tag }}
-                {% endif %}
-              </div>
-              {% if card_title != blank or card_text != blank %}
-                <div class="ppb-copy">
-                  {% if card_title != blank %}<h3 class="ppb-title">{{ card_title }}</h3>{% endif %}
-                  {% if card_text != blank %}<div class="ppb-text">{{ card_text }}</div>{% endif %}
-                </div>
-              {% endif %}
-            {% if card_link != blank %}</a>{% endif %}
-          </article>
-        {% endif %}
-
-        {% if block.settings.card_3_enabled %}
-          {% assign card_image = block.settings.card_3_image %}
-          {% assign card_title = block.settings.card_3_title %}
-          {% assign card_text = block.settings.card_3_text %}
-          {% assign card_link = block.settings.card_3_link %}
-          {% assign card_alt = card_image.alt | default: card_title %}
-          <article class="ppb-card">
-            {% if card_link != blank %}<a class="ppb-card-link" href="{{ card_link }}" aria-label="{{ card_title | escape }}">{% endif %}
-              <div class="ppb-media">
-                {% if card_image != blank %}
-                  {{ card_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '360, 520, 720, 900, 1200', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw', alt: card_alt }}
-                {% else %}
-                  {{ 'collection-3' | placeholder_svg_tag }}
-                {% endif %}
-              </div>
-              {% if card_title != blank or card_text != blank %}
-                <div class="ppb-copy">
-                  {% if card_title != blank %}<h3 class="ppb-title">{{ card_title }}</h3>{% endif %}
-                  {% if card_text != blank %}<div class="ppb-text">{{ card_text }}</div>{% endif %}
-                </div>
-              {% endif %}
-            {% if card_link != blank %}</a>{% endif %}
-          </article>
-        {% endif %}
-
-        {% if block.settings.card_4_enabled %}
-          {% assign card_image = block.settings.card_4_image %}
-          {% assign card_title = block.settings.card_4_title %}
-          {% assign card_text = block.settings.card_4_text %}
-          {% assign card_link = block.settings.card_4_link %}
-          {% assign card_alt = card_image.alt | default: card_title %}
-          <article class="ppb-card">
-            {% if card_link != blank %}<a class="ppb-card-link" href="{{ card_link }}" aria-label="{{ card_title | escape }}">{% endif %}
-              <div class="ppb-media">
-                {% if card_image != blank %}
-                  {{ card_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '360, 520, 720, 900, 1200', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw', alt: card_alt }}
-                {% else %}
-                  {{ 'collection-4' | placeholder_svg_tag }}
-                {% endif %}
-              </div>
-              {% if card_title != blank or card_text != blank %}
-                <div class="ppb-copy">
-                  {% if card_title != blank %}<h3 class="ppb-title">{{ card_title }}</h3>{% endif %}
-                  {% if card_text != blank %}<div class="ppb-text">{{ card_text }}</div>{% endif %}
-                </div>
-              {% endif %}
-            {% if card_link != blank %}</a>{% endif %}
-          </article>
-        {% endif %}
-      </div>
-    </div>
-  </section>
-{% elsif request.design_mode %}
-  <div class="paradise-photo-button-placeholder" {{ block.shopify_attributes }}>
-    <strong>PHOTO_BUTTON disattivata</strong>
-    <span>Attiva la section e almeno una foto per mostrarla nel sito.</span>
-  </div>
+<section
+id="{{ section_id }}"
+class="paradise-photo-button"
+style="
+--ppb-bg: {{ block.settings.background_color }};
+--ppb-text: {{ block.settings.text_color }};
+--ppb-muted: {{ block.settings.description_color }};
+--ppb-card-bg: {{ block.settings.card_background }};
+--ppb-card-border: {{ block.settings.card_border_color }};
+--ppb-radius: {{ block.settings.card_radius }}px;
+--ppb-image-radius: {{ block.settings.image_radius }}px;
+--ppb-image-height: {{ block.settings.image_height }}px;
+--ppb-mobile-image-height: {{ block.settings.mobile_image_height }}px;
+--ppb-padding-top: {{ block.settings.padding_top }}px;
+--ppb-padding-bottom: {{ block.settings.padding_bottom }}px;
+--ppb-mobile-padding-top: {{ block.settings.padding_top_mobile }}px;
+--ppb-mobile-padding-bottom: {{ block.settings.padding_bottom_mobile }}px;
+"
+{{ block.shopify_attributes }}
+>
+<div class="ppb-shell">
+{% if block.settings.heading != blank or block.settings.subheading != blank %}
+<div class="ppb-header">
+{% if block.settings.heading != blank %}
+<h2 class="ppb-heading">{{ block.settings.heading }}</h2>
 {% endif %}
-
+{% if block.settings.subheading != blank %}
+<div class="ppb-subheading">{{ block.settings.subheading }}</div>
+{% endif %}
+</div>
+{% endif %}
+<div class="ppb-grid ppb-grid--{{ active_cards }}">
+{% if block.settings.card_1_enabled %}
+{% assign card_image = block.settings.card_1_image %}
+{% assign card_title = block.settings.card_1_title %}
+{% assign card_text = block.settings.card_1_text %}
+{% assign card_link = block.settings.card_1_link %}
+{% assign card_alt = card_image.alt | default: card_title %}
+<article class="ppb-card">
+{% if card_link != blank %}<a class="ppb-card-link" href="{{ card_link }}" aria-label="{{ card_title | escape }}">{% endif %}
+<div class="ppb-media">
+{% if card_image != blank %}
+{{ card_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '360, 520, 720, 900, 1200', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw', alt: card_alt }}
+{% else %}
+{{ 'collection-1' | placeholder_svg_tag }}
+{% endif %}
+</div>
+{% if card_title != blank or card_text != blank %}
+<div class="ppb-copy">
+{% if card_title != blank %}<h3 class="ppb-title">{{ card_title }}</h3>{% endif %}
+{% if card_text != blank %}<div class="ppb-text">{{ card_text }}</div>{% endif %}
+</div>
+{% endif %}
+{% if card_link != blank %}</a>{% endif %}
+</article>
+{% endif %}
+{% if block.settings.card_2_enabled %}
+{% assign card_image = block.settings.card_2_image %}
+{% assign card_title = block.settings.card_2_title %}
+{% assign card_text = block.settings.card_2_text %}
+{% assign card_link = block.settings.card_2_link %}
+{% assign card_alt = card_image.alt | default: card_title %}
+<article class="ppb-card">
+{% if card_link != blank %}<a class="ppb-card-link" href="{{ card_link }}" aria-label="{{ card_title | escape }}">{% endif %}
+<div class="ppb-media">
+{% if card_image != blank %}
+{{ card_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '360, 520, 720, 900, 1200', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw', alt: card_alt }}
+{% else %}
+{{ 'collection-2' | placeholder_svg_tag }}
+{% endif %}
+</div>
+{% if card_title != blank or card_text != blank %}
+<div class="ppb-copy">
+{% if card_title != blank %}<h3 class="ppb-title">{{ card_title }}</h3>{% endif %}
+{% if card_text != blank %}<div class="ppb-text">{{ card_text }}</div>{% endif %}
+</div>
+{% endif %}
+{% if card_link != blank %}</a>{% endif %}
+</article>
+{% endif %}
+{% if block.settings.card_3_enabled %}
+{% assign card_image = block.settings.card_3_image %}
+{% assign card_title = block.settings.card_3_title %}
+{% assign card_text = block.settings.card_3_text %}
+{% assign card_link = block.settings.card_3_link %}
+{% assign card_alt = card_image.alt | default: card_title %}
+<article class="ppb-card">
+{% if card_link != blank %}<a class="ppb-card-link" href="{{ card_link }}" aria-label="{{ card_title | escape }}">{% endif %}
+<div class="ppb-media">
+{% if card_image != blank %}
+{{ card_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '360, 520, 720, 900, 1200', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw', alt: card_alt }}
+{% else %}
+{{ 'collection-3' | placeholder_svg_tag }}
+{% endif %}
+</div>
+{% if card_title != blank or card_text != blank %}
+<div class="ppb-copy">
+{% if card_title != blank %}<h3 class="ppb-title">{{ card_title }}</h3>{% endif %}
+{% if card_text != blank %}<div class="ppb-text">{{ card_text }}</div>{% endif %}
+</div>
+{% endif %}
+{% if card_link != blank %}</a>{% endif %}
+</article>
+{% endif %}
+{% if block.settings.card_4_enabled %}
+{% assign card_image = block.settings.card_4_image %}
+{% assign card_title = block.settings.card_4_title %}
+{% assign card_text = block.settings.card_4_text %}
+{% assign card_link = block.settings.card_4_link %}
+{% assign card_alt = card_image.alt | default: card_title %}
+<article class="ppb-card">
+{% if card_link != blank %}<a class="ppb-card-link" href="{{ card_link }}" aria-label="{{ card_title | escape }}">{% endif %}
+<div class="ppb-media">
+{% if card_image != blank %}
+{{ card_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '360, 520, 720, 900, 1200', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw', alt: card_alt }}
+{% else %}
+{{ 'collection-4' | placeholder_svg_tag }}
+{% endif %}
+</div>
+{% if card_title != blank or card_text != blank %}
+<div class="ppb-copy">
+{% if card_title != blank %}<h3 class="ppb-title">{{ card_title }}</h3>{% endif %}
+{% if card_text != blank %}<div class="ppb-text">{{ card_text }}</div>{% endif %}
+</div>
+{% endif %}
+{% if card_link != blank %}</a>{% endif %}
+</article>
+{% endif %}
+</div>
+</div>
+</section>
+{% elsif request.design_mode %}
+<div class="paradise-photo-button-placeholder" {{ block.shopify_attributes }}>
+<strong>PHOTO_BUTTON disattivata</strong>
+<span>Attiva la section e almeno una foto per mostrarla nel sito.</span>
+</div>
+{% endif %}
 {% schema %}
 {
-  "name": "PHOTO_BUTTON",
-  "target": "section",
-  "stylesheet": "photo-button.css",
-  "settings": [
-    {
-      "type": "checkbox",
-      "id": "enabled",
-      "label": "Mostra section",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Titolo section",
-      "default": "Banner Paradise"
-    },
-    {
-      "type": "richtext",
-      "id": "subheading",
-      "label": "Descrizione section",
-      "default": "<p>Scegli fino a quattro immagini cliccabili con titolo, descrizione e link.</p>"
-    },
-    {
-      "type": "header",
-      "content": "Stile"
-    },
-    {
-      "type": "color",
-      "id": "background_color",
-      "label": "Colore sfondo",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Colore titoli",
-      "default": "#111111"
-    },
-    {
-      "type": "color",
-      "id": "description_color",
-      "label": "Colore descrizioni",
-      "default": "#5f5a54"
-    },
-    {
-      "type": "color",
-      "id": "card_background",
-      "label": "Sfondo card",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "card_border_color",
-      "label": "Bordo card",
-      "default": "#e7e1d9"
-    },
-    {
-      "type": "range",
-      "id": "card_radius",
-      "min": 0,
-      "max": 32,
-      "step": 2,
-      "unit": "px",
-      "label": "Rotondita' card",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "image_radius",
-      "min": 0,
-      "max": 32,
-      "step": 2,
-      "unit": "px",
-      "label": "Rotondita' immagine",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "image_height",
-      "min": 180,
-      "max": 620,
-      "step": 20,
-      "unit": "px",
-      "label": "Altezza immagine desktop",
-      "default": 420
-    },
-    {
-      "type": "range",
-      "id": "mobile_image_height",
-      "min": 120,
-      "max": 360,
-      "step": 10,
-      "unit": "px",
-      "label": "Altezza immagine mobile",
-      "default": 190
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 140,
-      "step": 4,
-      "unit": "px",
-      "label": "Spazio sopra desktop",
-      "default": 48
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 140,
-      "step": 4,
-      "unit": "px",
-      "label": "Spazio sotto desktop",
-      "default": 48
-    },
-    {
-      "type": "range",
-      "id": "padding_top_mobile",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "Spazio sopra mobile",
-      "default": 32
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom_mobile",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "Spazio sotto mobile",
-      "default": 32
-    },
-    {
-      "type": "header",
-      "content": "Foto 1"
-    },
-    {
-      "type": "checkbox",
-      "id": "card_1_enabled",
-      "label": "Attiva foto 1",
-      "default": true
-    },
-    {
-      "type": "image_picker",
-      "id": "card_1_image",
-      "label": "Immagine"
-    },
-    {
-      "type": "text",
-      "id": "card_1_title",
-      "label": "Titolo",
-      "default": "Titolo foto 1"
-    },
-    {
-      "type": "richtext",
-      "id": "card_1_text",
-      "label": "Descrizione",
-      "default": "<p>Scrivi qui la descrizione.</p>"
-    },
-    {
-      "type": "url",
-      "id": "card_1_link",
-      "label": "Link al click"
-    },
-    {
-      "type": "header",
-      "content": "Foto 2"
-    },
-    {
-      "type": "checkbox",
-      "id": "card_2_enabled",
-      "label": "Attiva foto 2",
-      "default": true
-    },
-    {
-      "type": "image_picker",
-      "id": "card_2_image",
-      "label": "Immagine"
-    },
-    {
-      "type": "text",
-      "id": "card_2_title",
-      "label": "Titolo",
-      "default": "Titolo foto 2"
-    },
-    {
-      "type": "richtext",
-      "id": "card_2_text",
-      "label": "Descrizione",
-      "default": "<p>Scrivi qui la descrizione.</p>"
-    },
-    {
-      "type": "url",
-      "id": "card_2_link",
-      "label": "Link al click"
-    },
-    {
-      "type": "header",
-      "content": "Foto 3"
-    },
-    {
-      "type": "checkbox",
-      "id": "card_3_enabled",
-      "label": "Attiva foto 3",
-      "default": true
-    },
-    {
-      "type": "image_picker",
-      "id": "card_3_image",
-      "label": "Immagine"
-    },
-    {
-      "type": "text",
-      "id": "card_3_title",
-      "label": "Titolo",
-      "default": "Titolo foto 3"
-    },
-    {
-      "type": "richtext",
-      "id": "card_3_text",
-      "label": "Descrizione",
-      "default": "<p>Scrivi qui la descrizione.</p>"
-    },
-    {
-      "type": "url",
-      "id": "card_3_link",
-      "label": "Link al click"
-    },
-    {
-      "type": "header",
-      "content": "Foto 4"
-    },
-    {
-      "type": "checkbox",
-      "id": "card_4_enabled",
-      "label": "Attiva foto 4",
-      "default": true
-    },
-    {
-      "type": "image_picker",
-      "id": "card_4_image",
-      "label": "Immagine"
-    },
-    {
-      "type": "text",
-      "id": "card_4_title",
-      "label": "Titolo",
-      "default": "Titolo foto 4"
-    },
-    {
-      "type": "richtext",
-      "id": "card_4_text",
-      "label": "Descrizione",
-      "default": "<p>Scrivi qui la descrizione.</p>"
-    },
-    {
-      "type": "url",
-      "id": "card_4_link",
-      "label": "Link al click"
-    }
-  ]
+"name": "PHOTO_BUTTON",
+"target": "section",
+"stylesheet": "photo-button.css",
+"settings": [
+{
+"type": "checkbox",
+"id": "enabled",
+"label": "Mostra section",
+"default": false
+},
+{
+"type": "text",
+"id": "heading",
+"label": "Titolo section",
+"default": "Banner Paradise"
+},
+{
+"type": "richtext",
+"id": "subheading",
+"label": "Descrizione section",
+"default": "<p>Scegli fino a quattro immagini cliccabili con titolo, descrizione e link.</p>"
+},
+{
+"type": "header",
+"content": "Stile"
+},
+{
+"type": "color",
+"id": "background_color",
+"label": "Colore sfondo",
+"default": "#ffffff"
+},
+{
+"type": "color",
+"id": "text_color",
+"label": "Colore titoli",
+"default": "#111111"
+},
+{
+"type": "color",
+"id": "description_color",
+"label": "Colore descrizioni",
+"default": "#5f5a54"
+},
+{
+"type": "color",
+"id": "card_background",
+"label": "Sfondo card",
+"default": "#ffffff"
+},
+{
+"type": "color",
+"id": "card_border_color",
+"label": "Bordo card",
+"default": "#e7e1d9"
+},
+{
+"type": "range",
+"id": "card_radius",
+"min": 0,
+"max": 32,
+"step": 2,
+"unit": "px",
+"label": "Rotondita' card",
+"default": 0
+},
+{
+"type": "range",
+"id": "image_radius",
+"min": 0,
+"max": 32,
+"step": 2,
+"unit": "px",
+"label": "Rotondita' immagine",
+"default": 0
+},
+{
+"type": "range",
+"id": "image_height",
+"min": 180,
+"max": 620,
+"step": 20,
+"unit": "px",
+"label": "Altezza immagine desktop",
+"default": 420
+},
+{
+"type": "range",
+"id": "mobile_image_height",
+"min": 120,
+"max": 360,
+"step": 10,
+"unit": "px",
+"label": "Altezza immagine mobile",
+"default": 190
+},
+{
+"type": "range",
+"id": "padding_top",
+"min": 0,
+"max": 140,
+"step": 4,
+"unit": "px",
+"label": "Spazio sopra desktop",
+"default": 48
+},
+{
+"type": "range",
+"id": "padding_bottom",
+"min": 0,
+"max": 140,
+"step": 4,
+"unit": "px",
+"label": "Spazio sotto desktop",
+"default": 48
+},
+{
+"type": "range",
+"id": "padding_top_mobile",
+"min": 0,
+"max": 100,
+"step": 4,
+"unit": "px",
+"label": "Spazio sopra mobile",
+"default": 32
+},
+{
+"type": "range",
+"id": "padding_bottom_mobile",
+"min": 0,
+"max": 100,
+"step": 4,
+"unit": "px",
+"label": "Spazio sotto mobile",
+"default": 32
+},
+{
+"type": "header",
+"content": "Foto 1"
+},
+{
+"type": "checkbox",
+"id": "card_1_enabled",
+"label": "Attiva foto 1",
+"default": true
+},
+{
+"type": "image_picker",
+"id": "card_1_image",
+"label": "Immagine"
+},
+{
+"type": "text",
+"id": "card_1_title",
+"label": "Titolo",
+"default": "Titolo foto 1"
+},
+{
+"type": "richtext",
+"id": "card_1_text",
+"label": "Descrizione",
+"default": "<p>Scrivi qui la descrizione.</p>"
+},
+{
+"type": "url",
+"id": "card_1_link",
+"label": "Link al click"
+},
+{
+"type": "header",
+"content": "Foto 2"
+},
+{
+"type": "checkbox",
+"id": "card_2_enabled",
+"label": "Attiva foto 2",
+"default": true
+},
+{
+"type": "image_picker",
+"id": "card_2_image",
+"label": "Immagine"
+},
+{
+"type": "text",
+"id": "card_2_title",
+"label": "Titolo",
+"default": "Titolo foto 2"
+},
+{
+"type": "richtext",
+"id": "card_2_text",
+"label": "Descrizione",
+"default": "<p>Scrivi qui la descrizione.</p>"
+},
+{
+"type": "url",
+"id": "card_2_link",
+"label": "Link al click"
+},
+{
+"type": "header",
+"content": "Foto 3"
+},
+{
+"type": "checkbox",
+"id": "card_3_enabled",
+"label": "Attiva foto 3",
+"default": true
+},
+{
+"type": "image_picker",
+"id": "card_3_image",
+"label": "Immagine"
+},
+{
+"type": "text",
+"id": "card_3_title",
+"label": "Titolo",
+"default": "Titolo foto 3"
+},
+{
+"type": "richtext",
+"id": "card_3_text",
+"label": "Descrizione",
+"default": "<p>Scrivi qui la descrizione.</p>"
+},
+{
+"type": "url",
+"id": "card_3_link",
+"label": "Link al click"
+},
+{
+"type": "header",
+"content": "Foto 4"
+},
+{
+"type": "checkbox",
+"id": "card_4_enabled",
+"label": "Attiva foto 4",
+"default": true
+},
+{
+"type": "image_picker",
+"id": "card_4_image",
+"label": "Immagine"
+},
+{
+"type": "text",
+"id": "card_4_title",
+"label": "Titolo",
+"default": "Titolo foto 4"
+},
+{
+"type": "richtext",
+"id": "card_4_text",
+"label": "Descrizione",
+"default": "<p>Scrivi qui la descrizione.</p>"
+},
+{
+"type": "url",
+"id": "card_4_link",
+"label": "Link al click"
+}
+]
 }
 {% endschema %}

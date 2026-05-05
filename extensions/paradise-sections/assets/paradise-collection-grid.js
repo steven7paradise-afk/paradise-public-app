@@ -133,15 +133,102 @@
     });
   }
 
+  function initProductCarousel(root) {
+    var sections = (root || document).querySelectorAll("[data-product-carousel]");
+
+    sections.forEach(function (section) {
+      if (section.dataset.paradiseCarouselReady === "true") return;
+      section.dataset.paradiseCarouselReady = "true";
+
+      var track = section.querySelector("[data-carousel-track]");
+      var prev = section.querySelector("[data-carousel-prev]");
+      var next = section.querySelector("[data-carousel-next]");
+      var dotsWrap = section.querySelector("[data-carousel-dots]");
+      if (!track) return;
+
+      function getStep() {
+        var slide = track.querySelector(".ppc-slide");
+        if (!slide) return track.clientWidth;
+        var gap = parseFloat(window.getComputedStyle(track).columnGap || window.getComputedStyle(track).gap || 0);
+        return slide.getBoundingClientRect().width + gap;
+      }
+
+      function pages() {
+        return Math.max(1, Math.ceil(track.scrollWidth / Math.max(1, track.clientWidth)));
+      }
+
+      function activePage() {
+        return Math.min(pages() - 1, Math.round(track.scrollLeft / Math.max(1, track.clientWidth)));
+      }
+
+      function renderDots() {
+        if (!dotsWrap) return;
+        dotsWrap.innerHTML = "";
+        for (var i = 0; i < pages(); i += 1) {
+          var dot = document.createElement("button");
+          dot.type = "button";
+          dot.className = "ppc-dot";
+          dot.setAttribute("aria-label", "Vai al gruppo prodotti " + (i + 1));
+          dot.dataset.page = String(i);
+          dotsWrap.appendChild(dot);
+        }
+        syncDots();
+      }
+
+      function syncDots() {
+        if (!dotsWrap) return;
+        var current = activePage();
+        dotsWrap.querySelectorAll(".ppc-dot").forEach(function (dot) {
+          dot.classList.toggle("is-active", Number(dot.dataset.page) === current);
+        });
+      }
+
+      function go(direction) {
+        var nextLeft = track.scrollLeft + getStep() * direction;
+        if (nextLeft >= track.scrollWidth - track.clientWidth - 4) nextLeft = 0;
+        if (nextLeft < 0) nextLeft = track.scrollWidth;
+        track.scrollTo({ left: nextLeft, behavior: "smooth" });
+      }
+
+      if (prev) prev.addEventListener("click", function () { go(-1); });
+      if (next) next.addEventListener("click", function () { go(1); });
+      if (dotsWrap) {
+        dotsWrap.addEventListener("click", function (event) {
+          var dot = event.target.closest(".ppc-dot");
+          if (!dot) return;
+          track.scrollTo({ left: Number(dot.dataset.page) * track.clientWidth, behavior: "smooth" });
+        });
+      }
+
+      track.addEventListener("scroll", function () {
+        window.requestAnimationFrame(syncDots);
+      });
+
+      renderDots();
+      window.addEventListener("resize", renderDots);
+
+      if (section.dataset.autoplay === "true") {
+        var interval = Math.max(2, Number(section.dataset.interval || 4)) * 1000;
+        var timer = window.setInterval(function () { go(1); }, interval);
+        section.addEventListener("mouseenter", function () { window.clearInterval(timer); });
+        section.addEventListener("mouseleave", function () {
+          timer = window.setInterval(function () { go(1); }, interval);
+        });
+      }
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initQuickAdd(document);
     initGridToolbar(document);
     initLoadMore(document);
+    initProductCarousel(document);
   });
 
   document.addEventListener("shopify:section:load", function (event) {
     initQuickAdd(event.target);
     initGridToolbar(event.target);
     initLoadMore(event.target);
+    initProductCarousel(event.target);
   });
 })();
