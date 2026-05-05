@@ -266,16 +266,16 @@ style="
 {% if block.settings.show_view_toolbar %}
 <div class="pcg-toolbar" data-grid-toolbar>
 <div class="pcg-view-buttons" aria-label="Cambia vista prodotti">
-<button class="pcg-view-btn pcg-view-btn--mobile" type="button" data-grid-columns="1" aria-label="1 prodotto per riga">
+<button class="pcg-view-btn pcg-view-btn--mobile{% if block.settings.mobile_columns == '1' %} is-active{% endif %}" type="button" data-grid-columns="1" aria-label="1 prodotto per riga">
 <span></span>
 </button>
-<button class="pcg-view-btn pcg-view-btn--mobile is-active" type="button" data-grid-columns="2" aria-label="2 prodotti per riga">
+<button class="pcg-view-btn pcg-view-btn--mobile{% if block.settings.mobile_columns == '2' %} is-active{% endif %}" type="button" data-grid-columns="2" aria-label="2 prodotti per riga">
 <span></span><span></span>
 </button>
-<button class="pcg-view-btn pcg-view-btn--desktop is-active" type="button" data-grid-columns="3" aria-label="3 prodotti per riga">
+<button class="pcg-view-btn pcg-view-btn--desktop{% if block.settings.desktop_columns == '3' %} is-active{% endif %}" type="button" data-grid-columns="3" aria-label="3 prodotti per riga">
 <span></span><span></span><span></span>
 </button>
-<button class="pcg-view-btn pcg-view-btn--desktop" type="button" data-grid-columns="4" aria-label="4 prodotti per riga">
+<button class="pcg-view-btn pcg-view-btn--desktop{% if block.settings.desktop_columns == '4' %} is-active{% endif %}" type="button" data-grid-columns="4" aria-label="4 prodotti per riga">
 <span></span><span></span><span></span><span></span>
 </button>
 </div>
@@ -433,45 +433,45 @@ Esaurito
 { "value": "right", "label": "Destra" }
 ]
 },
-    {
-      "type": "range",
-      "id": "product_limit",
+{
+"type": "range",
+"id": "product_limit",
 "min": 4,
 "max": 48,
 "step": 1,
 "label": "Numero prodotti",
-      "default": 24
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_load_more",
-      "label": "Mostra prodotti a pagine",
-      "default": true
-    },
-    {
-      "type": "range",
-      "id": "initial_visible_products",
-      "min": 4,
-      "max": 24,
-      "step": 1,
-      "label": "Prodotti visibili all'inizio",
-      "default": 12
-    },
-    {
-      "type": "range",
-      "id": "load_more_step",
-      "min": 2,
-      "max": 24,
-      "step": 1,
-      "label": "Prodotti da mostrare ogni click",
-      "default": 8
-    },
-    {
-      "type": "text",
-      "id": "load_more_label",
-      "label": "Testo bottone mostra altro",
-      "default": "Mostra altro"
-    },
+"default": 24
+},
+{
+"type": "checkbox",
+"id": "enable_load_more",
+"label": "Mostra prodotti a pagine",
+"default": true
+},
+{
+"type": "range",
+"id": "initial_visible_products",
+"min": 4,
+"max": 24,
+"step": 1,
+"label": "Prodotti visibili all'inizio",
+"default": 12
+},
+{
+"type": "range",
+"id": "load_more_step",
+"min": 2,
+"max": 24,
+"step": 1,
+"label": "Prodotti da mostrare ogni click",
+"default": 8
+},
+{
+"type": "text",
+"id": "load_more_label",
+"label": "Testo bottone mostra altro",
+"default": "Mostra altro"
+},
 {
 "type": "select",
 "id": "desktop_columns",
