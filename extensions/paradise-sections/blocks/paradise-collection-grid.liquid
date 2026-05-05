@@ -1,53 +1,48 @@
 {{ 'paradise-adv-slot.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'paradise-collection-grid.js' | asset_url }}" defer></script>
-
 {% assign grid_collection = blank %}
 {% if block.settings.use_current_collection and collection != blank %}
-  {% assign grid_collection = collection %}
+{% assign grid_collection = collection %}
 {% elsif block.settings.collection != blank %}
-  {% assign grid_collection = block.settings.collection %}
+{% assign grid_collection = block.settings.collection %}
 {% endif %}
-
 {% assign adv_slot_code = block.settings.adv_slot_code %}
 {% assign collection_slot_code = blank %}
 {% if block.settings.use_collection_campaign and grid_collection.handle != blank %}
-  {% assign collection_slot_code = 'collection-' | append: grid_collection.handle %}
+{% assign collection_slot_code = 'collection-' | append: grid_collection.handle %}
 {% endif %}
 {% assign resolved_slot_code = collection_slot_code | default: adv_slot_code %}
-
 {% assign global_campaign = blank %}
 {% if block.settings.show_adv and block.settings.use_global_campaign %}
-  {% if collection_slot_code != blank %}
-    {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[collection_slot_code] %}
-  {% endif %}
-  {% if global_campaign == blank and adv_slot_code != blank %}
-    {% assign global_campaign = shop.metaobjects.paradise_adv_campaign[adv_slot_code] %}
-    {% assign resolved_slot_code = adv_slot_code %}
-  {% endif %}
+{% if collection_slot_code != blank %}
+{% assign global_campaign = shop.metaobjects.paradise_adv_campaign[collection_slot_code] %}
 {% endif %}
-
+{% if global_campaign == blank and adv_slot_code != blank %}
+{% assign global_campaign = shop.metaobjects.paradise_adv_campaign[adv_slot_code] %}
+{% assign resolved_slot_code = adv_slot_code %}
+{% endif %}
+{% endif %}
 {% assign has_global_campaign = false %}
 {% if global_campaign != blank %}
-  {% assign has_global_campaign = true %}
+{% assign has_global_campaign = true %}
 {% endif %}
 {% assign global_campaign_active = true %}
 {% if global_campaign.is_active.value == false or global_campaign.is_active.value == 'false' %}
-  {% assign global_campaign_active = false %}
+{% assign global_campaign_active = false %}
 {% endif %}
 {% assign now_timestamp = 'now' | date: '%s' | plus: 0 %}
 {% if global_campaign.starts_at.value != blank %}
-  {% assign start_timestamp = global_campaign.starts_at.value | date: '%s' | plus: 0 %}
-  {% if now_timestamp < start_timestamp %}
-    {% assign global_campaign_active = false %}
-  {% endif %}
+{% assign start_timestamp = global_campaign.starts_at.value | date: '%s' | plus: 0 %}
+{% if now_timestamp < start_timestamp %}
+{% assign global_campaign_active = false %}
+{% endif %}
 {% endif %}
 {% if global_campaign.ends_at.value != blank %}
-  {% assign end_timestamp = global_campaign.ends_at.value | date: '%s' | plus: 0 %}
-  {% if now_timestamp > end_timestamp %}
-    {% assign global_campaign_active = false %}
-  {% endif %}
+{% assign end_timestamp = global_campaign.ends_at.value | date: '%s' | plus: 0 %}
+{% if now_timestamp > end_timestamp %}
+{% assign global_campaign_active = false %}
 {% endif %}
-
+{% endif %}
 {% assign global_desktop_image = global_campaign.desktop_image.value %}
 {% assign global_mobile_image = global_campaign.mobile_image.value | default: global_desktop_image %}
 {% assign global_kicker = global_campaign.kicker.value %}
@@ -65,7 +60,7 @@
 {% assign global_button_background = global_campaign.button_background.value | default: '#ffffff' %}
 {% assign global_button_background_opacity = global_campaign.button_background_opacity.value | default: 100 %}
 {% if global_button_label != blank and global_button_background_opacity == '0' %}
-  {% assign global_button_background_opacity = 100 %}
+{% assign global_button_background_opacity = 100 %}
 {% endif %}
 {% assign global_button_text_color = global_campaign.button_text_color.value | default: '#171313' %}
 {% assign global_button_border_color = global_campaign.button_border_color.value | default: '#ffffff' %}
@@ -77,794 +72,824 @@
 {% assign global_text_position_y = global_campaign.text_position_y.value | default: 72 %}
 {% assign global_mobile_text_position_x = global_campaign.mobile_text_position_x.value | default: global_text_position_x %}
 {% assign global_mobile_text_position_y = global_campaign.mobile_text_position_y.value | default: global_text_position_y %}
-
 {% assign adv_position = 'bottom-left' %}
 {% if global_text_position_raw != blank %}
-  {% case global_text_position_raw %}
-    {% when 'custom', 'libera', 'free', 'drag' %}
-      {% assign adv_position = 'custom' %}
-    {% when 'destra', 'right', 'basso destra', 'bottom-right', 'bottom right' %}
-      {% assign adv_position = 'bottom-right' %}
-    {% when 'centro', 'center', 'basso centro', 'bottom-center', 'bottom center' %}
-      {% assign adv_position = 'bottom-center' %}
-    {% when 'alto destra', 'top-right', 'top right' %}
-      {% assign adv_position = 'top-right' %}
-    {% when 'alto centro', 'top-center', 'top center' %}
-      {% assign adv_position = 'top-center' %}
-    {% when 'alto sinistra', 'top-left', 'top left' %}
-      {% assign adv_position = 'top-left' %}
-    {% when 'nascosto', 'hidden', 'solo immagine' %}
-      {% assign adv_position = 'hidden' %}
-  {% endcase %}
+{% case global_text_position_raw %}
+{% when 'custom', 'libera', 'free', 'drag' %}
+{% assign adv_position = 'custom' %}
+{% when 'destra', 'right', 'basso destra', 'bottom-right', 'bottom right' %}
+{% assign adv_position = 'bottom-right' %}
+{% when 'centro', 'center', 'basso centro', 'bottom-center', 'bottom center' %}
+{% assign adv_position = 'bottom-center' %}
+{% when 'alto destra', 'top-right', 'top right' %}
+{% assign adv_position = 'top-right' %}
+{% when 'alto centro', 'top-center', 'top center' %}
+{% assign adv_position = 'top-center' %}
+{% when 'alto sinistra', 'top-left', 'top left' %}
+{% assign adv_position = 'top-left' %}
+{% when 'nascosto', 'hidden', 'solo immagine' %}
+{% assign adv_position = 'hidden' %}
+{% endcase %}
 {% endif %}
-
 {% assign can_render_adv = false %}
 {% if block.settings.show_adv and has_global_campaign and global_campaign_active and global_desktop_image != blank %}
-  {% assign can_render_adv = true %}
+{% assign can_render_adv = true %}
 {% endif %}
 {% assign adv_has_copy = false %}
 {% if global_kicker != blank or global_title != blank or global_text != blank or global_button_label != blank %}
-  {% assign adv_has_copy = true %}
+{% assign adv_has_copy = true %}
 {% endif %}
 {% assign adv_alt = global_accessibility_label | default: global_title | default: resolved_slot_code %}
 {% assign should_render_adv = false %}
 {% if can_render_adv %}
-  {% assign should_render_adv = true %}
+{% assign should_render_adv = true %}
 {% elsif request.design_mode and block.settings.show_adv %}
-  {% assign should_render_adv = true %}
+{% assign should_render_adv = true %}
 {% endif %}
-
 {% capture paradise_adv_card %}
-  {% if can_render_adv %}
-    <div class="pcg-adv-card" data-adv-slot="{{ resolved_slot_code | escape }}">
-      <section
-        class="paradise-adv-slot paradise-adv-slot--{{ adv_position }}"
-        style="
-          --pas-height: {{ block.settings.adv_desktop_height }}px;
-          --pas-mobile-height: {{ block.settings.adv_mobile_height }}px;
-          --pas-image-position: {{ global_desktop_image_position }};
-          --pas-mobile-image-position: {{ global_mobile_image_position }};
-          --pas-overlay-opacity: {{ global_overlay_opacity | divided_by: 100.0 }};
-          --pas-radius: {{ global_card_radius }}px;
-          --pas-content-width: {{ global_content_max_width }}px;
-          --pas-text: {{ global_text_color }};
-          --pas-button-bg-color: {{ global_button_background }};
-          --pas-button-bg-opacity-percent: {{ global_button_background_opacity }}%;
-          --pas-button-text: {{ global_button_text_color }};
-          --pas-button-border: {{ global_button_border_color }};
-          --pas-button-hover-bg: {{ global_button_hover_background }};
-          --pas-button-hover-text: {{ global_button_hover_text_color }};
-          --pas-button-radius: {{ global_button_radius }}px;
-          --pas-padding-top: 0px;
-          --pas-padding-bottom: 0px;
-          --pas-mobile-padding-top: 0px;
-          --pas-mobile-padding-bottom: 0px;
-          --pas-text-x: {{ global_text_position_x }}%;
-          --pas-text-y: {{ global_text_position_y }}%;
-          --pas-mobile-text-x: {{ global_mobile_text_position_x }}%;
-          --pas-mobile-text-y: {{ global_mobile_text_position_y }}%;
-        "
-      >
-        {% if global_button_link != blank %}
-          <a class="pas-frame" href="{{ global_button_link }}" aria-label="{{ adv_alt | escape }}">
-        {% else %}
-          <div class="pas-frame pas-frame--static" role="img" aria-label="{{ adv_alt | escape }}">
-        {% endif %}
-          <picture class="pas-picture">
-            {% if global_mobile_image != blank %}
-              <source media="(max-width: 749px)" srcset="{{ global_mobile_image | image_url: width: 1000 }}">
-            {% endif %}
-            {{ global_desktop_image | image_url: width: 1600 | image_tag: loading: 'lazy', widths: '450, 700, 900, 1200, 1600', sizes: '(max-width: 749px) 100vw, 50vw', alt: adv_alt }}
-          </picture>
-          <div class="pas-overlay" aria-hidden="true"></div>
-          {% if adv_has_copy %}
-            <div class="pas-content">
-              <div class="pas-copy">
-                {% if global_kicker != blank %}<p class="pas-kicker">{{ global_kicker }}</p>{% endif %}
-                {% if global_title != blank %}<h2 class="pas-title">{{ global_title }}</h2>{% endif %}
-                {% if global_text != blank %}<div class="pas-text">{{ global_text | newline_to_br }}</div>{% endif %}
-                {% if global_button_label != blank %}<span class="pas-button" role="button">{{ global_button_label }}</span>{% endif %}
-              </div>
-            </div>
-          {% endif %}
-        {% if global_button_link != blank %}
-          </a>
-        {% else %}
-          </div>
-        {% endif %}
-      </section>
-    </div>
-  {% elsif request.design_mode and block.settings.show_adv %}
-    <div class="pcg-adv-card">
-      <div class="paradise-adv-slot-placeholder">
-        <strong>ADV non trovata</strong>
-        <span>Crea una campagna attiva con immagine per {{ resolved_slot_code | default: 'collection-handle' }}.</span>
-      </div>
-    </div>
-  {% endif %}
-{% endcapture %}
-
+{% if can_render_adv %}
+<div class="pcg-adv-card" data-adv-slot="{{ resolved_slot_code | escape }}">
 <section
-  class="paradise-collection-grid"
-  style="
-    --pcg-max-width: {{ block.settings.max_width }}px;
-    --pcg-side-padding: {{ block.settings.side_padding }}px;
-    --pcg-mobile-side-padding: {{ block.settings.mobile_side_padding }}px;
-    --pcg-columns: {{ block.settings.desktop_columns }};
-    --pcg-mobile-columns: {{ block.settings.mobile_columns }};
-    --pcg-gap: {{ block.settings.grid_gap }}px;
-    --pcg-mobile-gap: {{ block.settings.mobile_grid_gap }}px;
-    --pcg-radius: {{ block.settings.card_radius }}px;
-    --pcg-product-ratio: {{ block.settings.product_image_ratio }}%;
-    --pcg-heading-align: {{ block.settings.heading_alignment }};
-    --pcg-padding-top: {{ block.settings.padding_top }}px;
-    --pcg-padding-bottom: {{ block.settings.padding_bottom }}px;
-    --pcg-mobile-padding-top: {{ block.settings.mobile_padding_top }}px;
-    --pcg-mobile-padding-bottom: {{ block.settings.mobile_padding_bottom }}px;
-    --pcg-adv-span: {{ block.settings.adv_desktop_span }};
-    --pcg-mobile-adv-span: {{ block.settings.adv_mobile_span }};
-    --pcg-adv-height: {{ block.settings.adv_desktop_height }}px;
-    --pcg-mobile-adv-height: {{ block.settings.adv_mobile_height }}px;
-    --pcg-card-bg: {{ block.settings.product_card_background }};
-    --pcg-card-border: {{ block.settings.product_card_border }};
-    --pcg-sale-bg: {{ block.settings.discount_badge_background }};
-    --pcg-sale-text: {{ block.settings.discount_badge_text_color }};
-    --pcg-sale-radius: {{ block.settings.discount_badge_radius }}px;
-    --pcg-sale-size: {{ block.settings.discount_badge_font_size }}px;
-    --pcg-image-fit: {{ block.settings.product_image_fit }};
-    --pcg-image-bg: {{ block.settings.product_image_background }};
-    --pcg-title-color: {{ block.settings.product_title_color }};
-    --pcg-title-size: {{ block.settings.product_title_size }}px;
-    --pcg-title-weight: {{ block.settings.product_title_weight }};
-    --pcg-title-family: {{ block.settings.product_title_font }};
-    --pcg-vendor-color: {{ block.settings.product_vendor_color }};
-    --pcg-price-color: {{ block.settings.product_price_color }};
-    --pcg-compare-color: {{ block.settings.product_compare_price_color }};
-    --pcg-rating-filled: {{ block.settings.rating_star_color }};
-    --pcg-rating-empty: {{ block.settings.rating_empty_star_color }};
-    --pcg-rating-text: {{ block.settings.rating_text_color }};
-    --pcg-quick-border: {{ block.settings.quick_add_border_color }};
-    --pcg-quick-bg: {{ block.settings.quick_add_background }};
-    --pcg-quick-text: {{ block.settings.quick_add_text_color }};
-    --pcg-quick-hover-bg: {{ block.settings.quick_add_hover_background }};
-    --pcg-quick-hover-text: {{ block.settings.quick_add_hover_text_color }};
-  "
-  {{ block.shopify_attributes }}
+class="paradise-adv-slot paradise-adv-slot--{{ adv_position }}"
+style="
+--pas-height: {{ block.settings.adv_desktop_height }}px;
+--pas-mobile-height: {{ block.settings.adv_mobile_height }}px;
+--pas-image-position: {{ global_desktop_image_position }};
+--pas-mobile-image-position: {{ global_mobile_image_position }};
+--pas-overlay-opacity: {{ global_overlay_opacity | divided_by: 100.0 }};
+--pas-radius: {{ global_card_radius }}px;
+--pas-content-width: {{ global_content_max_width }}px;
+--pas-text: {{ global_text_color }};
+--pas-button-bg-color: {{ global_button_background }};
+--pas-button-bg-opacity-percent: {{ global_button_background_opacity }}%;
+--pas-button-text: {{ global_button_text_color }};
+--pas-button-border: {{ global_button_border_color }};
+--pas-button-hover-bg: {{ global_button_hover_background }};
+--pas-button-hover-text: {{ global_button_hover_text_color }};
+--pas-button-radius: {{ global_button_radius }}px;
+--pas-padding-top: 0px;
+--pas-padding-bottom: 0px;
+--pas-mobile-padding-top: 0px;
+--pas-mobile-padding-bottom: 0px;
+--pas-text-x: {{ global_text_position_x }}%;
+--pas-text-y: {{ global_text_position_y }}%;
+--pas-mobile-text-x: {{ global_mobile_text_position_x }}%;
+--pas-mobile-text-y: {{ global_mobile_text_position_y }}%;
+"
 >
-  <div class="pcg-inner">
-    {% if block.settings.kicker != blank or block.settings.heading != blank %}
-      <div class="pcg-heading">
-        {% if block.settings.kicker != blank %}<p>{{ block.settings.kicker }}</p>{% endif %}
-        {% if block.settings.heading != blank %}<h2>{{ block.settings.heading }}</h2>{% endif %}
-      </div>
-    {% endif %}
-
-    {% if grid_collection != blank and grid_collection.products_count > 0 %}
-      {% assign adv_rendered = false %}
-      {% if block.settings.show_view_toolbar %}
-        <div class="pcg-toolbar" data-grid-toolbar>
-          <div class="pcg-view-buttons" aria-label="Cambia vista prodotti">
-            <button class="pcg-view-btn pcg-view-btn--mobile" type="button" data-grid-columns="1" aria-label="1 prodotto per riga">
-              <span></span>
-            </button>
-            <button class="pcg-view-btn pcg-view-btn--mobile is-active" type="button" data-grid-columns="2" aria-label="2 prodotti per riga">
-              <span></span><span></span>
-            </button>
-            <button class="pcg-view-btn pcg-view-btn--desktop is-active" type="button" data-grid-columns="3" aria-label="3 prodotti per riga">
-              <span></span><span></span><span></span>
-            </button>
-            <button class="pcg-view-btn pcg-view-btn--desktop" type="button" data-grid-columns="4" aria-label="4 prodotti per riga">
-              <span></span><span></span><span></span><span></span>
-            </button>
-          </div>
-          <p class="pcg-product-count">{{ grid_collection.products_count }} prodotti</p>
-        </div>
-      {% endif %}
-      <div class="pcg-grid">
-        {% for product in grid_collection.products limit: block.settings.product_limit %}
-          {% if adv_rendered == false and should_render_adv %}
-            {% if block.settings.adv_insert_after == 0 and forloop.first %}
-              {{ paradise_adv_card }}
-              {% assign adv_rendered = true %}
-            {% endif %}
-          {% endif %}
-
-          {% assign product_variant = product.selected_or_first_available_variant %}
-          <article class="pcg-product-card" data-product-card>
-            <a class="pcg-product-media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
-              {% if block.settings.show_discount_badge and product.compare_at_price > product.price %}
-                {% assign discount_amount = product.compare_at_price | minus: product.price %}
-                {% assign discount_percent = discount_amount | times: 100 | divided_by: product.compare_at_price %}
-                <span class="pcg-sale-badge pcg-sale-badge--{{ block.settings.discount_badge_position }}">
-                  {% if block.settings.discount_badge_label != blank %}
-                    {{ block.settings.discount_badge_label }}
-                  {% else %}
-                    -{{ discount_percent }}%
-                  {% endif %}
-                </span>
-              {% endif %}
-              {% if product.featured_image != blank %}
-                {{ product.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--primary' }}
-                {% if block.settings.show_hover_image and product.images.size > 1 %}
-                  {% assign hover_image = product.images[1] %}
-                  {{ hover_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--hover' }}
-                {% endif %}
-              {% endif %}
-            </a>
-            <span class="pcg-product-info">
-              <span class="pcg-product-copy">
-                {% if block.settings.show_vendor and product.vendor != blank %}
-                  <span class="pcg-product-vendor">{{ product.vendor }}</span>
-                {% endif %}
-                <a class="pcg-product-title" href="{{ product.url }}">{{ product.title }}</a>
-              </span>
-              {% if block.settings.show_rating %}
-                <span class="pcg-rating" aria-label="{{ block.settings.rating_value }} stelle su 5">
-                  <span class="pcg-stars" aria-hidden="true">
-                    {% for star_index in (1..5) %}
-                      <span class="{% if star_index <= block.settings.rating_value %}is-filled{% endif %}">★</span>
-                    {% endfor %}
-                  </span>
-                  {% if block.settings.rating_review_count != blank %}
-                    <span class="pcg-review-count">({{ block.settings.rating_review_count }})</span>
-                  {% endif %}
-                </span>
-              {% endif %}
-              {% if block.settings.show_price %}
-                <span class="pcg-product-price">
-                  {% if product.compare_at_price > product.price %}
-                    <span class="pcg-product-compare">{{ product.compare_at_price | money }}</span>
-                  {% endif %}
-                  {{ product.price | money }}
-                </span>
-              {% endif %}
-              {% if block.settings.show_quick_add %}
-                <form
-                  class="pcg-quick-add"
-                  action="{{ routes.cart_add_url }}"
-                  method="post"
-                  data-quick-add
-                  data-price="{{ product_variant.price }}"
-                  data-currency="{{ cart.currency.iso_code | default: shop.currency }}"
-                >
-                  <input type="hidden" name="id" value="{{ product_variant.id }}">
-                  <div class="pcg-quantity" aria-label="Quantita">
-                    <button type="button" class="pcg-qty-btn" data-qty-minus aria-label="Riduci quantita">-</button>
-                    <input class="pcg-qty-input" type="number" name="quantity" value="1" min="1" max="99" inputmode="numeric" data-qty-input aria-label="Quantita">
-                    <button type="button" class="pcg-qty-btn" data-qty-plus aria-label="Aumenta quantita">+</button>
-                  </div>
-                  <button
-                    type="submit"
-                    class="pcg-cart-button"
-                    data-cart-button
-                    {% unless product_variant.available %}disabled{% endunless %}
-                  >
-                    {% if product_variant.available %}
-                      {{ block.settings.quick_add_label }} - <span data-total-price>{{ product_variant.price | money }}</span>
-                    {% else %}
-                      Esaurito
-                    {% endif %}
-                  </button>
-                </form>
-              {% endif %}
-            </span>
-          </article>
-
-          {% if adv_rendered == false and should_render_adv %}
-            {% if block.settings.adv_insert_after == forloop.index %}
-              {{ paradise_adv_card }}
-              {% assign adv_rendered = true %}
-            {% endif %}
-          {% endif %}
-        {% endfor %}
-
-        {% if adv_rendered == false and should_render_adv %}
-          {{ paradise_adv_card }}
-        {% endif %}
-      </div>
-    {% elsif request.design_mode %}
-      <div class="pcg-empty">Seleziona una collezione o apri questa sezione dentro una pagina collezione.</div>
-    {% endif %}
-  </div>
+{% if global_button_link != blank %}
+<a class="pas-frame" href="{{ global_button_link }}" aria-label="{{ adv_alt | escape }}">
+{% else %}
+<div class="pas-frame pas-frame--static" role="img" aria-label="{{ adv_alt | escape }}">
+{% endif %}
+<picture class="pas-picture">
+{% if global_mobile_image != blank %}
+<source media="(max-width: 749px)" srcset="{{ global_mobile_image | image_url: width: 1000 }}">
+{% endif %}
+{{ global_desktop_image | image_url: width: 1600 | image_tag: loading: 'lazy', widths: '450, 700, 900, 1200, 1600', sizes: '(max-width: 749px) 100vw, 50vw', alt: adv_alt }}
+</picture>
+<div class="pas-overlay" aria-hidden="true"></div>
+{% if adv_has_copy %}
+<div class="pas-content">
+<div class="pas-copy">
+{% if global_kicker != blank %}<p class="pas-kicker">{{ global_kicker }}</p>{% endif %}
+{% if global_title != blank %}<h2 class="pas-title">{{ global_title }}</h2>{% endif %}
+{% if global_text != blank %}<div class="pas-text">{{ global_text | newline_to_br }}</div>{% endif %}
+{% if global_button_label != blank %}<span class="pas-button" role="button">{{ global_button_label }}</span>{% endif %}
+</div>
+</div>
+{% endif %}
+{% if global_button_link != blank %}
+</a>
+{% else %}
+</div>
+{% endif %}
 </section>
-
+</div>
+{% elsif request.design_mode and block.settings.show_adv %}
+<div class="pcg-adv-card">
+<div class="paradise-adv-slot-placeholder">
+<strong>ADV non trovata</strong>
+<span>Crea una campagna attiva con immagine per {{ resolved_slot_code | default: 'collection-handle' }}.</span>
+</div>
+</div>
+{% endif %}
+{% endcapture %}
+{% capture grid_max_width %}
+{% if block.settings.full_width %}
+none
+{% else %}
+{{ block.settings.max_width }}px
+{% endif %}
+{% endcapture %}
+<section
+class="paradise-collection-grid"
+style="
+--pcg-max-width: {{ grid_max_width | strip }};
+--pcg-side-padding: {{ block.settings.side_padding }}px;
+--pcg-mobile-side-padding: {{ block.settings.mobile_side_padding }}px;
+--pcg-columns: {{ block.settings.desktop_columns }};
+--pcg-mobile-columns: {{ block.settings.mobile_columns }};
+--pcg-gap: {{ block.settings.grid_gap }}px;
+--pcg-mobile-gap: {{ block.settings.mobile_grid_gap }}px;
+--pcg-radius: {{ block.settings.card_radius }}px;
+--pcg-product-ratio: {{ block.settings.product_image_ratio }}%;
+--pcg-heading-align: {{ block.settings.heading_alignment }};
+--pcg-padding-top: {{ block.settings.padding_top }}px;
+--pcg-padding-bottom: {{ block.settings.padding_bottom }}px;
+--pcg-mobile-padding-top: {{ block.settings.mobile_padding_top }}px;
+--pcg-mobile-padding-bottom: {{ block.settings.mobile_padding_bottom }}px;
+--pcg-adv-span: {{ block.settings.adv_desktop_span }};
+--pcg-mobile-adv-span: {{ block.settings.adv_mobile_span }};
+--pcg-adv-height: {{ block.settings.adv_desktop_height }}px;
+--pcg-mobile-adv-height: {{ block.settings.adv_mobile_height }}px;
+--pcg-card-bg: {{ block.settings.product_card_background }};
+--pcg-card-border: {{ block.settings.product_card_border }};
+--pcg-sale-bg: {{ block.settings.discount_badge_background }};
+--pcg-sale-text: {{ block.settings.discount_badge_text_color }};
+--pcg-sale-radius: {{ block.settings.discount_badge_radius }}px;
+--pcg-sale-size: {{ block.settings.discount_badge_font_size }}px;
+--pcg-image-fit: {{ block.settings.product_image_fit }};
+--pcg-image-bg: {{ block.settings.product_image_background }};
+--pcg-image-padding: {{ block.settings.product_image_padding }}px;
+--pcg-image-position: {{ block.settings.product_image_position }};
+--pcg-title-color: {{ block.settings.product_title_color }};
+--pcg-title-size: {{ block.settings.product_title_size }}px;
+--pcg-title-weight: {{ block.settings.product_title_weight }};
+--pcg-title-family: {{ block.settings.product_title_font }};
+--pcg-vendor-color: {{ block.settings.product_vendor_color }};
+--pcg-price-color: {{ block.settings.product_price_color }};
+--pcg-compare-color: {{ block.settings.product_compare_price_color }};
+--pcg-rating-filled: {{ block.settings.rating_star_color }};
+--pcg-rating-empty: {{ block.settings.rating_empty_star_color }};
+--pcg-rating-text: {{ block.settings.rating_text_color }};
+--pcg-quick-border: {{ block.settings.quick_add_border_color }};
+--pcg-quick-bg: {{ block.settings.quick_add_background }};
+--pcg-quick-text: {{ block.settings.quick_add_text_color }};
+--pcg-quick-hover-bg: {{ block.settings.quick_add_hover_background }};
+--pcg-quick-hover-text: {{ block.settings.quick_add_hover_text_color }};
+"
+{{ block.shopify_attributes }}
+>
+<div class="pcg-inner">
+{% if block.settings.kicker != blank or block.settings.heading != blank %}
+<div class="pcg-heading">
+{% if block.settings.kicker != blank %}<p>{{ block.settings.kicker }}</p>{% endif %}
+{% if block.settings.heading != blank %}<h2>{{ block.settings.heading }}</h2>{% endif %}
+</div>
+{% endif %}
+{% if grid_collection != blank and grid_collection.products_count > 0 %}
+{% assign adv_rendered = false %}
+{% if block.settings.show_view_toolbar %}
+<div class="pcg-toolbar" data-grid-toolbar>
+<div class="pcg-view-buttons" aria-label="Cambia vista prodotti">
+<button class="pcg-view-btn pcg-view-btn--mobile" type="button" data-grid-columns="1" aria-label="1 prodotto per riga">
+<span></span>
+</button>
+<button class="pcg-view-btn pcg-view-btn--mobile is-active" type="button" data-grid-columns="2" aria-label="2 prodotti per riga">
+<span></span><span></span>
+</button>
+<button class="pcg-view-btn pcg-view-btn--desktop is-active" type="button" data-grid-columns="3" aria-label="3 prodotti per riga">
+<span></span><span></span><span></span>
+</button>
+<button class="pcg-view-btn pcg-view-btn--desktop" type="button" data-grid-columns="4" aria-label="4 prodotti per riga">
+<span></span><span></span><span></span><span></span>
+</button>
+</div>
+<p class="pcg-product-count">{{ grid_collection.products_count }} prodotti</p>
+</div>
+{% endif %}
+<div class="pcg-grid">
+{% for product in grid_collection.products limit: block.settings.product_limit %}
+{% if adv_rendered == false and should_render_adv %}
+{% if block.settings.adv_insert_after == 0 and forloop.first %}
+{{ paradise_adv_card }}
+{% assign adv_rendered = true %}
+{% endif %}
+{% endif %}
+{% assign product_variant = product.selected_or_first_available_variant %}
+<article class="pcg-product-card" data-product-card>
+<a class="pcg-product-media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+{% if block.settings.show_discount_badge and product.compare_at_price > product.price %}
+{% assign discount_amount = product.compare_at_price | minus: product.price %}
+{% assign discount_percent = discount_amount | times: 100 | divided_by: product.compare_at_price %}
+<span class="pcg-sale-badge pcg-sale-badge--{{ block.settings.discount_badge_position }}">
+{% if block.settings.discount_badge_label != blank %}
+{{ block.settings.discount_badge_label }}
+{% else %}
+-{{ discount_percent }}%
+{% endif %}
+</span>
+{% endif %}
+{% if product.featured_image != blank %}
+{{ product.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--primary' }}
+{% if block.settings.show_hover_image and product.images.size > 1 %}
+{% assign hover_image = product.images[1] %}
+{{ hover_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--hover' }}
+{% endif %}
+{% endif %}
+</a>
+<span class="pcg-product-info">
+<span class="pcg-product-copy">
+{% if block.settings.show_vendor and product.vendor != blank %}
+<span class="pcg-product-vendor">{{ product.vendor }}</span>
+{% endif %}
+<a class="pcg-product-title" href="{{ product.url }}">{{ product.title }}</a>
+</span>
+{% if block.settings.show_rating %}
+<span class="pcg-rating" aria-label="{{ block.settings.rating_value }} stelle su 5">
+<span class="pcg-stars" aria-hidden="true">
+{% for star_index in (1..5) %}
+<span class="{% if star_index <= block.settings.rating_value %}is-filled{% endif %}">★</span>
+{% endfor %}
+</span>
+{% if block.settings.rating_review_count != blank %}
+<span class="pcg-review-count">({{ block.settings.rating_review_count }})</span>
+{% endif %}
+</span>
+{% endif %}
+{% if block.settings.show_price %}
+<span class="pcg-product-price">
+{% if product.compare_at_price > product.price %}
+<span class="pcg-product-compare">{{ product.compare_at_price | money }}</span>
+{% endif %}
+{{ product.price | money }}
+</span>
+{% endif %}
+{% if block.settings.show_quick_add %}
+<form
+class="pcg-quick-add"
+action="{{ routes.cart_add_url }}"
+method="post"
+data-quick-add
+data-price="{{ product_variant.price }}"
+data-currency="{{ cart.currency.iso_code | default: shop.currency }}"
+>
+<input type="hidden" name="id" value="{{ product_variant.id }}">
+<div class="pcg-quantity" aria-label="Quantita">
+<button type="button" class="pcg-qty-btn" data-qty-minus aria-label="Riduci quantita">-</button>
+<input class="pcg-qty-input" type="number" name="quantity" value="1" min="1" max="99" inputmode="numeric" data-qty-input aria-label="Quantita">
+<button type="button" class="pcg-qty-btn" data-qty-plus aria-label="Aumenta quantita">+</button>
+</div>
+<button
+type="submit"
+class="pcg-cart-button"
+data-cart-button
+{% unless product_variant.available %}disabled{% endunless %}
+>
+{% if product_variant.available %}
+{{ block.settings.quick_add_label }} - <span data-total-price>{{ product_variant.price | money }}</span>
+{% else %}
+Esaurito
+{% endif %}
+</button>
+</form>
+{% endif %}
+</span>
+</article>
+{% if adv_rendered == false and should_render_adv %}
+{% if block.settings.adv_insert_after == forloop.index %}
+{{ paradise_adv_card }}
+{% assign adv_rendered = true %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% if adv_rendered == false and should_render_adv %}
+{{ paradise_adv_card }}
+{% endif %}
+</div>
+{% elsif request.design_mode %}
+<div class="pcg-empty">Seleziona una collezione o apri questa sezione dentro una pagina collezione.</div>
+{% endif %}
+</div>
+</section>
 {% schema %}
 {
-  "name": "Paradise Collection Grid",
-  "target": "section",
-  "stylesheet": "paradise-collection-grid.css",
-  "settings": [
-    {
-      "type": "checkbox",
-      "id": "use_current_collection",
-      "label": "Usa collezione corrente",
-      "default": false
-    },
-    {
-      "type": "collection",
-      "id": "collection",
-      "label": "Collezione manuale"
-    },
-    {
-      "type": "text",
-      "id": "kicker",
-      "label": "Sopratitolo",
-      "default": "Shop"
-    },
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Titolo"
-    },
-    {
-      "type": "select",
-      "id": "heading_alignment",
-      "label": "Allineamento titolo",
-      "default": "left",
-      "options": [
-        { "value": "left", "label": "Sinistra" },
-        { "value": "center", "label": "Centro" },
-        { "value": "right", "label": "Destra" }
-      ]
-    },
-    {
-      "type": "range",
-      "id": "product_limit",
-      "min": 4,
-      "max": 48,
-      "step": 1,
-      "label": "Numero prodotti",
-      "default": 24
-    },
-    {
-      "type": "select",
-      "id": "desktop_columns",
-      "label": "Colonne desktop",
-      "default": "3",
-      "options": [
-        { "value": "3", "label": "3 prodotti per riga" },
-        { "value": "4", "label": "4 prodotti per riga" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "mobile_columns",
-      "label": "Colonne mobile",
-      "default": "2",
-      "options": [
-        { "value": "1", "label": "1 colonna" },
-        { "value": "2", "label": "2 colonne" }
-      ]
-    },
-    {
-      "type": "checkbox",
-      "id": "show_price",
-      "label": "Mostra prezzo",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_vendor",
-      "label": "Mostra brand/vendor",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "show_quick_add",
-      "label": "Mostra quantita e aggiungi al carrello",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "quick_add_label",
-      "label": "Testo bottone carrello",
-      "default": "Aggiungi al carrello"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_hover_image",
-      "label": "Mostra seconda immagine al passaggio mouse",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_view_toolbar",
-      "label": "Mostra barra cambio vista",
-      "default": true
-    },
-    {
-      "type": "select",
-      "id": "product_image_fit",
-      "label": "Visualizzazione immagine",
-      "default": "contain",
-      "options": [
-        { "value": "contain", "label": "Completa" },
-        { "value": "cover", "label": "Riempi card" }
-      ]
-    },
-    {
-      "type": "color",
-      "id": "product_image_background",
-      "label": "Sfondo immagine prodotto",
-      "default": "#f3eeee"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_discount_badge",
-      "label": "Mostra badge sconto",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "discount_badge_label",
-      "label": "Testo badge sconto",
-      "info": "Lascia vuoto per mostrare la percentuale automatica, per esempio -20%."
-    },
-    {
-      "type": "color",
-      "id": "discount_badge_background",
-      "label": "Sfondo badge sconto",
-      "default": "#d24f5f"
-    },
-    {
-      "type": "color",
-      "id": "discount_badge_text_color",
-      "label": "Testo badge sconto",
-      "default": "#ffffff"
-    },
-    {
-      "type": "select",
-      "id": "discount_badge_position",
-      "label": "Posizione badge sconto",
-      "default": "top-left",
-      "options": [
-        { "value": "top-left", "label": "Alto sinistra" },
-        { "value": "top-right", "label": "Alto destra" },
-        { "value": "bottom-left", "label": "Basso sinistra" },
-        { "value": "bottom-right", "label": "Basso destra" }
-      ]
-    },
-    {
-      "type": "range",
-      "id": "discount_badge_font_size",
-      "min": 8,
-      "max": 22,
-      "step": 1,
-      "unit": "px",
-      "label": "Dimensione badge sconto",
-      "default": 11
-    },
-    {
-      "type": "range",
-      "id": "discount_badge_radius",
-      "min": 0,
-      "max": 24,
-      "step": 2,
-      "unit": "px",
-      "label": "Angoli badge sconto",
-      "default": 4
-    },
-    {
-      "type": "color",
-      "id": "product_card_background",
-      "label": "Sfondo card prodotto",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "product_card_border",
-      "label": "Bordo card prodotto",
-      "default": "#ece3e0"
-    },
-    {
-      "type": "select",
-      "id": "product_title_font",
-      "label": "Font titolo prodotto",
-      "default": "inherit",
-      "options": [
-        { "value": "inherit", "label": "Font tema" },
-        { "value": "Arial, sans-serif", "label": "Sans moderna" },
-        { "value": "Georgia, serif", "label": "Editoriale serif" },
-        { "value": "'Helvetica Neue', Arial, sans-serif", "label": "Helvetica" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "product_title_weight",
-      "label": "Peso titolo prodotto",
-      "default": "750",
-      "options": [
-        { "value": "400", "label": "Normale" },
-        { "value": "600", "label": "Semi bold" },
-        { "value": "750", "label": "Bold" },
-        { "value": "900", "label": "Extra bold" }
-      ]
-    },
-    {
-      "type": "range",
-      "id": "product_title_size",
-      "min": 10,
-      "max": 28,
-      "step": 1,
-      "unit": "px",
-      "label": "Dimensione titolo prodotto",
-      "default": 15
-    },
-    {
-      "type": "color",
-      "id": "product_title_color",
-      "label": "Colore titolo prodotto",
-      "default": "#171313"
-    },
-    {
-      "type": "color",
-      "id": "product_vendor_color",
-      "label": "Colore vendor",
-      "default": "#6c5958"
-    },
-    {
-      "type": "color",
-      "id": "product_price_color",
-      "label": "Colore prezzo",
-      "default": "#5c5350"
-    },
-    {
-      "type": "color",
-      "id": "product_compare_price_color",
-      "label": "Colore prezzo barrato",
-      "default": "#9a8b88"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_rating",
-      "label": "Mostra stelle recensioni",
-      "default": true
-    },
-    {
-      "type": "range",
-      "id": "rating_value",
-      "min": 0,
-      "max": 5,
-      "step": 1,
-      "label": "Numero stelle",
-      "default": 5
-    },
-    {
-      "type": "text",
-      "id": "rating_review_count",
-      "label": "Numero recensioni",
-      "default": "0"
-    },
-    {
-      "type": "color",
-      "id": "rating_star_color",
-      "label": "Colore stelle piene",
-      "default": "#171313"
-    },
-    {
-      "type": "color",
-      "id": "rating_empty_star_color",
-      "label": "Colore stelle vuote",
-      "default": "#d8cecb"
-    },
-    {
-      "type": "color",
-      "id": "rating_text_color",
-      "label": "Colore numero recensioni",
-      "default": "#6c5958"
-    },
-    {
-      "type": "color",
-      "id": "quick_add_background",
-      "label": "Sfondo quantita e bottone",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "quick_add_text_color",
-      "label": "Testo quantita e bottone",
-      "default": "#171313"
-    },
-    {
-      "type": "color",
-      "id": "quick_add_border_color",
-      "label": "Bordo quantita e bottone",
-      "default": "#171313"
-    },
-    {
-      "type": "color",
-      "id": "quick_add_hover_background",
-      "label": "Sfondo bottone hover",
-      "default": "#171313"
-    },
-    {
-      "type": "color",
-      "id": "quick_add_hover_text_color",
-      "label": "Testo bottone hover",
-      "default": "#ffffff"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_adv",
-      "label": "Inserisci ADV nella griglia",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "use_global_campaign",
-      "label": "Usa campagna globale dall'app",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "use_collection_campaign",
-      "label": "Usa campagna della collezione",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "adv_slot_code",
-      "label": "Codice ADV manuale",
-      "default": "collection-adv-1"
-    },
-    {
-      "type": "range",
-      "id": "adv_insert_after",
-      "min": 0,
-      "max": 24,
-      "step": 1,
-      "label": "ADV dopo prodotto numero",
-      "default": 4
-    },
-    {
-      "type": "range",
-      "id": "adv_desktop_span",
-      "min": 1,
-      "max": 5,
-      "step": 1,
-      "label": "Colonne ADV desktop",
-      "default": 1
-    },
-    {
-      "type": "select",
-      "id": "adv_mobile_span",
-      "label": "Colonne ADV mobile",
-      "default": "2",
-      "options": [
-        { "value": "1", "label": "1 colonna" },
-        { "value": "2", "label": "2 colonne" }
-      ]
-    },
-    {
-      "type": "range",
-      "id": "adv_desktop_height",
-      "min": 260,
-      "max": 760,
-      "step": 20,
-      "unit": "px",
-      "label": "Altezza ADV desktop",
-      "default": 520
-    },
-    {
-      "type": "range",
-      "id": "adv_mobile_height",
-      "min": 220,
-      "max": 620,
-      "step": 20,
-      "unit": "px",
-      "label": "Altezza ADV mobile",
-      "default": 420
-    },
-    {
-      "type": "range",
-      "id": "product_image_ratio",
-      "min": 90,
-      "max": 150,
-      "step": 5,
-      "unit": "%",
-      "label": "Rapporto immagine prodotto",
-      "default": 125
-    },
-    {
-      "type": "range",
-      "id": "card_radius",
-      "min": 0,
-      "max": 28,
-      "step": 2,
-      "unit": "px",
-      "label": "Angoli card",
-      "default": 8
-    },
-    {
-      "type": "range",
-      "id": "grid_gap",
-      "min": 8,
-      "max": 48,
-      "step": 2,
-      "unit": "px",
-      "label": "Spazio griglia desktop",
-      "default": 24
-    },
-    {
-      "type": "range",
-      "id": "mobile_grid_gap",
-      "min": 6,
-      "max": 28,
-      "step": 2,
-      "unit": "px",
-      "label": "Spazio griglia mobile",
-      "default": 12
-    },
-    {
-      "type": "range",
-      "id": "max_width",
-      "min": 960,
-      "max": 1800,
-      "step": 20,
-      "unit": "px",
-      "label": "Larghezza massima",
-      "default": 1600
-    },
-    {
-      "type": "range",
-      "id": "side_padding",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "label": "Margine laterale desktop",
-      "default": 24
-    },
-    {
-      "type": "range",
-      "id": "mobile_side_padding",
-      "min": 0,
-      "max": 32,
-      "step": 2,
-      "unit": "px",
-      "label": "Margine laterale mobile",
-      "default": 12
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 120,
-      "step": 4,
-      "unit": "px",
-      "label": "Spazio sopra desktop",
-      "default": 32
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 120,
-      "step": 4,
-      "unit": "px",
-      "label": "Spazio sotto desktop",
-      "default": 32
-    },
-    {
-      "type": "range",
-      "id": "mobile_padding_top",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "label": "Spazio sopra mobile",
-      "default": 20
-    },
-    {
-      "type": "range",
-      "id": "mobile_padding_bottom",
-      "min": 0,
-      "max": 80,
-      "step": 4,
-      "unit": "px",
-      "label": "Spazio sotto mobile",
-      "default": 20
-    }
-  ]
+"name": "Paradise Collection Grid",
+"target": "section",
+"stylesheet": "paradise-collection-grid.css",
+"settings": [
+{
+"type": "checkbox",
+"id": "use_current_collection",
+"label": "Usa collezione corrente",
+"default": false
+},
+{
+"type": "collection",
+"id": "collection",
+"label": "Collezione manuale"
+},
+{
+"type": "text",
+"id": "kicker",
+"label": "Sopratitolo",
+"default": "Shop"
+},
+{
+"type": "text",
+"id": "heading",
+"label": "Titolo"
+},
+{
+"type": "select",
+"id": "heading_alignment",
+"label": "Allineamento titolo",
+"default": "left",
+"options": [
+{ "value": "left", "label": "Sinistra" },
+{ "value": "center", "label": "Centro" },
+{ "value": "right", "label": "Destra" }
+]
+},
+{
+"type": "range",
+"id": "product_limit",
+"min": 4,
+"max": 48,
+"step": 1,
+"label": "Numero prodotti",
+"default": 24
+},
+{
+"type": "select",
+"id": "desktop_columns",
+"label": "Colonne desktop",
+"default": "3",
+"options": [
+{ "value": "3", "label": "3 prodotti per riga" },
+{ "value": "4", "label": "4 prodotti per riga" }
+]
+},
+{
+"type": "select",
+"id": "mobile_columns",
+"label": "Colonne mobile",
+"default": "2",
+"options": [
+{ "value": "1", "label": "1 colonna" },
+{ "value": "2", "label": "2 colonne" }
+]
+},
+{
+"type": "checkbox",
+"id": "show_price",
+"label": "Mostra prezzo",
+"default": true
+},
+{
+"type": "checkbox",
+"id": "show_vendor",
+"label": "Mostra brand/vendor",
+"default": false
+},
+{
+"type": "checkbox",
+"id": "show_quick_add",
+"label": "Mostra quantita e aggiungi al carrello",
+"default": true
+},
+{
+"type": "text",
+"id": "quick_add_label",
+"label": "Testo bottone carrello",
+"default": "Aggiungi al carrello"
+},
+{
+"type": "checkbox",
+"id": "show_hover_image",
+"label": "Mostra seconda immagine al passaggio mouse",
+"default": true
+},
+{
+"type": "checkbox",
+"id": "show_view_toolbar",
+"label": "Mostra barra cambio vista",
+"default": true
+},
+{
+"type": "select",
+"id": "product_image_fit",
+"label": "Visualizzazione immagine",
+"default": "contain",
+"options": [
+{ "value": "contain", "label": "Completa" },
+{ "value": "cover", "label": "Riempi card" }
+]
+},
+{
+"type": "color",
+"id": "product_image_background",
+"label": "Colore spazio area immagine",
+"default": "#ffffff"
+},
+{
+"type": "range",
+"id": "product_image_padding",
+"min": 0,
+"max": 40,
+"step": 2,
+"unit": "px",
+"label": "Spazio interno immagine",
+"default": 0
+},
+{
+"type": "select",
+"id": "product_image_position",
+"label": "Posizione immagine prodotto",
+"default": "center center",
+"options": [
+{ "value": "center center", "label": "Centro" },
+{ "value": "center top", "label": "Alto" },
+{ "value": "center bottom", "label": "Basso" },
+{ "value": "left center", "label": "Sinistra" },
+{ "value": "right center", "label": "Destra" }
+]
+},
+{
+"type": "checkbox",
+"id": "show_discount_badge",
+"label": "Mostra badge sconto",
+"default": true
+},
+{
+"type": "text",
+"id": "discount_badge_label",
+"label": "Testo badge sconto",
+"info": "Lascia vuoto per mostrare la percentuale automatica, per esempio -20%."
+},
+{
+"type": "color",
+"id": "discount_badge_background",
+"label": "Sfondo badge sconto",
+"default": "#d24f5f"
+},
+{
+"type": "color",
+"id": "discount_badge_text_color",
+"label": "Testo badge sconto",
+"default": "#ffffff"
+},
+{
+"type": "select",
+"id": "discount_badge_position",
+"label": "Posizione badge sconto",
+"default": "top-left",
+"options": [
+{ "value": "top-left", "label": "Alto sinistra" },
+{ "value": "top-right", "label": "Alto destra" },
+{ "value": "bottom-left", "label": "Basso sinistra" },
+{ "value": "bottom-right", "label": "Basso destra" }
+]
+},
+{
+"type": "range",
+"id": "discount_badge_font_size",
+"min": 8,
+"max": 22,
+"step": 1,
+"unit": "px",
+"label": "Dimensione badge sconto",
+"default": 11
+},
+{
+"type": "range",
+"id": "discount_badge_radius",
+"min": 0,
+"max": 24,
+"step": 2,
+"unit": "px",
+"label": "Angoli badge sconto",
+"default": 4
+},
+{
+"type": "color",
+"id": "product_card_background",
+"label": "Sfondo card prodotto",
+"default": "#ffffff"
+},
+{
+"type": "color",
+"id": "product_card_border",
+"label": "Bordo card prodotto",
+"default": "#ece3e0"
+},
+{
+"type": "select",
+"id": "product_title_font",
+"label": "Font titolo prodotto",
+"default": "inherit",
+"options": [
+{ "value": "inherit", "label": "Font tema" },
+{ "value": "Arial, sans-serif", "label": "Sans moderna" },
+{ "value": "Georgia, serif", "label": "Editoriale serif" },
+{ "value": "'Helvetica Neue', Arial, sans-serif", "label": "Helvetica" }
+]
+},
+{
+"type": "select",
+"id": "product_title_weight",
+"label": "Peso titolo prodotto",
+"default": "750",
+"options": [
+{ "value": "400", "label": "Normale" },
+{ "value": "600", "label": "Semi bold" },
+{ "value": "750", "label": "Bold" },
+{ "value": "900", "label": "Extra bold" }
+]
+},
+{
+"type": "range",
+"id": "product_title_size",
+"min": 10,
+"max": 28,
+"step": 1,
+"unit": "px",
+"label": "Dimensione titolo prodotto",
+"default": 15
+},
+{
+"type": "color",
+"id": "product_title_color",
+"label": "Colore titolo prodotto",
+"default": "#171313"
+},
+{
+"type": "color",
+"id": "product_vendor_color",
+"label": "Colore vendor",
+"default": "#6c5958"
+},
+{
+"type": "color",
+"id": "product_price_color",
+"label": "Colore prezzo",
+"default": "#5c5350"
+},
+{
+"type": "color",
+"id": "product_compare_price_color",
+"label": "Colore prezzo barrato",
+"default": "#9a8b88"
+},
+{
+"type": "checkbox",
+"id": "show_rating",
+"label": "Mostra stelle recensioni",
+"default": true
+},
+{
+"type": "range",
+"id": "rating_value",
+"min": 0,
+"max": 5,
+"step": 1,
+"label": "Numero stelle",
+"default": 5
+},
+{
+"type": "text",
+"id": "rating_review_count",
+"label": "Numero recensioni tra parentesi",
+"info": "Modifica il numero che appare come (0), per esempio 35 o 124.",
+"default": "0"
+},
+{
+"type": "color",
+"id": "rating_star_color",
+"label": "Colore stelle piene",
+"default": "#171313"
+},
+{
+"type": "color",
+"id": "rating_empty_star_color",
+"label": "Colore stelle vuote",
+"default": "#d8cecb"
+},
+{
+"type": "color",
+"id": "rating_text_color",
+"label": "Colore numero recensioni",
+"default": "#6c5958"
+},
+{
+"type": "color",
+"id": "quick_add_background",
+"label": "Sfondo quantita e bottone",
+"default": "#ffffff"
+},
+{
+"type": "color",
+"id": "quick_add_text_color",
+"label": "Testo quantita e bottone",
+"default": "#171313"
+},
+{
+"type": "color",
+"id": "quick_add_border_color",
+"label": "Bordo quantita e bottone",
+"default": "#171313"
+},
+{
+"type": "color",
+"id": "quick_add_hover_background",
+"label": "Sfondo bottone hover",
+"default": "#171313"
+},
+{
+"type": "color",
+"id": "quick_add_hover_text_color",
+"label": "Testo bottone hover",
+"default": "#ffffff"
+},
+{
+"type": "checkbox",
+"id": "show_adv",
+"label": "Inserisci ADV nella griglia",
+"default": true
+},
+{
+"type": "checkbox",
+"id": "use_global_campaign",
+"label": "Usa campagna globale dall'app",
+"default": true
+},
+{
+"type": "checkbox",
+"id": "use_collection_campaign",
+"label": "Usa campagna della collezione",
+"default": true
+},
+{
+"type": "text",
+"id": "adv_slot_code",
+"label": "Codice ADV manuale",
+"default": "collection-adv-1"
+},
+{
+"type": "range",
+"id": "adv_insert_after",
+"min": 0,
+"max": 24,
+"step": 1,
+"label": "ADV dopo prodotto numero",
+"default": 4
+},
+{
+"type": "range",
+"id": "adv_desktop_span",
+"min": 1,
+"max": 5,
+"step": 1,
+"label": "Colonne ADV desktop",
+"default": 1
+},
+{
+"type": "select",
+"id": "adv_mobile_span",
+"label": "Colonne ADV mobile",
+"default": "2",
+"options": [
+{ "value": "1", "label": "1 colonna" },
+{ "value": "2", "label": "2 colonne" }
+]
+},
+{
+"type": "range",
+"id": "adv_desktop_height",
+"min": 260,
+"max": 760,
+"step": 20,
+"unit": "px",
+"label": "Altezza ADV desktop",
+"default": 520
+},
+{
+"type": "range",
+"id": "adv_mobile_height",
+"min": 220,
+"max": 620,
+"step": 20,
+"unit": "px",
+"label": "Altezza ADV mobile",
+"default": 420
+},
+{
+"type": "range",
+"id": "product_image_ratio",
+"min": 90,
+"max": 150,
+"step": 5,
+"unit": "%",
+"label": "Rapporto immagine prodotto",
+"default": 125
+},
+{
+"type": "range",
+"id": "card_radius",
+"min": 0,
+"max": 28,
+"step": 2,
+"unit": "px",
+"label": "Angoli card",
+"default": 8
+},
+{
+"type": "range",
+"id": "grid_gap",
+"min": 8,
+"max": 48,
+"step": 2,
+"unit": "px",
+"label": "Spazio griglia desktop",
+"default": 24
+},
+{
+"type": "range",
+"id": "mobile_grid_gap",
+"min": 6,
+"max": 28,
+"step": 2,
+"unit": "px",
+"label": "Spazio griglia mobile",
+"default": 12
+},
+{
+"type": "checkbox",
+"id": "full_width",
+"label": "Usa larghezza piena pagina",
+"default": true
+},
+{
+"type": "range",
+"id": "max_width",
+"min": 960,
+"max": 2400,
+"step": 20,
+"unit": "px",
+"label": "Larghezza massima",
+"default": 1800
+},
+{
+"type": "range",
+"id": "side_padding",
+"min": 0,
+"max": 80,
+"step": 4,
+"unit": "px",
+"label": "Margine laterale desktop",
+"default": 24
+},
+{
+"type": "range",
+"id": "mobile_side_padding",
+"min": 0,
+"max": 32,
+"step": 2,
+"unit": "px",
+"label": "Margine laterale mobile",
+"default": 12
+},
+{
+"type": "range",
+"id": "padding_top",
+"min": 0,
+"max": 120,
+"step": 4,
+"unit": "px",
+"label": "Spazio sopra desktop",
+"default": 32
+},
+{
+"type": "range",
+"id": "padding_bottom",
+"min": 0,
+"max": 120,
+"step": 4,
+"unit": "px",
+"label": "Spazio sotto desktop",
+"default": 32
+},
+{
+"type": "range",
+"id": "mobile_padding_top",
+"min": 0,
+"max": 80,
+"step": 4,
+"unit": "px",
+"label": "Spazio sopra mobile",
+"default": 20
+},
+{
+"type": "range",
+"id": "mobile_padding_bottom",
+"min": 0,
+"max": 80,
+"step": 4,
+"unit": "px",
+"label": "Spazio sotto mobile",
+"default": 20
+}
+]
 }
 {% endschema %}
