@@ -46,6 +46,7 @@
 {% assign global_text = global_campaign.text.value %}
 {% assign global_button_label = global_campaign.button_label.value %}
 {% assign global_button_link = global_campaign.button_link_url.value %}
+{% assign global_link_behavior = global_campaign.link_behavior.value | default: 'image' %}
 {% assign global_accessibility_label = global_campaign.accessibility_label.value %}
 {% assign global_desktop_height = global_campaign.desktop_height.value %}
 {% assign global_mobile_height = global_campaign.mobile_height.value %}
@@ -185,7 +186,7 @@
     "
     {{ block.shopify_attributes }}
   >
-    {% if adv_button_link != blank %}
+    {% if adv_button_link != blank and global_link_behavior != 'button' %}
       <a class="pas-frame" href="{{ adv_button_link }}" aria-label="{{ adv_alt | escape }}">
     {% else %}
       <div class="pas-frame pas-frame--static" role="img" aria-label="{{ adv_alt | escape }}">
@@ -225,12 +226,16 @@
               </div>
             {% endif %}
             {% if adv_button_label != blank %}
-              <span class="pas-button">{{ adv_button_label }}</span>
+              {% if adv_button_link != blank and global_link_behavior == 'button' %}
+                <a class="pas-button" href="{{ adv_button_link }}">{{ adv_button_label }}</a>
+              {% else %}
+                <span class="pas-button">{{ adv_button_label }}</span>
+              {% endif %}
             {% endif %}
           </div>
         </div>
       {% endif %}
-    {% if adv_button_link != blank %}
+    {% if adv_button_link != blank and global_link_behavior != 'button' %}
       </a>
     {% else %}
       </div>

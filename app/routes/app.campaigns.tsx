@@ -43,6 +43,8 @@ const fieldDefinitions = [
   { key: "ends_at", name: "Data fine", type: "date_time" },
   { key: "desktop_image", name: "Immagine desktop", type: "file_reference" },
   { key: "mobile_image", name: "Immagine mobile", type: "file_reference" },
+  { key: "image_format", name: "Formato immagine", type: "single_line_text_field" },
+  { key: "link_behavior", name: "Tipo link", type: "single_line_text_field" },
   { key: "accessibility_label", name: "Testo accessibilita immagine", type: "single_line_text_field" },
   { key: "kicker", name: "Sopratitolo", type: "single_line_text_field" },
   { key: "title", name: "Titolo", type: "single_line_text_field" },
@@ -78,6 +80,8 @@ const fieldDefinitions = [
 const legacyFieldKeys = ["desktop_image_url", "mobile_image_url"];
 const livePreviewFieldKeys = [
   "accessibility_label",
+  "image_format",
+  "link_behavior",
   "kicker",
   "title",
   "text",
@@ -186,6 +190,20 @@ function dateTimeInputValue(value = "") {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(
     date.getMinutes(),
   )}`;
+}
+
+function previewAspectRatio(format = "") {
+  if (format === "collection-portrait") return "4 / 5";
+  if (format === "collection-square") return "1 / 1";
+  if (format === "mobile-story") return "9 / 16";
+  return "16 / 6";
+}
+
+function imageFormatHelp(format = "") {
+  if (format === "collection-square") return "Consigliato collezioni: 1:1, per esempio 1080 x 1080 px.";
+  if (format === "collection-portrait") return "Consigliato collezioni/editoriale: 4:5, per esempio 1080 x 1350 px.";
+  if (format === "mobile-story") return "Consigliato mobile alto: 9:16, per esempio 1080 x 1920 px.";
+  return "Consigliato hero/banner: immagine larga, per esempio 2400 x 900 px.";
 }
 
 async function runGraphql<TData extends Record<string, unknown>>(
@@ -534,6 +552,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       "is_active",
       "starts_at",
       "ends_at",
+      "image_format",
+      "link_behavior",
       "accessibility_label",
       "kicker",
       "title",
@@ -693,6 +713,10 @@ export default function CampaignsPage() {
   const liveTextColor = liveFields.text_color || "#ffffff";
   const liveButtonBackground = liveFields.button_background || "#ffffff";
   const liveButtonBackgroundOpacity = Math.max(0, Math.min(100, Number(liveFields.button_background_opacity || "0"))) / 100;
+  const liveImageFormat = liveFields.image_format || "hero-wide";
+  const liveLinkBehavior = liveFields.link_behavior || "image";
+  const livePreviewAspectRatio = previewAspectRatio(liveImageFormat);
+  const liveImageHelp = imageFormatHelp(liveImageFormat);
   const liveButtonStyle: CSSProperties = {
     backgroundColor: `color-mix(in srgb, ${liveButtonBackground} ${liveButtonBackgroundOpacity * 100}%, transparent)`,
     borderColor: liveFields.button_border_color || "#ffffff",
@@ -704,6 +728,7 @@ export default function CampaignsPage() {
       ? {
           backgroundImage: `linear-gradient(rgba(0, 0, 0, ${liveOverlayOpacity}), rgba(0, 0, 0, ${liveOverlayOpacity})), url("${image}")`,
           backgroundPosition: position,
+          aspectRatio: livePreviewAspectRatio,
           borderRadius: `${Math.max(0, Math.min(40, Number(liveFields.card_radius || "8")))}px`,
         }
       : undefined;
@@ -886,9 +911,26 @@ export default function CampaignsPage() {
               <span>02</span>
               <div>
                 <h3>Immagini</h3>
-                <p>Carica desktop e mobile. La preview si aggiorna subito prima del salvataggio.</p>
+                <p>Carica desktop e mobile. Per collezioni usa 1:1 oppure 1080 x 1350 px.</p>
               </div>
             </div>
+          <label>
+            Formato immagine
+            <select name="image_format" defaultValue={selectedCampaign?.fields.image_format || "hero-wide"}>
+              <option value="hero-wide">Hero/banner largo</option>
+              <option value="collection-square">Collezione 1:1 - 1080 x 1080</option>
+              <option value="collection-portrait">Collezione 4:5 - 1080 x 1350</option>
+              <option value="mobile-story">Mobile verticale 9:16</option>
+            </select>
+          </label>
+          <label>
+            Link campagna
+            <select name="link_behavior" defaultValue={selectedCampaign?.fields.link_behavior || "image"}>
+              <option value="image">Clic su tutta immagine</option>
+              <option value="button">Solo bottone cliccabile</option>
+            </select>
+          </label>
+          <p className="pd-field-help">{liveImageHelp}</p>
           <label className="pd-file-field">
             Immagine desktop
             {selectedCampaign?.fields.desktop_image_preview_url ? (
@@ -932,6 +974,9 @@ export default function CampaignsPage() {
             Link bottone
             <input name="button_link_url" defaultValue={selectedCampaign?.fields.button_link_url || ""} placeholder="https://..." />
           </label>
+          <p className="pd-field-help">
+            Se scegli “Clic su tutta immagine”, questo link apre cliccando ovunque sul banner. Se scegli “Solo bottone”, apre solo dal CTA.
+          </p>
           </div>
           <div className="pd-form-section pd-form-section--full">
             <div className="pd-form-section-head">
@@ -1110,6 +1155,7 @@ export default function CampaignsPage() {
               <div>
                 <span className="pd-home-kicker">Preview live</span>
                 <h3>{selectedFormHandle}</h3>
+                <small>{liveImageHelp}</small>
               </div>
               <span className={`pd-preview-mode ${isLiveTextFree ? "pd-preview-mode--free" : ""}`}>
                 {isLiveTextFree ? "Libera" : "Preset"}
@@ -1119,6 +1165,8 @@ export default function CampaignsPage() {
               {hasLiveCopy
                 ? "Clicca e trascina il testo dentro la preview per decidere la posizione."
                 : "Aggiungi titolo, testo o bottone per vedere e posizionare il contenuto."}
+              {" "}
+              Link: {liveLinkBehavior === "button" ? "solo bottone" : "tutta immagine"}.
             </p>
             <div className="pd-preview-grid pd-preview-grid--stacked">
               <article>

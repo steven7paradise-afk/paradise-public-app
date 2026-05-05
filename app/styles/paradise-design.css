@@ -501,6 +501,15 @@
   overflow-wrap: anywhere;
 }
 
+.pd-live-preview small,
+.pd-field-help {
+  color: #6f5f62;
+  display: block;
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 6px 0 0;
+}
+
 .pd-preview-mode {
   background: #f4f1ed;
   border: 1px solid rgba(23, 19, 19, 0.1);

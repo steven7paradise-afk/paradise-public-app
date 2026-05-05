@@ -55,6 +55,7 @@
 {% assign global_text = global_campaign.text.value %}
 {% assign global_button_label = global_campaign.button_label.value %}
 {% assign global_button_link = global_campaign.button_link_url.value %}
+{% assign global_link_behavior = global_campaign.link_behavior.value | default: 'image' %}
 {% assign global_accessibility_label = global_campaign.accessibility_label.value %}
 {% assign global_desktop_image_position = global_campaign.desktop_image_position.value | default: 'center center' %}
 {% assign global_mobile_image_position = global_campaign.mobile_image_position.value | default: global_desktop_image_position %}
@@ -155,8 +156,8 @@
         --pas-mobile-text-y: {{ global_mobile_text_position_y }}%;
       "
     >
-      {% if global_button_link != blank %}
-        <a class="pas-frame" href="{{ global_button_link }}" aria-label="{{ tile_alt | escape }}">
+        {% if global_button_link != blank and global_link_behavior != 'button' %}
+          <a class="pas-frame" href="{{ global_button_link }}" aria-label="{{ tile_alt | escape }}">
       {% else %}
         <div class="pas-frame pas-frame--static" role="img" aria-label="{{ tile_alt | escape }}">
       {% endif %}
@@ -173,11 +174,17 @@
               {% if global_kicker != blank %}<p class="pas-kicker">{{ global_kicker }}</p>{% endif %}
               {% if global_title != blank %}<h2 class="pas-title">{{ global_title }}</h2>{% endif %}
               {% if global_text != blank %}<div class="pas-text">{{ global_text | newline_to_br }}</div>{% endif %}
-              {% if global_button_label != blank %}<span class="pas-button" role="button">{{ global_button_label }}</span>{% endif %}
+              {% if global_button_label != blank %}
+                {% if global_button_link != blank and global_link_behavior == 'button' %}
+                  <a class="pas-button" href="{{ global_button_link }}">{{ global_button_label }}</a>
+                {% else %}
+                  <span class="pas-button" role="button">{{ global_button_label }}</span>
+                {% endif %}
+              {% endif %}
             </div>
           </div>
         {% endif %}
-      {% if global_button_link != blank %}
+      {% if global_button_link != blank and global_link_behavior != 'button' %}
         </a>
       {% else %}
         </div>
