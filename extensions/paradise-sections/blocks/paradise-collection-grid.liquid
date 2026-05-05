@@ -102,12 +102,12 @@
 {% assign adv_has_copy = true %}
 {% endif %}
 {% assign adv_alt = global_accessibility_label | default: global_title | default: resolved_slot_code %}
-{% assign adv_image_ratio = 125 %}
+{% assign adv_image_ratio = 100 %}
 {% case global_image_format %}
 {% when 'collection-square' %}
 {% assign adv_image_ratio = 100 %}
 {% when 'collection-portrait' %}
-{% assign adv_image_ratio = 125 %}
+{% assign adv_image_ratio = 100 %}
 {% when 'mobile-story' %}
 {% assign adv_image_ratio = 178 %}
 {% endcase %}
@@ -209,7 +209,7 @@ style="
 --pcg-gap: 24px;
 --pcg-mobile-gap: 12px;
 --pcg-radius: 8px;
---pcg-product-ratio: 140%;
+--pcg-product-ratio: 100%;
 --pcg-heading-align: {{ block.settings.heading_alignment }};
 --pcg-padding-top: 32px;
 --pcg-padding-bottom: 32px;
