@@ -1,10 +1,10 @@
 {{ 'paradise-adv-slot.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'paradise-collection-grid.js' | asset_url }}" defer></script>
 
-{% assign grid_collection = collection %}
-{% if block.settings.use_current_collection == false and block.settings.collection != blank %}
-  {% assign grid_collection = block.settings.collection %}
-{% endif %}
-{% if grid_collection == blank and block.settings.collection != blank %}
+{% assign grid_collection = blank %}
+{% if block.settings.use_current_collection and collection != blank %}
+  {% assign grid_collection = collection %}
+{% elsif block.settings.collection != blank %}
   {% assign grid_collection = block.settings.collection %}
 {% endif %}
 
@@ -232,8 +232,9 @@
             {% endif %}
           {% endif %}
 
-          <a class="pcg-product-card" href="{{ product.url }}">
-            <span class="pcg-product-media">
+          {% assign product_variant = product.selected_or_first_available_variant %}
+          <article class="pcg-product-card" data-product-card>
+            <a class="pcg-product-media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
               {% if block.settings.show_discount_badge and product.compare_at_price > product.price %}
                 {% assign discount_amount = product.compare_at_price | minus: product.price %}
                 {% assign discount_percent = discount_amount | times: 100 | divided_by: product.compare_at_price %}
@@ -252,13 +253,13 @@
                   {{ hover_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--hover' }}
                 {% endif %}
               {% endif %}
-            </span>
+            </a>
             <span class="pcg-product-info">
               <span class="pcg-product-copy">
                 {% if block.settings.show_vendor and product.vendor != blank %}
                   <span class="pcg-product-vendor">{{ product.vendor }}</span>
                 {% endif %}
-                <span class="pcg-product-title">{{ product.title }}</span>
+                <a class="pcg-product-title" href="{{ product.url }}">{{ product.title }}</a>
               </span>
               {% if block.settings.show_price %}
                 <span class="pcg-product-price">
@@ -268,8 +269,37 @@
                   {{ product.price | money }}
                 </span>
               {% endif %}
+              {% if block.settings.show_quick_add %}
+                <form
+                  class="pcg-quick-add"
+                  action="{{ routes.cart_add_url }}"
+                  method="post"
+                  data-quick-add
+                  data-price="{{ product_variant.price }}"
+                  data-currency="{{ cart.currency.iso_code | default: shop.currency }}"
+                >
+                  <input type="hidden" name="id" value="{{ product_variant.id }}">
+                  <div class="pcg-quantity" aria-label="Quantita">
+                    <button type="button" class="pcg-qty-btn" data-qty-minus aria-label="Riduci quantita">-</button>
+                    <input class="pcg-qty-input" type="number" name="quantity" value="1" min="1" max="99" inputmode="numeric" data-qty-input aria-label="Quantita">
+                    <button type="button" class="pcg-qty-btn" data-qty-plus aria-label="Aumenta quantita">+</button>
+                  </div>
+                  <button
+                    type="submit"
+                    class="pcg-cart-button"
+                    data-cart-button
+                    {% unless product_variant.available %}disabled{% endunless %}
+                  >
+                    {% if product_variant.available %}
+                      {{ block.settings.quick_add_label }} - <span data-total-price>{{ product_variant.price | money }}</span>
+                    {% else %}
+                      Esaurito
+                    {% endif %}
+                  </button>
+                </form>
+              {% endif %}
             </span>
-          </a>
+          </article>
 
           {% if adv_rendered == false and should_render_adv %}
             {% if block.settings.adv_insert_after == forloop.index %}
@@ -299,7 +329,7 @@
       "type": "checkbox",
       "id": "use_current_collection",
       "label": "Usa collezione corrente",
-      "default": true
+      "default": false
     },
     {
       "type": "collection",
@@ -368,6 +398,18 @@
       "id": "show_vendor",
       "label": "Mostra brand/vendor",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_add",
+      "label": "Mostra quantita e aggiungi al carrello",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "quick_add_label",
+      "label": "Testo bottone carrello",
+      "default": "Aggiungi al carrello"
     },
     {
       "type": "checkbox",

@@ -140,6 +140,7 @@
   min-height: 36px;
   overflow: hidden;
   text-transform: none;
+  text-decoration: none;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -173,6 +174,86 @@
 .pcg-product-compare {
   color: #9a8b88;
   text-decoration: line-through;
+}
+
+.pcg-quick-add {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  visibility: hidden;
+}
+
+.pcg-product-card:hover .pcg-quick-add,
+.pcg-product-card:focus-within .pcg-quick-add {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.pcg-quantity {
+  border: 1px solid rgba(23, 19, 19, 0.35);
+  border-radius: 4px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  min-height: 38px;
+  overflow: hidden;
+}
+
+.pcg-qty-btn,
+.pcg-qty-input,
+.pcg-cart-button {
+  appearance: none;
+  background: #ffffff;
+  border: 0;
+  color: #171313;
+  font: inherit;
+}
+
+.pcg-qty-btn {
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.pcg-qty-input {
+  border-left: 1px solid rgba(23, 19, 19, 0.18);
+  border-right: 1px solid rgba(23, 19, 19, 0.18);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+}
+
+.pcg-qty-input::-webkit-outer-spin-button,
+.pcg-qty-input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.pcg-cart-button {
+  border: 1px solid #171313;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  min-height: 40px;
+  padding: 0 12px;
+  text-align: center;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.pcg-cart-button:hover {
+  background: #171313;
+  color: #ffffff;
+}
+
+.pcg-cart-button:disabled {
+  border-color: rgba(23, 19, 19, 0.24);
+  color: rgba(23, 19, 19, 0.45);
+  cursor: not-allowed;
 }
 
 .pcg-adv-card {
@@ -234,7 +315,7 @@
   }
 
   .pcg-product-info {
-    min-height: 112px;
+    min-height: 160px;
     padding: 10px 10px 12px;
   }
 
@@ -247,6 +328,23 @@
     left: 6px;
     padding: 6px 7px;
     top: 6px;
+  }
+
+  .pcg-quick-add {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+  }
+
+  .pcg-quantity {
+    grid-template-columns: 30px minmax(0, 1fr) 30px;
+    min-height: 34px;
+  }
+
+  .pcg-cart-button {
+    font-size: 11px;
+    min-height: 36px;
+    padding: 0 8px;
   }
 }
 
