@@ -205,6 +205,11 @@
     --pcg-mobile-adv-span: {{ block.settings.adv_mobile_span }};
     --pcg-adv-height: {{ block.settings.adv_desktop_height }}px;
     --pcg-mobile-adv-height: {{ block.settings.adv_mobile_height }}px;
+    --pcg-card-bg: {{ block.settings.product_card_background }};
+    --pcg-card-border: {{ block.settings.product_card_border }};
+    --pcg-sale-bg: {{ block.settings.discount_badge_background }};
+    --pcg-sale-text: {{ block.settings.discount_badge_text_color }};
+    --pcg-sale-radius: {{ block.settings.discount_badge_radius }}px;
   "
   {{ block.shopify_attributes }}
 >
@@ -229,12 +234,32 @@
 
           <a class="pcg-product-card" href="{{ product.url }}">
             <span class="pcg-product-media">
+              {% if block.settings.show_discount_badge and product.compare_at_price > product.price %}
+                {% assign discount_amount = product.compare_at_price | minus: product.price %}
+                {% assign discount_percent = discount_amount | times: 100 | divided_by: product.compare_at_price %}
+                <span class="pcg-sale-badge">
+                  {% if block.settings.discount_badge_label != blank %}
+                    {{ block.settings.discount_badge_label }}
+                  {% else %}
+                    -{{ discount_percent }}%
+                  {% endif %}
+                </span>
+              {% endif %}
               {% if product.featured_image != blank %}
-                {{ product.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title }}
+                {{ product.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--primary' }}
+                {% if block.settings.show_hover_image and product.images.size > 1 %}
+                  {% assign hover_image = product.images[1] %}
+                  {{ hover_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--hover' }}
+                {% endif %}
               {% endif %}
             </span>
             <span class="pcg-product-info">
-              <span class="pcg-product-title">{{ product.title }}</span>
+              <span class="pcg-product-copy">
+                {% if block.settings.show_vendor and product.vendor != blank %}
+                  <span class="pcg-product-vendor">{{ product.vendor }}</span>
+                {% endif %}
+                <span class="pcg-product-title">{{ product.title }}</span>
+              </span>
               {% if block.settings.show_price %}
                 <span class="pcg-product-price">
                   {% if product.compare_at_price > product.price %}
@@ -242,9 +267,6 @@
                   {% endif %}
                   {{ product.price | money }}
                 </span>
-              {% endif %}
-              {% if block.settings.show_vendor and product.vendor != blank %}
-                <span class="pcg-product-vendor">{{ product.vendor }}</span>
               {% endif %}
             </span>
           </a>
@@ -316,13 +338,14 @@
       "default": 24
     },
     {
-      "type": "range",
+      "type": "select",
       "id": "desktop_columns",
-      "min": 2,
-      "max": 5,
-      "step": 1,
       "label": "Colonne desktop",
-      "default": 3
+      "default": "3",
+      "options": [
+        { "value": "3", "label": "3 prodotti per riga" },
+        { "value": "4", "label": "4 prodotti per riga" }
+      ]
     },
     {
       "type": "select",
@@ -345,6 +368,58 @@
       "id": "show_vendor",
       "label": "Mostra brand/vendor",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hover_image",
+      "label": "Mostra seconda immagine al passaggio mouse",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount_badge",
+      "label": "Mostra badge sconto",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "discount_badge_label",
+      "label": "Testo badge sconto",
+      "info": "Lascia vuoto per mostrare la percentuale automatica, per esempio -20%."
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_background",
+      "label": "Sfondo badge sconto",
+      "default": "#d24f5f"
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_text_color",
+      "label": "Testo badge sconto",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "discount_badge_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Angoli badge sconto",
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "product_card_background",
+      "label": "Sfondo card prodotto",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "product_card_border",
+      "label": "Bordo card prodotto",
+      "default": "#ece3e0"
     },
     {
       "type": "checkbox",
