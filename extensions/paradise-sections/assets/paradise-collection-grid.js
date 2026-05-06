@@ -240,12 +240,37 @@
     });
   }
 
+  function initAdvCarousel(root) {
+    var carousels = (root || document).querySelectorAll("[data-adv-carousel]");
+
+    carousels.forEach(function (carousel) {
+      if (carousel.dataset.paradiseAdvReady === "true") return;
+      carousel.dataset.paradiseAdvReady = "true";
+
+      var slides = Array.prototype.slice.call(carousel.querySelectorAll(".pcg-adv-slide"));
+      if (!slides.length) return;
+      var index = slides.findIndex(function (slide) { return slide.classList.contains("is-active"); });
+      if (index < 0) index = 0;
+      slides.forEach(function (slide, slideIndex) {
+        slide.classList.toggle("is-active", slideIndex === index);
+      });
+      if (slides.length < 2) return;
+
+      window.setInterval(function () {
+        slides[index].classList.remove("is-active");
+        index = (index + 1) % slides.length;
+        slides[index].classList.add("is-active");
+      }, 3600);
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initQuickAdd(document);
     initQuickReveal(document);
     initGridToolbar(document);
     initLoadMore(document);
     initProductCarousel(document);
+    initAdvCarousel(document);
   });
 
   document.addEventListener("shopify:section:load", function (event) {
@@ -254,5 +279,6 @@
     initGridToolbar(event.target);
     initLoadMore(event.target);
     initProductCarousel(event.target);
+    initAdvCarousel(event.target);
   });
 })();

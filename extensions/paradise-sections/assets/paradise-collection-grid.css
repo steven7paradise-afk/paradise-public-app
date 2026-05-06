@@ -389,6 +389,61 @@
   object-fit: contain;
 }
 
+.pcg-adv-carousel {
+  background: var(--pcg-image-bg);
+  border-radius: var(--pcg-radius);
+  overflow: hidden;
+  position: relative;
+}
+
+.pcg-adv-carousel::before {
+  content: "";
+  display: block;
+  padding-bottom: var(--pcg-adv-ratio, var(--pcg-product-ratio));
+}
+
+.pcg-adv-slide {
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: scale(1);
+  transition: opacity 520ms ease, transform 620ms ease;
+}
+
+.pcg-adv-slide.is-active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.pcg-adv-slide picture,
+.pcg-adv-slide img {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.pcg-adv-slide img {
+  object-fit: contain;
+}
+
+.pcg-adv-carousel--slide .pcg-adv-slide {
+  transform: translateX(18px);
+}
+
+.pcg-adv-carousel--slide .pcg-adv-slide.is-active {
+  transform: translateX(0);
+}
+
+.pcg-adv-carousel--zoom .pcg-adv-slide {
+  transform: scale(1.04);
+}
+
+.pcg-adv-carousel--zoom .pcg-adv-slide.is-active {
+  transform: scale(1);
+}
+
 .pcg-adv-disclosure {
   align-items: center;
   background: rgba(255, 255, 255, 0.86);

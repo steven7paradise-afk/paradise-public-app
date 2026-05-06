@@ -121,8 +121,36 @@
 {% if block.settings.enable_load_more and 4 > block.settings.initial_visible_products %}
 {% assign adv_hidden_initial = true %}
 {% endif %}
+{% assign adv_carousel_codes = block.settings.adv_slot_codes | strip %}
+{% assign has_adv_carousel = false %}
+{% if block.settings.show_adv and block.settings.use_global_campaign and adv_carousel_codes != blank %}
+{% assign has_adv_carousel = true %}
+{% endif %}
 {% capture paradise_adv_card %}
-{% if can_render_adv %}
+{% if has_adv_carousel %}
+{% assign carousel_codes = resolved_slot_code | append: ',' | append: adv_carousel_codes %}
+{% assign carousel_code_items = carousel_codes | split: ',' %}
+<div class="pcg-adv-card{% if adv_hidden_initial %} pcg-product-card--hidden{% endif %}">
+<div class="pcg-adv-carousel pcg-adv-carousel--{{ block.settings.adv_animation }}" data-adv-carousel style="--pcg-adv-ratio:100%;">
+<span class="pcg-adv-disclosure">ADV</span>
+{% for code_item in carousel_code_items %}
+{% assign code_handle = code_item | strip %}
+{% assign carousel_campaign = shop.metaobjects.paradise_adv_campaign[code_handle] %}
+{% assign carousel_active = true %}
+{% if carousel_campaign.is_active.value == false or carousel_campaign.is_active.value == 'false' %}{% assign carousel_active = false %}{% endif %}
+{% if carousel_campaign.starts_at.value != blank %}{% assign carousel_start = carousel_campaign.starts_at.value | date: '%s' | plus: 0 %}{% if now_timestamp < carousel_start %}{% assign carousel_active = false %}{% endif %}{% endif %}
+{% if carousel_campaign.ends_at.value != blank %}{% assign carousel_end = carousel_campaign.ends_at.value | date: '%s' | plus: 0 %}{% if now_timestamp > carousel_end %}{% assign carousel_active = false %}{% endif %}{% endif %}
+{% assign carousel_image = carousel_campaign.desktop_image.value %}
+{% assign carousel_mobile = carousel_campaign.mobile_image.value | default: carousel_image %}
+{% if carousel_active and carousel_image != blank %}
+<a class="pcg-adv-slide{% if forloop.first %} is-active{% endif %}" href="{{ carousel_campaign.button_link_url.value | default: '#' }}">
+<picture>{% if carousel_mobile != blank %}<source media="(max-width:749px)" srcset="{{ carousel_mobile | image_url: width: 900 }}">{% endif %}{{ carousel_image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: carousel_campaign.title.value }}</picture>
+</a>
+{% endif %}
+{% endfor %}
+</div>
+</div>
+{% elsif can_render_adv %}
 <div class="pcg-adv-card{% if adv_hidden_initial %} pcg-product-card--hidden{% endif %}" data-adv-slot="{{ resolved_slot_code | escape }}">
 <section
 class="paradise-adv-slot paradise-adv-slot--{{ adv_position }}"
@@ -587,8 +615,7 @@ Esaurito
 {
 "type": "text",
 "id": "discount_badge_label",
-"label": "Testo badge sconto",
-"info": "Lascia vuoto per mostrare la percentuale automatica, per esempio -20%."
+"label": "Testo badge sconto"
 },
 {
 "type": "color",
@@ -722,8 +749,7 @@ Esaurito
 {
 "type": "text",
 "id": "rating_review_count",
-"label": "Numero recensioni tra parentesi",
-"info": "Modifica il numero che appare come (0), per esempio 35 o 124.",
+"label": "Numero recensioni",
 "default": "0"
 },
 {
@@ -797,6 +823,22 @@ Esaurito
 "id": "adv_slot_code",
 "label": "Codice ADV manuale",
 "default": "collection-adv-1"
+},
+{
+"type": "text",
+"id": "adv_slot_codes",
+"label": "Altri codici ADV"
+},
+{
+"type": "select",
+"id": "adv_animation",
+"label": "Animazione ADV",
+"default": "fade",
+"options": [
+{"value": "fade", "label": "Fade"},
+{"value": "slide", "label": "Slide"},
+{"value": "zoom", "label": "Zoom"}
+]
 }
 ]
 }
