@@ -256,11 +256,12 @@
       });
       if (slides.length < 2) return;
 
+      var interval = Math.max(2, Number(carousel.dataset.interval || 4)) * 1000;
       window.setInterval(function () {
         slides[index].classList.remove("is-active");
         index = (index + 1) % slides.length;
         slides[index].classList.add("is-active");
-      }, 3600);
+      }, interval);
     });
   }
 

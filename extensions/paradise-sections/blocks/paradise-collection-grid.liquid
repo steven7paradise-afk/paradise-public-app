@@ -131,7 +131,7 @@
 {% assign carousel_codes = resolved_slot_code | append: ',' | append: adv_carousel_codes %}
 {% assign carousel_code_items = carousel_codes | split: ',' %}
 <div class="pcg-adv-card{% if adv_hidden_initial %} pcg-product-card--hidden{% endif %}">
-<div class="pcg-adv-carousel pcg-adv-carousel--{{ block.settings.adv_animation }}" data-adv-carousel style="--pcg-adv-ratio:100%;">
+<div class="pcg-adv-carousel pcg-adv-carousel--{{ block.settings.adv_animation }}" data-adv-carousel data-interval="{{ block.settings.adv_interval }}" style="--pcg-adv-ratio:100%;">
 <span class="pcg-adv-disclosure">ADV</span>
 {% for code_item in carousel_code_items %}
 {% assign code_handle = code_item | strip %}
@@ -221,7 +221,7 @@ style="
 <div class="pcg-adv-card">
 <div class="paradise-adv-slot-placeholder">
 <strong>ADV non trovata</strong>
-<span>Crea una campagna attiva con immagine per {{ resolved_slot_code | default: 'collection-handle' }}.</span>
+<span>{{ resolved_slot_code | default: 'collection-handle' }}</span>
 </div>
 </div>
 {% endif %}
@@ -821,24 +821,34 @@ Esaurito
 {
 "type": "text",
 "id": "adv_slot_code",
-"label": "Codice ADV manuale",
+"label": "Codice ADV",
 "default": "collection-adv-1"
 },
 {
 "type": "text",
 "id": "adv_slot_codes",
-"label": "Altri codici ADV"
+"label": "Altri ADV"
 },
 {
 "type": "select",
 "id": "adv_animation",
-"label": "Animazione ADV",
+"label": "Animazione",
 "default": "fade",
 "options": [
 {"value": "fade", "label": "Fade"},
 {"value": "slide", "label": "Slide"},
 {"value": "zoom", "label": "Zoom"}
 ]
+},
+{
+"type": "range",
+"id": "adv_interval",
+"min": 2,
+"max": 10,
+"step": 1,
+"unit": "s",
+"label": "Durata",
+"default": 4
 }
 ]
 }

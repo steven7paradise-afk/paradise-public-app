@@ -98,19 +98,9 @@ const livePreviewFieldKeys = [
   "mobile_image_position",
   "overlay_opacity",
   "card_radius",
-  "content_max_width",
   "text_color",
   "button_background",
-  "button_background_opacity",
   "button_text_color",
-  "button_border_color",
-  "button_hover_background",
-  "button_hover_text_color",
-  "button_radius",
-  "padding_top",
-  "padding_bottom",
-  "mobile_padding_top",
-  "mobile_padding_bottom",
 ];
 
 function normalizeHandle(value: FormDataEntryValue | null) {
@@ -571,19 +561,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       "mobile_image_position",
       "overlay_opacity",
       "card_radius",
-      "content_max_width",
       "text_color",
       "button_background",
-      "button_background_opacity",
       "button_text_color",
-      "button_border_color",
-      "button_hover_background",
-      "button_hover_text_color",
-      "button_radius",
-      "padding_top",
-      "padding_bottom",
-      "mobile_padding_top",
-      "mobile_padding_bottom",
     ];
     const editableFieldDefinitions = fieldDefinitions.filter((field) => appFormFieldKeys.includes(field.key));
     const shouldUseFreePosition = Boolean(
@@ -1080,10 +1060,6 @@ export default function CampaignsPage() {
               </div>
             </div>
           <label>
-            Larghezza massima testo
-            <input name="content_max_width" type="number" min="240" max="760" defaultValue={selectedCampaign?.fields.content_max_width || "520"} />
-          </label>
-          <label>
             Colore testo
             <input name="text_color" type="color" defaultValue={selectedCampaign?.fields.text_color || "#ffffff"} />
           </label>
@@ -1092,59 +1068,8 @@ export default function CampaignsPage() {
             <input name="button_background" type="color" defaultValue={selectedCampaign?.fields.button_background || "#ffffff"} />
           </label>
           <label>
-            Trasparenza sfondo bottone
-            <input
-              name="button_background_opacity"
-              type="number"
-              min="0"
-              max="100"
-              defaultValue={selectedCampaign?.fields.button_background_opacity || "0"}
-            />
-          </label>
-          <label>
             Testo bottone colore
             <input name="button_text_color" type="color" defaultValue={selectedCampaign?.fields.button_text_color || "#ffffff"} />
-          </label>
-          <label>
-            Bordo bottone
-            <input name="button_border_color" type="color" defaultValue={selectedCampaign?.fields.button_border_color || "#ffffff"} />
-          </label>
-          <label>
-            Sfondo bottone hover
-            <input name="button_hover_background" type="color" defaultValue={selectedCampaign?.fields.button_hover_background || "#ffffff"} />
-          </label>
-          <label>
-            Testo bottone hover
-            <input name="button_hover_text_color" type="color" defaultValue={selectedCampaign?.fields.button_hover_text_color || "#171313"} />
-          </label>
-          <label>
-            Angoli bottone
-            <input name="button_radius" type="number" min="0" max="40" defaultValue={selectedCampaign?.fields.button_radius || "18"} />
-          </label>
-          </div>
-          <div className="pd-form-section pd-form-section--full">
-            <div className="pd-form-section-head">
-              <span>06</span>
-              <div>
-                <h3>Spaziatura</h3>
-                <p>Gestisci il respiro sopra e sotto il banner su desktop e mobile.</p>
-              </div>
-            </div>
-          <label>
-            Spazio sopra desktop
-            <input name="padding_top" type="number" min="0" max="120" defaultValue={selectedCampaign?.fields.padding_top || "24"} />
-          </label>
-          <label>
-            Spazio sotto desktop
-            <input name="padding_bottom" type="number" min="0" max="120" defaultValue={selectedCampaign?.fields.padding_bottom || "24"} />
-          </label>
-          <label>
-            Spazio sopra mobile
-            <input name="mobile_padding_top" type="number" min="0" max="80" defaultValue={selectedCampaign?.fields.mobile_padding_top || "16"} />
-          </label>
-          <label>
-            Spazio sotto mobile
-            <input name="mobile_padding_bottom" type="number" min="0" max="80" defaultValue={selectedCampaign?.fields.mobile_padding_bottom || "16"} />
           </label>
           </div>
           <button className="pd-home-button" type="submit">Salva campagna globale</button>
