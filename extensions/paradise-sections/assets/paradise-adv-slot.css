@@ -31,8 +31,15 @@
 }
 
 .pas-picture img {
-  object-fit: cover;
+  object-fit: var(--pas-image-fit, cover);
   object-position: var(--pas-image-position);
+  transform: scale(var(--pas-image-scale, 1));
+  transform-origin: var(--pas-image-position);
+}
+
+.paradise-adv-slot--manual-image .pas-frame {
+  aspect-ratio: var(--pas-image-ratio);
+  min-height: 0;
 }
 
 .pas-overlay {
@@ -236,8 +243,14 @@
     min-height: var(--pas-mobile-height);
   }
 
+  .paradise-adv-slot--manual-image .pas-frame {
+    aspect-ratio: var(--pas-mobile-image-ratio);
+    min-height: 0;
+  }
+
   .pas-picture img {
     object-position: var(--pas-mobile-image-position);
+    transform-origin: var(--pas-mobile-image-position);
   }
 
   .pas-content {

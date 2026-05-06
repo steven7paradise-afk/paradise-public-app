@@ -150,14 +150,29 @@
 {% if adv_kicker != blank or adv_title != blank or adv_text != blank or adv_button_label != blank %}
 {% assign has_copy = true %}
 {% endif %}
+{% assign adv_image_ratio = 2 %}
+{% assign adv_mobile_image_ratio = adv_image_ratio %}
+{% if has_global_campaign == false and adv_image != blank %}
+{% assign adv_image_ratio = adv_image.aspect_ratio %}
+{% assign adv_mobile_image_ratio = adv_mobile_image.aspect_ratio | default: adv_image_ratio %}
+{% endif %}
+{% assign adv_image_fit = block.settings.image_fit %}
+{% if has_global_campaign %}
+{% assign adv_image_fit = 'cover' %}
+{% endif %}
+{% assign adv_image_zoom = block.settings.image_zoom | divided_by: 100.0 %}
 {% if can_render_adv %}
 <section
 id="{{ adv_id }}"
-class="paradise-adv-slot paradise-adv-slot--{{ adv_content_position }}"
+class="paradise-adv-slot paradise-adv-slot--{{ adv_content_position }}{% unless has_global_campaign %} paradise-adv-slot--manual-image{% endunless %}"
 data-adv-slot="{{ resolved_slot_code | escape }}"
 style="
 --pas-height: {{ adv_desktop_height }}px;
 --pas-mobile-height: {{ adv_mobile_height }}px;
+--pas-image-ratio: {{ adv_image_ratio }};
+--pas-mobile-image-ratio: {{ adv_mobile_image_ratio }};
+--pas-image-fit: {{ adv_image_fit }};
+--pas-image-scale: {{ adv_image_zoom }};
 --pas-image-position: {{ adv_desktop_image_position }};
 --pas-mobile-image-position: {{ adv_mobile_image_position }};
 --pas-overlay-opacity: {{ adv_overlay_opacity | divided_by: 100.0 }};
@@ -401,6 +416,26 @@ style="
 { "value": "left center", "label": "Sinistra" },
 { "value": "right center", "label": "Destra" }
 ]
+},
+{
+"type": "select",
+"id": "image_fit",
+"label": "Adattamento immagine",
+"default": "contain",
+"options": [
+{ "value": "contain", "label": "Adatta intera" },
+{ "value": "cover", "label": "Riempi area" }
+]
+},
+{
+"type": "range",
+"id": "image_zoom",
+"min": 80,
+"max": 160,
+"step": 5,
+"unit": "%",
+"label": "Zoom immagine",
+"default": 100
 },
 {
 "type": "range",
