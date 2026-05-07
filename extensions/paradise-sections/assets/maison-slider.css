@@ -24,7 +24,8 @@
   color: var(--sm-text);
   isolation: isolate;
   min-height: var(--sm-height);
-  overflow: hidden;
+  contain: paint;
+  overflow: clip;
   position: relative;
   width: 100%;
   z-index: 0;
@@ -224,13 +225,22 @@
   width: var(--sm-benefit-icon-size);
 }
 
-.slider-maison .sm-benefit-icon svg,
-.slider-maison svg.sm-benefit-icon {
+.slider-maison .sm-benefit-icon svg {
   display: block;
   height: 100%;
   stroke: currentColor;
   stroke-width: 1.8;
   width: 100%;
+}
+
+.slider-maison svg.sm-benefit-icon {
+  display: inline-block;
+  height: var(--sm-benefit-icon-size);
+  min-height: var(--sm-benefit-icon-size);
+  min-width: var(--sm-benefit-icon-size);
+  stroke: currentColor;
+  stroke-width: 1.8;
+  width: var(--sm-benefit-icon-size);
 }
 
 .slider-maison .sm-benefit-label {
@@ -241,6 +251,7 @@
   --sm-model-shift-x: var(--sm-model-x);
   --sm-model-shift-y: calc(var(--sm-model-y) + var(--sm-scroll-model));
   bottom: 0;
+  clip-path: inset(0);
   display: block;
   max-height: 96%;
   pointer-events: none;
