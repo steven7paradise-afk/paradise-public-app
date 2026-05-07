@@ -59,6 +59,7 @@
 .slider-maison .sm-copy {
   max-width: min(100%, var(--sm-content-width));
   position: relative;
+  transform: translate(var(--sm-text-x), var(--sm-text-y));
   z-index: 4;
 }
 
@@ -75,11 +76,6 @@
 .slider-maison .sm-copy--right {
   justify-self: end;
   text-align: left;
-}
-
-.slider-maison--model-right .sm-copy--right,
-.slider-maison--model-left .sm-copy--left {
-  justify-self: center;
 }
 
 .slider-maison .sm-kicker {
@@ -131,6 +127,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 18px;
+  justify-content: var(--sm-button-align);
   margin-top: var(--sm-text-gap);
 }
 
@@ -139,11 +136,12 @@
   border: 1px solid;
   border-radius: var(--sm-button-radius);
   display: inline-flex;
-  font-size: clamp(13px, 1vw, 18px);
+  font-size: var(--sm-button-size);
   font-weight: 900;
   justify-content: center;
   letter-spacing: 0.12em;
   line-height: 1;
+  min-width: var(--sm-button-width);
   min-height: 54px;
   padding: 0 clamp(24px, 3vw, 42px);
   text-decoration: none;
@@ -261,6 +259,7 @@
     justify-self: stretch;
     max-width: 100%;
     text-align: left;
+    transform: translate(var(--sm-mobile-text-x), var(--sm-mobile-text-y));
   }
 
   .slider-maison .sm-kicker {
@@ -287,12 +286,14 @@
 
   .slider-maison .sm-actions {
     gap: 10px;
+    justify-content: flex-start;
     margin-top: var(--sm-mobile-text-gap);
   }
 
   .slider-maison .sm-button {
     font-size: 12px;
     min-height: 46px;
+    min-width: 0;
     padding: 0 18px;
   }
 

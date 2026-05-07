@@ -18,6 +18,10 @@ style="
 --sm-mobile-text-gap: {{ block.settings.mobile_text_gap }}px;
 --sm-model-mobile-gap: {{ block.settings.mobile_model_gap }}px;
 --sm-content-width: {{ block.settings.content_width }}px;
+--sm-text-x: {{ block.settings.text_x }}%;
+--sm-text-y: {{ block.settings.text_y }}%;
+--sm-mobile-text-x: {{ block.settings.mobile_text_x }}%;
+--sm-mobile-text-y: {{ block.settings.mobile_text_y }}%;
 --sm-model-width: {{ block.settings.model_width }}%;
 --sm-model-mobile-width: {{ block.settings.mobile_model_width }}%;
 --sm-model-x: {{ block.settings.model_x }}%;
@@ -28,6 +32,9 @@ style="
 --sm-button-text: {{ block.settings.button_text_color }};
 --sm-button-border: {{ block.settings.button_border_color }};
 --sm-button-radius: {{ block.settings.button_radius }}px;
+--sm-button-align: {{ block.settings.button_desktop_position }};
+--sm-button-width: {{ block.settings.button_desktop_width }}px;
+--sm-button-size: {{ block.settings.button_desktop_size }}px;
 --sm-secondary-text: {{ block.settings.secondary_button_text_color }};
 --sm-secondary-border: {{ block.settings.secondary_button_border_color }};
 "
@@ -124,6 +131,10 @@ style="
 {"type":"richtext","id":"description","label":"Descrizione","default":"<p>Docente digitale + supporto reale. Solo qui.</p>"},
 {"type":"select","id":"text_position","label":"Posizione testo","default":"right","options":[{"value":"left","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"right","label":"Destra"}]},
 {"type":"range","id":"content_width","min":420,"max":980,"step":20,"unit":"px","label":"Larghezza testo","default":820},
+{"type":"range","id":"text_x","min":-30,"max":30,"step":2,"unit":"%","label":"Testo X desktop","default":0},
+{"type":"range","id":"text_y","min":-30,"max":30,"step":2,"unit":"%","label":"Testo Y desktop","default":0},
+{"type":"range","id":"mobile_text_x","min":-30,"max":30,"step":2,"unit":"%","label":"Testo X mobile","default":0},
+{"type":"range","id":"mobile_text_y","min":-30,"max":30,"step":2,"unit":"%","label":"Testo Y mobile","default":0},
 {"type":"range","id":"title_size","min":38,"max":110,"step":2,"unit":"px","label":"Titolo desktop","default":76},
 {"type":"range","id":"mobile_title_size","min":30,"max":62,"step":2,"unit":"px","label":"Titolo mobile","default":42},
 {"type":"range","id":"title_line_height","min":85,"max":130,"step":5,"unit":"%","label":"Interlinea titolo","default":110},
@@ -136,6 +147,9 @@ style="
 {"type":"url","id":"primary_link","label":"Link bottone principale"},
 {"type":"text","id":"secondary_label","label":"Testo bottone secondario","default":"Guarda i corsi"},
 {"type":"url","id":"secondary_link","label":"Link bottone secondario"},
+{"type":"select","id":"button_desktop_position","label":"Posizione bottoni desktop","default":"flex-start","options":[{"value":"flex-start","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"flex-end","label":"Destra"}]},
+{"type":"range","id":"button_desktop_width","min":140,"max":520,"step":20,"unit":"px","label":"Larghezza bottoni desktop","default":300},
+{"type":"range","id":"button_desktop_size","min":11,"max":24,"step":1,"unit":"px","label":"Testo bottoni desktop","default":16},
 {"type":"color","id":"button_background","label":"Sfondo bottone","default":"#ff4f62"},
 {"type":"color","id":"button_text_color","label":"Testo bottone","default":"#ffffff"},
 {"type":"color","id":"button_border_color","label":"Bordo bottone","default":"#ff4f62"},
