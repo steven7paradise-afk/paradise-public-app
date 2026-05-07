@@ -287,10 +287,16 @@ style="
 {% endif %}
 {% if grid_collection != blank and grid_collection.products_count > 0 %}
 {% assign adv_rendered = false %}
+{% paginate grid_collection.products by 250 %}
 <div class="pcg-search" data-product-search-wrap>
-<label class="pcg-search-label" for="pcg-search-{{ block.id }}">Cerca prodotto</label>
-<input id="pcg-search-{{ block.id }}" class="pcg-search-input" type="search" placeholder="Cerca per nome prodotto..." autocomplete="off" data-product-search>
-<button class="pcg-search-clear" type="button" data-product-search-clear aria-label="Cancella ricerca">×</button>
+<button class="pcg-search-toggle" type="button" data-product-search-toggle aria-controls="pcg-search-panel-{{ block.id }}" aria-expanded="false" aria-label="Abrir busqueda">
+<span aria-hidden="true">⌕</span>
+</button>
+<div class="pcg-search-panel" id="pcg-search-panel-{{ block.id }}">
+<label class="pcg-search-label" for="pcg-search-{{ block.id }}">Buscar producto</label>
+<input id="pcg-search-{{ block.id }}" class="pcg-search-input" type="search" placeholder="Buscar por nombre..." autocomplete="off" data-product-search>
+<button class="pcg-search-clear" type="button" data-product-search-clear aria-label="Cerrar busqueda">×</button>
+</div>
 </div>
 {% if block.settings.show_view_toolbar %}
 <div class="pcg-toolbar" data-grid-toolbar>
@@ -312,7 +318,7 @@ style="
 </div>
 {% endif %}
 <div class="pcg-grid">
-{% for product in grid_collection.products limit: block.settings.product_limit %}
+{% for product in grid_collection.products %}
 {% assign product_number = forloop.index %}
 {% assign product_variant = product.selected_or_first_available_variant %}
 <article class="pcg-product-card{% if block.settings.enable_load_more and product_number > block.settings.initial_visible_products %} pcg-product-card--hidden{% endif %}" data-product-card data-product-search-text="{{ product.title | append: ' ' | append: product.vendor | downcase | escape }}">
@@ -401,7 +407,7 @@ Esaurito
 {% endif %}
 {% endif %}
 {% endfor %}
-<div class="pcg-search-empty" data-product-search-empty>Nessun prodotto trovato.</div>
+<div class="pcg-search-empty" data-product-search-empty data-hint-text="Escribe para buscar un producto." data-empty-text="No encontramos productos parecidos.">Escribe para buscar un producto.</div>
 {% if adv_rendered == false and should_render_adv %}
 {{ paradise_adv_card }}
 {% endif %}
@@ -413,6 +419,7 @@ Esaurito
 </button>
 </div>
 {% endif %}
+{% endpaginate %}
 {% elsif request.design_mode %}
 <div class="pcg-empty">Seleziona una collezione o apri questa sezione dentro una pagina collezione.</div>
 {% endif %}
@@ -456,15 +463,6 @@ Esaurito
 { "value": "center", "label": "Centro" },
 { "value": "right", "label": "Destra" }
 ]
-},
-{
-"type": "range",
-"id": "product_limit",
-"min": 4,
-"max": 50,
-"step": 1,
-"label": "Numero prodotti",
-"default": 50
 },
 {
 "type": "checkbox",

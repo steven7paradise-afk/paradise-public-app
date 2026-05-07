@@ -177,15 +177,19 @@
 
       var input = section.querySelector("[data-product-search]");
       var clear = section.querySelector("[data-product-search-clear]");
+      var toggle = section.querySelector("[data-product-search-toggle]");
+      var wrap = section.querySelector("[data-product-search-wrap]");
       var loadMore = section.querySelector("[data-load-more]");
       var empty = section.querySelector("[data-product-search-empty]");
       if (!input) return;
 
       function applySearch() {
         var query = normalize(input.value);
+        var open = wrap && wrap.classList.contains("is-open");
         var searching = query.length > 0;
         var matches = 0;
 
+        section.classList.toggle("is-search-open", open);
         section.classList.toggle("is-searching", searching);
 
         section.querySelectorAll("[data-product-card]").forEach(function (card) {
@@ -194,37 +198,56 @@
           }
 
           var text = normalize(card.getAttribute("data-product-search-text"));
-          var matched = !searching || text.indexOf(query) !== -1;
+          var words = query.split(/\s+/).filter(Boolean);
+          var matched = searching && words.every(function (word) {
+            return text.indexOf(word) !== -1;
+          });
 
-          card.classList.toggle("pcg-product-card--search-hidden", searching && !matched);
+          card.classList.toggle("pcg-product-card--search-hidden", open && !matched);
 
           if (searching && matched) {
             card.classList.remove("pcg-product-card--hidden");
             matches += 1;
-          } else if (!searching && card.dataset.pcgVisible !== "true") {
+          } else if (!open && card.dataset.pcgVisible !== "true") {
             card.classList.add("pcg-product-card--hidden");
           }
         });
 
         section.querySelectorAll(".pcg-adv-card").forEach(function (card) {
-          card.classList.toggle("pcg-adv-card--search-hidden", searching);
+          card.classList.toggle("pcg-adv-card--search-hidden", open);
         });
 
         if (loadMore && loadMore.parentElement) {
-          loadMore.parentElement.style.display = searching ? "none" : "";
+          loadMore.parentElement.style.display = open ? "none" : "";
         }
 
-        section.classList.toggle("is-search-empty", searching && matches === 0);
-        if (empty) empty.hidden = !(searching && matches === 0);
+        section.classList.toggle("is-search-empty", open && (!searching || matches === 0));
+        if (empty) {
+          empty.textContent = searching ? empty.getAttribute("data-empty-text") : empty.getAttribute("data-hint-text");
+          empty.hidden = !(open && (!searching || matches === 0));
+        }
       }
 
       input.addEventListener("input", applySearch);
 
+      if (toggle && wrap) {
+        toggle.addEventListener("click", function () {
+          wrap.classList.add("is-open");
+          toggle.setAttribute("aria-expanded", "true");
+          window.requestAnimationFrame(function () {
+            input.focus();
+          });
+          applySearch();
+        });
+      }
+
       if (clear) {
         clear.addEventListener("click", function () {
           input.value = "";
+          if (wrap) wrap.classList.remove("is-open");
+          if (toggle) toggle.setAttribute("aria-expanded", "false");
           applySearch();
-          input.focus();
+          if (toggle) toggle.focus();
         });
       }
 
