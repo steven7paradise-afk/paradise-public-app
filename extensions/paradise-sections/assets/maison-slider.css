@@ -210,26 +210,20 @@
   color: var(--sm-accent);
   display: inline-flex;
   flex: 0 0 auto;
-  font-size: clamp(20px, 2.1vw, 34px);
-  height: 1em;
+  height: clamp(22px, 2.2vw, 36px);
   justify-content: center;
   line-height: 1;
-  width: 1em;
+  width: clamp(22px, 2.2vw, 36px);
 }
 
-.slider-maison .sm-benefit-icon::before {
-  content: "";
+.slider-maison .sm-benefit-icon svg,
+.slider-maison svg.sm-benefit-icon {
+  display: block;
+  height: 100%;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  width: 100%;
 }
-
-.slider-maison .sm-benefit-icon--shield::before { content: "◇"; }
-.slider-maison .sm-benefit-icon--clock::before { content: "◷"; }
-.slider-maison .sm-benefit-icon--users::before { content: "♙"; }
-.slider-maison .sm-benefit-icon--award::before { content: "◎"; }
-.slider-maison .sm-benefit-icon--sparkles::before { content: "✦"; }
-.slider-maison .sm-benefit-icon--heart::before { content: "♡"; }
-.slider-maison .sm-benefit-icon--star::before { content: "☆"; }
-.slider-maison .sm-benefit-icon--book::before { content: "▱"; }
-.slider-maison .sm-benefit-icon--check::before { content: "✓"; }
 
 .slider-maison .sm-benefit-label {
   display: block;

@@ -1,5 +1,6 @@
 (function () {
   var ticking = false;
+  var lucideLoading = false;
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var states = new WeakMap();
 
@@ -82,8 +83,48 @@
     window.requestAnimationFrame(updateBannerScroll);
   }
 
-  function boot() {
+  function renderLucideIcons(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    if (!scope.querySelector("[data-lucide]")) return;
+
+    if (window.lucide && typeof window.lucide.createIcons === "function") {
+      window.lucide.createIcons({
+        attrs: {
+          "stroke-width": 1.8
+        }
+      });
+      return;
+    }
+
+    if (lucideLoading) return;
+    lucideLoading = true;
+
+    var script = document.createElement("script");
+    script.src = "https://unpkg.com/lucide@latest";
+    script.async = true;
+    script.onload = function () {
+      lucideLoading = false;
+      if (window.lucide && typeof window.lucide.createIcons === "function") {
+        window.lucide.createIcons({
+          attrs: {
+            "stroke-width": 1.8
+          }
+        });
+      }
+    };
+    script.onerror = function () {
+      lucideLoading = false;
+    };
+    document.head.appendChild(script);
+  }
+
+  function refresh(event) {
+    renderLucideIcons(event && event.target ? event.target : document);
     requestUpdate();
+  }
+
+  function boot() {
+    refresh();
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
   }
@@ -94,6 +135,7 @@
     boot();
   }
 
-  document.addEventListener("shopify:section:load", requestUpdate);
-  document.addEventListener("shopify:section:select", requestUpdate);
+  document.addEventListener("shopify:section:load", refresh);
+  document.addEventListener("shopify:section:select", refresh);
+  document.addEventListener("shopify:block:select", refresh);
 })();

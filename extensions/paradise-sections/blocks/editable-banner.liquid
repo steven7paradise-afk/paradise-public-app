@@ -106,20 +106,23 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {% if block.settings.benefit_1 != blank or block.settings.benefit_2 != blank or block.settings.benefit_3 != blank %}
 <div class="sm-benefits">
 {% if block.settings.benefit_1 != blank %}
+{% assign benefit_1_icon = block.settings.benefit_1_icon | strip %}
 <span>
-{% if block.settings.benefit_1_icon != 'none' %}<span class="sm-benefit-icon sm-benefit-icon--{{ block.settings.benefit_1_icon }}" aria-hidden="true"></span>{% endif %}
+{% if benefit_1_icon != blank and benefit_1_icon != 'none' %}<span class="sm-benefit-icon" data-lucide="{{ benefit_1_icon | escape }}" aria-hidden="true"></span>{% endif %}
 <span class="sm-benefit-label">{{ block.settings.benefit_1 }}</span>
 </span>
 {% endif %}
 {% if block.settings.benefit_2 != blank %}
+{% assign benefit_2_icon = block.settings.benefit_2_icon | strip %}
 <span>
-{% if block.settings.benefit_2_icon != 'none' %}<span class="sm-benefit-icon sm-benefit-icon--{{ block.settings.benefit_2_icon }}" aria-hidden="true"></span>{% endif %}
+{% if benefit_2_icon != blank and benefit_2_icon != 'none' %}<span class="sm-benefit-icon" data-lucide="{{ benefit_2_icon | escape }}" aria-hidden="true"></span>{% endif %}
 <span class="sm-benefit-label">{{ block.settings.benefit_2 }}</span>
 </span>
 {% endif %}
 {% if block.settings.benefit_3 != blank %}
+{% assign benefit_3_icon = block.settings.benefit_3_icon | strip %}
 <span>
-{% if block.settings.benefit_3_icon != 'none' %}<span class="sm-benefit-icon sm-benefit-icon--{{ block.settings.benefit_3_icon }}" aria-hidden="true"></span>{% endif %}
+{% if benefit_3_icon != blank and benefit_3_icon != 'none' %}<span class="sm-benefit-icon" data-lucide="{{ benefit_3_icon | escape }}" aria-hidden="true"></span>{% endif %}
 <span class="sm-benefit-label">{{ block.settings.benefit_3 }}</span>
 </span>
 {% endif %}
@@ -216,11 +219,11 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"header","content":"Benefit"},
 {"type":"checkbox","id":"show_benefits_mobile","label":"Mostra benefit su mobile","default":true},
 {"type":"select","id":"benefit_weight","label":"Peso benefit","default":"600","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
-{"type":"select","id":"benefit_1_icon","label":"Icona benefit 1","default":"shield","options":[{"value":"none","label":"Nessuna"},{"value":"shield","label":"Shield"},{"value":"clock","label":"Clock"},{"value":"users","label":"Users"},{"value":"award","label":"Award"},{"value":"sparkles","label":"Sparkles"},{"value":"heart","label":"Heart"},{"value":"star","label":"Star"},{"value":"book","label":"Book"},{"value":"check","label":"Check"}]},
+{"type":"text","id":"benefit_1_icon","label":"Codice icona benefit 1","default":"shield","info":"Catalogo completo: lucide.dev/icons. Esempi: credit-card, shield-check, graduation-cap. Lascia vuoto o scrivi none per nascondere."},
 {"type":"text","id":"benefit_1","label":"Benefit 1","default":"Corsi riconosciuti"},
-{"type":"select","id":"benefit_2_icon","label":"Icona benefit 2","default":"clock","options":[{"value":"none","label":"Nessuna"},{"value":"shield","label":"Shield"},{"value":"clock","label":"Clock"},{"value":"users","label":"Users"},{"value":"award","label":"Award"},{"value":"sparkles","label":"Sparkles"},{"value":"heart","label":"Heart"},{"value":"star","label":"Star"},{"value":"book","label":"Book"},{"value":"check","label":"Check"}]},
+{"type":"text","id":"benefit_2_icon","label":"Codice icona benefit 2","default":"clock","info":"Scrivi il nome dell'icona Lucide, per esempio clock, credit-card o sparkles."},
 {"type":"text","id":"benefit_2","label":"Benefit 2","default":"Studia quando vuoi"},
-{"type":"select","id":"benefit_3_icon","label":"Icona benefit 3","default":"users","options":[{"value":"none","label":"Nessuna"},{"value":"shield","label":"Shield"},{"value":"clock","label":"Clock"},{"value":"users","label":"Users"},{"value":"award","label":"Award"},{"value":"sparkles","label":"Sparkles"},{"value":"heart","label":"Heart"},{"value":"star","label":"Star"},{"value":"book","label":"Book"},{"value":"check","label":"Check"}]},
+{"type":"text","id":"benefit_3_icon","label":"Codice icona benefit 3","default":"users","info":"Scrivi il nome dell'icona Lucide. Esempio: users, badge-check, heart-handshake."},
 {"type":"text","id":"benefit_3","label":"Benefit 3","default":"Supporto reale"}
 ]
 }
