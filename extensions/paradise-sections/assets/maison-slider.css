@@ -394,17 +394,24 @@
   }
 
   .slider-maison .sm-benefits {
+    align-items: center;
     display: var(--sm-mobile-benefits-display);
+    flex-direction: column;
     gap: 10px 12px;
+    justify-content: center;
     margin-top: calc(var(--sm-mobile-text-gap) + 10px);
     width: 100%;
   }
 
   .slider-maison .sm-benefits span {
+    align-items: center;
     border-left: 1px solid color-mix(in srgb, var(--sm-text) 42%, transparent);
     font-size: 12px;
-    max-width: min(100%, 170px);
+    justify-content: center;
+    max-width: min(100%, 220px);
+    min-width: min(100%, 210px);
     padding-left: 12px;
+    text-align: left;
   }
 
   .slider-maison .sm-benefit-icon {
