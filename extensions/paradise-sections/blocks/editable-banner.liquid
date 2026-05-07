@@ -16,7 +16,7 @@ style="
 --sm-scroll-strength: 20;
 --sm-height: {{ block.settings.desktop_height }}px;
 --sm-mobile-height: {{ block.settings.mobile_height }}px;
---sm-radius: {{ block.settings.radius }}px;
+--sm-radius: 0px;
 --sm-title: {{ block.settings.title_size }}px;
 --sm-mobile-title: {{ block.settings.mobile_title_size }}px;
 --sm-mobile-title-width: 100%;
@@ -155,7 +155,6 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"range","id":"overlay_opacity","min":0,"max":70,"step":5,"unit":"%","label":"Trasparenza overlay","default":10},
 {"type":"range","id":"desktop_height","min":380,"max":1000,"step":20,"unit":"px","label":"Altezza desktop","default":720},
 {"type":"range","id":"mobile_height","min":520,"max":980,"step":20,"unit":"px","label":"Altezza mobile","default":760},
-{"type":"range","id":"radius","min":0,"max":40,"step":2,"unit":"px","label":"Angoli banner","default":0},
 {"type":"select","id":"scroll_effect","label":"Effetto scroll","default":"soft","options":[{"value":"none","label":"Nessuno"},{"value":"soft","label":"Soft luxury"},{"value":"parallax","label":"Parallax"},{"value":"depth","label":"Profondita"}]},
 {"type":"header","content":"02 - Modello PNG"},
 {"type":"image_picker","id":"model_image","label":"Modello desktop PNG"},

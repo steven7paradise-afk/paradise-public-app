@@ -201,8 +201,9 @@
   margin-top: calc(var(--sm-text-gap) + 24px);
 }
 
-.slider-maison .sm-benefits span {
+.slider-maison .sm-benefits > span {
   align-items: center;
+  border-left: 1px solid color-mix(in srgb, var(--sm-text) 42%, transparent);
   color: color-mix(in srgb, var(--sm-text) 90%, transparent);
   display: inline-flex;
   font-size: clamp(12px, 1vw, 16px);
@@ -210,6 +211,7 @@
   gap: 12px;
   line-height: 1.45;
   max-width: 180px;
+  padding-left: 18px;
 }
 
 .slider-maison .sm-benefit-icon {
@@ -246,7 +248,7 @@
 }
 
 .slider-maison .sm-model {
-  --sm-model-shift-x: var(--sm-model-x);
+  --sm-model-shift-x: calc(-50% + var(--sm-model-x));
   --sm-model-shift-y: calc(var(--sm-model-y) + var(--sm-scroll-model));
   bottom: 0;
   clip-path: inset(0);
@@ -266,12 +268,12 @@
 }
 
 .slider-maison--model-left .sm-model {
-  left: clamp(0px, 4vw, 90px);
+  left: 25%;
 }
 
 .slider-maison--model-right .sm-model {
-  --sm-model-shift-x: calc(var(--sm-model-x) * -1);
-  right: clamp(0px, 4vw, 90px);
+  left: 75%;
+  right: auto;
 }
 
 .slider-maison .sm-animate--fade {
@@ -401,7 +403,7 @@
     width: 100%;
   }
 
-  .slider-maison .sm-benefits span {
+  .slider-maison .sm-benefits > span {
     align-items: center;
     font-size: 12px;
     justify-content: center;
@@ -522,7 +524,7 @@
     min-width: min(var(--sm-button-width), 42vw);
   }
 
-  .slider-maison .sm-benefits span {
+  .slider-maison .sm-benefits > span {
     max-width: 160px;
   }
 }
