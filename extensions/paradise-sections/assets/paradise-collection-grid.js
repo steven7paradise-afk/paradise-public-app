@@ -160,101 +160,6 @@
     });
   }
 
-  function normalize(value) {
-    return String(value || "")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .trim();
-  }
-
-  function initProductSearch(root) {
-    var sections = (root || document).querySelectorAll(".paradise-collection-grid");
-
-    sections.forEach(function (section) {
-      if (section.dataset.paradiseSearchReady === "true") return;
-      section.dataset.paradiseSearchReady = "true";
-
-      var input = section.querySelector("[data-product-search]");
-      var clear = section.querySelector("[data-product-search-clear]");
-      var toggle = section.querySelector("[data-product-search-toggle]");
-      var wrap = section.querySelector("[data-product-search-wrap]");
-      var loadMore = section.querySelector("[data-load-more]");
-      var empty = section.querySelector("[data-product-search-empty]");
-      if (!input) return;
-
-      function applySearch() {
-        var query = normalize(input.value);
-        var open = wrap && wrap.classList.contains("is-open");
-        var searching = query.length > 0;
-        var matches = 0;
-
-        section.classList.toggle("is-search-open", open);
-        section.classList.toggle("is-searching", searching);
-
-        section.querySelectorAll("[data-product-card]").forEach(function (card) {
-          if (!card.dataset.pcgVisible) {
-            card.dataset.pcgVisible = card.classList.contains("pcg-product-card--hidden") ? "false" : "true";
-          }
-
-          var text = normalize(card.getAttribute("data-product-search-text"));
-          var words = query.split(/\s+/).filter(Boolean);
-          var matched = searching && words.every(function (word) {
-            return text.indexOf(word) !== -1;
-          });
-
-          card.classList.toggle("pcg-product-card--search-hidden", open && !matched);
-
-          if (searching && matched) {
-            card.classList.remove("pcg-product-card--hidden");
-            matches += 1;
-          } else if (!open && card.dataset.pcgVisible !== "true") {
-            card.classList.add("pcg-product-card--hidden");
-          }
-        });
-
-        section.querySelectorAll(".pcg-adv-card").forEach(function (card) {
-          card.classList.toggle("pcg-adv-card--search-hidden", open);
-        });
-
-        if (loadMore && loadMore.parentElement) {
-          loadMore.parentElement.style.display = open ? "none" : "";
-        }
-
-        section.classList.toggle("is-search-empty", open && (!searching || matches === 0));
-        if (empty) {
-          empty.textContent = searching ? empty.getAttribute("data-empty-text") : empty.getAttribute("data-hint-text");
-          empty.hidden = !(open && (!searching || matches === 0));
-        }
-      }
-
-      input.addEventListener("input", applySearch);
-
-      if (toggle && wrap) {
-        toggle.addEventListener("click", function () {
-          wrap.classList.add("is-open");
-          toggle.setAttribute("aria-expanded", "true");
-          window.requestAnimationFrame(function () {
-            input.focus();
-          });
-          applySearch();
-        });
-      }
-
-      if (clear) {
-        clear.addEventListener("click", function () {
-          input.value = "";
-          if (wrap) wrap.classList.remove("is-open");
-          if (toggle) toggle.setAttribute("aria-expanded", "false");
-          applySearch();
-          if (toggle) toggle.focus();
-        });
-      }
-
-      applySearch();
-    });
-  }
-
   function initProductCarousel(root) {
     var sections = (root || document).querySelectorAll("[data-product-carousel]");
 
@@ -370,7 +275,6 @@
     initQuickReveal(document);
     initGridToolbar(document);
     initLoadMore(document);
-    initProductSearch(document);
     initProductCarousel(document);
     initAdvCarousel(document);
   });
@@ -380,7 +284,6 @@
     initQuickReveal(event.target);
     initGridToolbar(event.target);
     initLoadMore(event.target);
-    initProductSearch(event.target);
     initProductCarousel(event.target);
     initAdvCarousel(event.target);
   });

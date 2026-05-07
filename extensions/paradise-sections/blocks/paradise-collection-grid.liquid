@@ -288,16 +288,6 @@ style="
 {% if grid_collection != blank and grid_collection.products_count > 0 %}
 {% assign adv_rendered = false %}
 {% paginate grid_collection.products by 250 %}
-<div class="pcg-search" data-product-search-wrap>
-<button class="pcg-search-toggle" type="button" data-product-search-toggle aria-controls="pcg-search-panel-{{ block.id }}" aria-expanded="false" aria-label="Abrir busqueda">
-<span aria-hidden="true">⌕</span>
-</button>
-<div class="pcg-search-panel" id="pcg-search-panel-{{ block.id }}">
-<label class="pcg-search-label" for="pcg-search-{{ block.id }}">Buscar producto</label>
-<input id="pcg-search-{{ block.id }}" class="pcg-search-input" type="search" placeholder="Buscar por nombre..." autocomplete="off" data-product-search>
-<button class="pcg-search-clear" type="button" data-product-search-clear aria-label="Cerrar busqueda">×</button>
-</div>
-</div>
 {% if block.settings.show_view_toolbar %}
 <div class="pcg-toolbar" data-grid-toolbar>
 <div class="pcg-view-buttons" aria-label="Cambia vista prodotti">
@@ -321,7 +311,7 @@ style="
 {% for product in grid_collection.products %}
 {% assign product_number = forloop.index %}
 {% assign product_variant = product.selected_or_first_available_variant %}
-<article class="pcg-product-card{% if block.settings.enable_load_more and product_number > block.settings.initial_visible_products %} pcg-product-card--hidden{% endif %}" data-product-card data-product-search-text="{{ product.title | append: ' ' | append: product.vendor | downcase | escape }}">
+<article class="pcg-product-card{% if block.settings.enable_load_more and product_number > block.settings.initial_visible_products %} pcg-product-card--hidden{% endif %}" data-product-card>
 <a class="pcg-product-media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
 {% if block.settings.show_discount_badge and product.compare_at_price > product.price %}
 {% assign discount_amount = product.compare_at_price | minus: product.price %}
@@ -407,7 +397,6 @@ Esaurito
 {% endif %}
 {% endif %}
 {% endfor %}
-<div class="pcg-search-empty" data-product-search-empty data-hint-text="Escribe para buscar un producto." data-empty-text="No encontramos productos parecidos.">Escribe para buscar un producto.</div>
 {% if adv_rendered == false and should_render_adv %}
 {{ paradise_adv_card }}
 {% endif %}
