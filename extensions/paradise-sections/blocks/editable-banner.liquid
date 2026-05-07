@@ -1,12 +1,17 @@
 {% assign section_id = 'slider-maison-' | append: block.id %}
+{% assign mobile_benefits_display = 'flex' %}
+{% if block.settings.show_benefits_mobile == false %}
+{% assign mobile_benefits_display = 'none' %}
+{% endif %}
 {% if block.settings.enabled %}
 <section
 id="{{ section_id }}"
-class="slider-maison slider-maison--{{ block.settings.layout }} slider-maison--model-{{ block.settings.model_side }} slider-maison--mobile-model-{{ block.settings.mobile_model_position }} slider-maison--mobile-copy-{{ block.settings.mobile_copy_flow }}"
+class="slider-maison slider-maison--{{ block.settings.layout }} slider-maison--model-{{ block.settings.model_side }} slider-maison--mobile-model-{{ block.settings.mobile_model_position }} slider-maison--mobile-copy-{{ block.settings.mobile_copy_flow }} slider-maison--mobile-buttons-{{ block.settings.mobile_button_layout }}"
 style="
 --sm-bg: {{ block.settings.background_color }};
 --sm-text: {{ block.settings.text_color }};
 --sm-accent: {{ block.settings.accent_color }};
+--sm-overlay-color: {{ block.settings.overlay_color }};
 --sm-overlay: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
 --sm-scroll-strength: {{ block.settings.scroll_strength }};
 --sm-height: {{ block.settings.desktop_height }}px;
@@ -14,6 +19,7 @@ style="
 --sm-radius: {{ block.settings.radius }}px;
 --sm-title: {{ block.settings.title_size }}px;
 --sm-mobile-title: {{ block.settings.mobile_title_size }}px;
+--sm-mobile-title-width: {{ block.settings.mobile_title_width }}%;
 --sm-title-line: {{ block.settings.title_line_height | divided_by: 100.0 }};
 --sm-text-gap: {{ block.settings.text_gap }}px;
 --sm-mobile-text-gap: {{ block.settings.mobile_text_gap }}px;
@@ -27,6 +33,13 @@ style="
 --sm-bottom-y: {{ block.settings.bottom_text_y }}%;
 --sm-mobile-bottom-x: {{ block.settings.mobile_bottom_text_x }}%;
 --sm-mobile-bottom-y: {{ block.settings.mobile_bottom_text_y }}%;
+--sm-kicker-weight: {{ block.settings.kicker_weight }};
+--sm-title-weight: {{ block.settings.title_weight }};
+--sm-subtitle-weight: {{ block.settings.subtitle_weight }};
+--sm-description-weight: {{ block.settings.description_weight }};
+--sm-button-weight: {{ block.settings.button_weight }};
+--sm-benefit-weight: {{ block.settings.benefit_weight }};
+--sm-mobile-benefits-display: {{ mobile_benefits_display }};
 --sm-model-width: {{ block.settings.model_width }}%;
 --sm-model-mobile-width: {{ block.settings.mobile_model_width }}%;
 --sm-model-x: {{ block.settings.model_x }}%;
@@ -40,6 +53,9 @@ style="
 --sm-button-align: {{ block.settings.button_desktop_position }};
 --sm-button-width: {{ block.settings.button_desktop_width }}px;
 --sm-button-size: {{ block.settings.button_desktop_size }}px;
+--sm-mobile-button-width: {{ block.settings.mobile_button_width }}px;
+--sm-mobile-button-size: {{ block.settings.mobile_button_size }}px;
+--sm-mobile-button-height: {{ block.settings.mobile_button_height }}px;
 --sm-secondary-text: {{ block.settings.secondary_button_text_color }};
 --sm-secondary-border: {{ block.settings.secondary_button_border_color }};
 "
@@ -116,7 +132,8 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"color","id":"background_color","label":"Colore sfondo","default":"#351054"},
 {"type":"image_picker","id":"background_image","label":"Immagine sfondo desktop"},
 {"type":"image_picker","id":"mobile_background_image","label":"Immagine sfondo mobile"},
-{"type":"range","id":"overlay_opacity","min":0,"max":70,"step":5,"unit":"%","label":"Overlay scuro","default":10},
+{"type":"color","id":"overlay_color","label":"Colore overlay","default":"#000000"},
+{"type":"range","id":"overlay_opacity","min":0,"max":70,"step":5,"unit":"%","label":"Trasparenza overlay","default":10},
 {"type":"range","id":"desktop_height","min":380,"max":1000,"step":20,"unit":"px","label":"Altezza desktop","default":720},
 {"type":"range","id":"mobile_height","min":520,"max":980,"step":20,"unit":"px","label":"Altezza mobile","default":760},
 {"type":"range","id":"radius","min":0,"max":40,"step":2,"unit":"px","label":"Angoli banner","default":0},
@@ -153,8 +170,13 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"range","id":"bottom_text_y","min":-40,"max":40,"step":2,"unit":"%","label":"Sottotitolo/descrizione Y desktop","default":0},
 {"type":"range","id":"mobile_bottom_text_x","min":-40,"max":40,"step":2,"unit":"%","label":"Sottotitolo/descrizione X mobile","default":0},
 {"type":"range","id":"mobile_bottom_text_y","min":-40,"max":40,"step":2,"unit":"%","label":"Sottotitolo/descrizione Y mobile","default":0},
+{"type":"select","id":"kicker_weight","label":"Peso sopratitolo","default":"700","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
+{"type":"select","id":"title_weight","label":"Peso titolo","default":"900","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
+{"type":"select","id":"subtitle_weight","label":"Peso sottotitolo","default":"800","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
+{"type":"select","id":"description_weight","label":"Peso descrizione","default":"600","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
 {"type":"range","id":"title_size","min":38,"max":110,"step":2,"unit":"px","label":"Titolo desktop","default":76},
 {"type":"range","id":"mobile_title_size","min":30,"max":62,"step":2,"unit":"px","label":"Titolo mobile","default":42},
+{"type":"range","id":"mobile_title_width","min":45,"max":100,"step":5,"unit":"%","label":"Larghezza titolo mobile","default":100},
 {"type":"range","id":"title_line_height","min":85,"max":130,"step":5,"unit":"%","label":"Interlinea titolo","default":110},
 {"type":"range","id":"text_gap","min":0,"max":80,"step":4,"unit":"px","label":"Spazio tra testi desktop","default":24},
 {"type":"range","id":"mobile_text_gap","min":0,"max":60,"step":4,"unit":"px","label":"Spazio tra testi mobile","default":20},
@@ -168,6 +190,11 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"select","id":"button_desktop_position","label":"Posizione bottoni desktop","default":"flex-start","options":[{"value":"flex-start","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"flex-end","label":"Destra"}]},
 {"type":"range","id":"button_desktop_width","min":140,"max":520,"step":20,"unit":"px","label":"Larghezza bottoni desktop","default":300},
 {"type":"range","id":"button_desktop_size","min":11,"max":24,"step":1,"unit":"px","label":"Testo bottoni desktop","default":16},
+{"type":"select","id":"mobile_button_layout","label":"Layout bottoni mobile","default":"stacked","options":[{"value":"stacked","label":"Uno sotto l'altro"},{"value":"inline","label":"Affiancati"},{"value":"full","label":"Pieni larghezza"}]},
+{"type":"range","id":"mobile_button_width","min":120,"max":360,"step":10,"unit":"px","label":"Larghezza bottoni mobile","default":220},
+{"type":"range","id":"mobile_button_size","min":10,"max":18,"step":1,"unit":"px","label":"Testo bottoni mobile","default":12},
+{"type":"range","id":"mobile_button_height","min":38,"max":64,"step":2,"unit":"px","label":"Altezza bottoni mobile","default":46},
+{"type":"select","id":"button_weight","label":"Peso bottoni","default":"800","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
 {"type":"color","id":"button_background","label":"Sfondo bottone","default":"#ff4f62"},
 {"type":"color","id":"button_text_color","label":"Testo bottone","default":"#ffffff"},
 {"type":"color","id":"button_border_color","label":"Bordo bottone","default":"#ff4f62"},
@@ -175,6 +202,8 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"color","id":"secondary_button_border_color","label":"Bordo bottone secondario","default":"#b985ff"},
 {"type":"range","id":"button_radius","min":0,"max":40,"step":2,"unit":"px","label":"Angoli bottone","default":8},
 {"type":"header","content":"Benefit"},
+{"type":"checkbox","id":"show_benefits_mobile","label":"Mostra benefit su mobile","default":true},
+{"type":"select","id":"benefit_weight","label":"Peso benefit","default":"600","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
 {"type":"text","id":"benefit_1","label":"Benefit 1","default":"Corsi riconosciuti"},
 {"type":"text","id":"benefit_2","label":"Benefit 2","default":"Studia quando vuoi"},
 {"type":"text","id":"benefit_3","label":"Benefit 3","default":"Supporto reale"}

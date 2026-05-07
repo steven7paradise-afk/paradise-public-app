@@ -22,10 +22,12 @@
   background: var(--sm-bg);
   border-radius: var(--sm-radius);
   color: var(--sm-text);
+  isolation: isolate;
   min-height: var(--sm-height);
   overflow: hidden;
   position: relative;
   width: 100%;
+  z-index: 0;
 }
 
 .slider-maison .sm-bg,
@@ -47,7 +49,8 @@
 .slider-maison .sm-overlay {
   background:
     radial-gradient(circle at 72% 35%, color-mix(in srgb, var(--sm-accent) 32%, transparent), transparent 34%),
-    linear-gradient(90deg, rgba(0, 0, 0, calc(var(--sm-overlay) + 0.06)), rgba(0, 0, 0, var(--sm-overlay)));
+    var(--sm-overlay-color);
+  opacity: var(--sm-overlay);
   pointer-events: none;
   z-index: 1;
 }
@@ -93,7 +96,7 @@
 .slider-maison .sm-kicker {
   color: color-mix(in srgb, var(--sm-text) 72%, transparent);
   font-size: clamp(13px, 1.1vw, 18px);
-  font-weight: 700;
+  font-weight: var(--sm-kicker-weight);
   letter-spacing: 0.02em;
   margin: 0 0 clamp(22px, 3vw, 52px);
   text-align: inherit;
@@ -102,7 +105,7 @@
 .slider-maison .sm-title {
   color: var(--sm-text);
   font-size: clamp(38px, 5.1vw, var(--sm-title));
-  font-weight: 900;
+  font-weight: var(--sm-title-weight);
   letter-spacing: -0.02em;
   line-height: var(--sm-title-line);
   margin: 0;
@@ -120,7 +123,7 @@
 .slider-maison .sm-subtitle {
   color: var(--sm-text);
   font-size: clamp(22px, 2vw, 36px);
-  font-weight: 850;
+  font-weight: var(--sm-subtitle-weight);
   line-height: 1.16;
   margin: var(--sm-text-gap) 0 0;
 }
@@ -128,7 +131,7 @@
 .slider-maison .sm-description {
   color: color-mix(in srgb, var(--sm-text) 88%, transparent);
   font-size: clamp(15px, 1.35vw, 24px);
-  font-weight: 800;
+  font-weight: var(--sm-description-weight);
   letter-spacing: 0.09em;
   line-height: 1.25;
   margin: clamp(var(--sm-text-gap), 8vw, 120px) 0 0;
@@ -153,7 +156,7 @@
   border-radius: var(--sm-button-radius);
   display: inline-flex;
   font-size: var(--sm-button-size);
-  font-weight: 900;
+  font-weight: var(--sm-button-weight);
   justify-content: center;
   letter-spacing: 0.12em;
   line-height: 1;
@@ -193,7 +196,7 @@
   border-left: 1px solid color-mix(in srgb, var(--sm-text) 52%, transparent);
   color: color-mix(in srgb, var(--sm-text) 90%, transparent);
   font-size: clamp(12px, 1vw, 16px);
-  font-weight: 700;
+  font-weight: var(--sm-benefit-weight);
   line-height: 1.45;
   max-width: 180px;
   padding-left: 20px;
@@ -285,7 +288,7 @@
 
   .slider-maison .sm-title {
     font-size: var(--sm-mobile-title);
-    max-width: 10ch;
+    max-width: var(--sm-mobile-title-width);
   }
 
   .slider-maison .sm-copy-bottom {
@@ -311,14 +314,48 @@
   }
 
   .slider-maison .sm-button {
-    font-size: 12px;
-    min-height: 46px;
+    font-size: var(--sm-mobile-button-size);
+    min-height: var(--sm-mobile-button-height);
     min-width: 0;
     padding: 0 18px;
+    width: min(100%, var(--sm-mobile-button-width));
+  }
+
+  .slider-maison--mobile-buttons-stacked .sm-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .slider-maison--mobile-buttons-inline .sm-actions {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .slider-maison--mobile-buttons-inline .sm-button {
+    flex: 0 1 auto;
+    width: auto;
+  }
+
+  .slider-maison--mobile-buttons-full .sm-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .slider-maison--mobile-buttons-full .sm-button {
+    width: 100%;
   }
 
   .slider-maison .sm-benefits {
-    display: none;
+    display: var(--sm-mobile-benefits-display);
+    gap: 12px;
+    margin-top: calc(var(--sm-mobile-text-gap) + 10px);
+  }
+
+  .slider-maison .sm-benefits span {
+    border-left: 1px solid color-mix(in srgb, var(--sm-text) 42%, transparent);
+    font-size: 12px;
+    max-width: 140px;
+    padding-left: 12px;
   }
 
   .slider-maison .sm-model {
