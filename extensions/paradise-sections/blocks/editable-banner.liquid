@@ -1,172 +1,73 @@
-{% assign slider_id = 'paradise-maison-slider-' | append: block.id %}
-{% assign slide_count = 0 %}
-{% if block.settings.slide_1_enabled %}
-{% assign slide_count = slide_count | plus: 1 %}
-{% endif %}
-{% if block.settings.slide_2_enabled %}
-{% assign slide_count = slide_count | plus: 1 %}
-{% endif %}
-{% if block.settings.slide_3_enabled %}
-{% assign slide_count = slide_count | plus: 1 %}
-{% endif %}
+{% assign section_id = 'slider-maison-' | append: block.id %}
 {% if block.settings.enabled %}
-{% if slide_count > 0 %}
 <section
-id="{{ slider_id }}"
-class="paradise-maison-slider{% if block.settings.desktop_ratio == 'original_image' %} pms-fit--original-desktop{% endif %}"
-aria-label="{{ block.settings.accessibility_label | escape }}"
+id="{{ section_id }}"
+class="slider-maison slider-maison--{{ block.settings.layout }} slider-maison--model-{{ block.settings.model_side }}"
 style="
---pms-panel-bg: {{ block.settings.panel_background }};
---pms-panel-opacity: {{ block.settings.panel_opacity | divided_by: 100.0 }};
---pms-black: {{ block.settings.panel_text_color }};
---pms-white: {{ block.settings.button_text_color }};
---pms-button-bg: {{ block.settings.button_background }};
---pms-button-border: {{ block.settings.button_border_color }};
---pms-button-hover-bg: {{ block.settings.button_hover_background }};
---pms-button-hover-text: {{ block.settings.button_hover_text_color }};
---pms-arrow-bg-rgb: {{ block.settings.arrow_background.red }}, {{ block.settings.arrow_background.green }}, {{ block.settings.arrow_background.blue }};
---pms-arrow-text: {{ block.settings.arrow_text_color }};
---pms-arrow-border-rgb: {{ block.settings.arrow_border_color.red }}, {{ block.settings.arrow_border_color.green }}, {{ block.settings.arrow_border_color.blue }};
---pms-arrow-hover-bg: {{ block.settings.arrow_hover_background }};
---pms-arrow-hover-text: {{ block.settings.arrow_hover_text_color }};
---pms-arrow-opacity: {{ block.settings.arrow_opacity | divided_by: 100.0 }};
---pms-arrow-border-opacity: {{ block.settings.arrow_border_opacity | divided_by: 100.0 }};
---pms-card-line: {{ block.settings.panel_border_color }};
---pms-frame: {{ block.settings.frame_color }};
---pms-overlay-opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
---pms-button-radius: {{ block.settings.button_radius }}px;
---pms-panel-radius: {{ block.settings.panel_radius }}px;
---pms-arrow-radius: {{ block.settings.arrow_radius }}px;
---pms-desktop-height: {{ block.settings.desktop_height }}px;
---pms-desktop-position: {{ block.settings.desktop_image_position }};
---pms-mobile-position: {{ block.settings.mobile_image_position }};
---pms-mobile-min-height: {{ block.settings.mobile_min_height }}px;
+--sm-bg: {{ block.settings.background_color }};
+--sm-text: {{ block.settings.text_color }};
+--sm-accent: {{ block.settings.accent_color }};
+--sm-overlay: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+--sm-height: {{ block.settings.desktop_height }}px;
+--sm-mobile-height: {{ block.settings.mobile_height }}px;
+--sm-radius: {{ block.settings.radius }}px;
+--sm-title: {{ block.settings.title_size }}px;
+--sm-mobile-title: {{ block.settings.mobile_title_size }}px;
+--sm-content-width: {{ block.settings.content_width }}px;
+--sm-model-width: {{ block.settings.model_width }}%;
+--sm-model-mobile-width: {{ block.settings.mobile_model_width }}%;
+--sm-button-bg: {{ block.settings.button_background }};
+--sm-button-text: {{ block.settings.button_text_color }};
+--sm-button-border: {{ block.settings.button_border_color }};
+--sm-button-radius: {{ block.settings.button_radius }}px;
+--sm-secondary-text: {{ block.settings.secondary_button_text_color }};
+--sm-secondary-border: {{ block.settings.secondary_button_border_color }};
 "
-data-pms-autoplay="{{ block.settings.autoplay }}"
-data-pms-delay="{{ block.settings.autoplay_delay | times: 1000 }}"
 {{ block.shopify_attributes }}
 >
-<div class="pms-shell">
-<div class="pms-slider" data-pms-slider>
-<div class="pms-viewport" data-pms-viewport>
-<div class="pms-track" data-pms-track>
-{% assign rendered_slide_index = 0 %}
-{% if block.settings.slide_1_enabled %}
-{% assign slide_image = block.settings.slide_1_image %}
-{% assign slide_mobile_image = block.settings.slide_1_mobile_image | default: slide_image %}
-{% assign slide_alt = slide_image.alt | default: block.settings.slide_1_title %}
-<article class="pms-slide" data-pms-slide aria-hidden="{% if rendered_slide_index == 0 %}false{% else %}true{% endif %}">
-<picture class="pms-picture">
-{% if slide_mobile_image != blank %}
-<source media="(max-width: 749px)" srcset="{{ slide_mobile_image | image_url: width: 1200 }}">
-{% endif %}
-{% if slide_image != blank %}
-{{ slide_image | image_url: width: 3200 | image_tag: loading: 'eager', widths: '750, 1100, 1500, 2000, 2400, 3200', sizes: '100vw', alt: slide_alt }}
+<div class="sm-bg">
+{% if block.settings.background_image != blank or block.settings.mobile_background_image != blank %}
+<picture>
+{% if block.settings.mobile_background_image != blank %}<source media="(max-width: 749px)" srcset="{{ block.settings.mobile_background_image | image_url: width: 1200 }}">{% endif %}
+{% if block.settings.background_image != blank %}
+{{ block.settings.background_image | image_url: width: 2400 | image_tag: loading: 'eager', widths: '900,1400,1800,2400', sizes: '100vw', alt: block.settings.title }}
 {% else %}
-{{ 'lifestyle-1' | placeholder_svg_tag }}
+{{ block.settings.mobile_background_image | image_url: width: 1200 | image_tag: loading: 'eager', alt: block.settings.title }}
 {% endif %}
 </picture>
-<div class="pms-overlay"></div>
-{% if block.settings.show_frame %}<div class="pms-frame" aria-hidden="true"></div>{% endif %}
-<div class="pms-content pms-content--{{ block.settings.slide_1_position }}">
-<div class="pms-panel">
-{% if block.settings.slide_1_kicker != blank %}<p class="pms-kicker">{{ block.settings.slide_1_kicker }}</p>{% endif %}
-{% if block.settings.slide_1_title != blank %}<h2 class="pms-title">{{ block.settings.slide_1_title }}</h2>{% endif %}
-{% if block.settings.slide_1_text != blank %}<div class="pms-text">{{ block.settings.slide_1_text }}</div>{% endif %}
-{% if block.settings.slide_1_button_label != blank and block.settings.slide_1_button_link != blank %}
-<a class="pms-button" href="{{ block.settings.slide_1_button_link }}">{{ block.settings.slide_1_button_label }}</a>
 {% endif %}
 </div>
-</div>
-</article>
-{% assign rendered_slide_index = rendered_slide_index | plus: 1 %}
-{% endif %}
-{% if block.settings.slide_2_enabled %}
-{% assign slide_image = block.settings.slide_2_image %}
-{% assign slide_mobile_image = block.settings.slide_2_mobile_image | default: slide_image %}
-{% assign slide_alt = slide_image.alt | default: block.settings.slide_2_title %}
-<article class="pms-slide" data-pms-slide aria-hidden="{% if rendered_slide_index == 0 %}false{% else %}true{% endif %}">
-<picture class="pms-picture">
-{% if slide_mobile_image != blank %}
-<source media="(max-width: 749px)" srcset="{{ slide_mobile_image | image_url: width: 1200 }}">
-{% endif %}
-{% if slide_image != blank %}
-{{ slide_image | image_url: width: 3200 | image_tag: loading: 'lazy', widths: '750, 1100, 1500, 2000, 2400, 3200', sizes: '100vw', alt: slide_alt }}
+<div class="sm-overlay"></div>
+{% if block.settings.model_image != blank or block.settings.mobile_model_image != blank %}
+<picture class="sm-model sm-animate--{{ block.settings.model_animation }}">
+{% if block.settings.mobile_model_image != blank %}<source media="(max-width: 749px)" srcset="{{ block.settings.mobile_model_image | image_url: width: 900 }}">{% endif %}
+{% assign model_alt = block.settings.model_alt | default: block.settings.title %}
+{% if block.settings.model_image != blank %}
+{{ block.settings.model_image | image_url: width: 1400 | image_tag: loading: 'eager', widths: '500,800,1100,1400', sizes: '(max-width: 749px) 80vw, 42vw', alt: model_alt }}
 {% else %}
-{{ 'lifestyle-2' | placeholder_svg_tag }}
+{{ block.settings.mobile_model_image | image_url: width: 900 | image_tag: loading: 'eager', alt: model_alt }}
 {% endif %}
 </picture>
-<div class="pms-overlay"></div>
-{% if block.settings.show_frame %}<div class="pms-frame" aria-hidden="true"></div>{% endif %}
-<div class="pms-content pms-content--{{ block.settings.slide_2_position }}">
-<div class="pms-panel">
-{% if block.settings.slide_2_kicker != blank %}<p class="pms-kicker">{{ block.settings.slide_2_kicker }}</p>{% endif %}
-{% if block.settings.slide_2_title != blank %}<h2 class="pms-title">{{ block.settings.slide_2_title }}</h2>{% endif %}
-{% if block.settings.slide_2_text != blank %}<div class="pms-text">{{ block.settings.slide_2_text }}</div>{% endif %}
-{% if block.settings.slide_2_button_label != blank and block.settings.slide_2_button_link != blank %}
-<a class="pms-button" href="{{ block.settings.slide_2_button_link }}">{{ block.settings.slide_2_button_label }}</a>
 {% endif %}
+<div class="sm-inner">
+<div class="sm-copy sm-copy--{{ block.settings.text_position }}">
+{% if block.settings.kicker != blank %}<p class="sm-kicker">{{ block.settings.kicker }}</p>{% endif %}
+{% if block.settings.title != blank %}
+<h2 class="sm-title">{{ block.settings.title }}{% if block.settings.highlight != blank %} <span>{{ block.settings.highlight }}</span>{% endif %}</h2>
+{% endif %}
+{% if block.settings.subtitle != blank %}<p class="sm-subtitle">{{ block.settings.subtitle }}</p>{% endif %}
+{% if block.settings.description != blank %}<div class="sm-description">{{ block.settings.description }}</div>{% endif %}
+{% if block.settings.primary_label != blank or block.settings.secondary_label != blank %}
+<div class="sm-actions">
+{% if block.settings.primary_label != blank and block.settings.primary_link != blank %}<a class="sm-button sm-button--primary" href="{{ block.settings.primary_link }}">{{ block.settings.primary_label }}</a>{% endif %}
+{% if block.settings.secondary_label != blank and block.settings.secondary_link != blank %}<a class="sm-button sm-button--secondary" href="{{ block.settings.secondary_link }}">{{ block.settings.secondary_label }}</a>{% endif %}
 </div>
-</div>
-</article>
-{% assign rendered_slide_index = rendered_slide_index | plus: 1 %}
 {% endif %}
-{% if block.settings.slide_3_enabled %}
-{% assign slide_image = block.settings.slide_3_image %}
-{% assign slide_mobile_image = block.settings.slide_3_mobile_image | default: slide_image %}
-{% assign slide_alt = slide_image.alt | default: block.settings.slide_3_title %}
-<article class="pms-slide" data-pms-slide aria-hidden="{% if rendered_slide_index == 0 %}false{% else %}true{% endif %}">
-<picture class="pms-picture">
-{% if slide_mobile_image != blank %}
-<source media="(max-width: 749px)" srcset="{{ slide_mobile_image | image_url: width: 1200 }}">
-{% endif %}
-{% if slide_image != blank %}
-{{ slide_image | image_url: width: 3200 | image_tag: loading: 'lazy', widths: '750, 1100, 1500, 2000, 2400, 3200', sizes: '100vw', alt: slide_alt }}
-{% else %}
-{{ 'lifestyle-1' | placeholder_svg_tag }}
-{% endif %}
-</picture>
-<div class="pms-overlay"></div>
-{% if block.settings.show_frame %}<div class="pms-frame" aria-hidden="true"></div>{% endif %}
-<div class="pms-content pms-content--{{ block.settings.slide_3_position }}">
-<div class="pms-panel">
-{% if block.settings.slide_3_kicker != blank %}<p class="pms-kicker">{{ block.settings.slide_3_kicker }}</p>{% endif %}
-{% if block.settings.slide_3_title != blank %}<h2 class="pms-title">{{ block.settings.slide_3_title }}</h2>{% endif %}
-{% if block.settings.slide_3_text != blank %}<div class="pms-text">{{ block.settings.slide_3_text }}</div>{% endif %}
-{% if block.settings.slide_3_button_label != blank and block.settings.slide_3_button_link != blank %}
-<a class="pms-button" href="{{ block.settings.slide_3_button_link }}">{{ block.settings.slide_3_button_label }}</a>
-{% endif %}
-</div>
-</div>
-</article>
-{% assign rendered_slide_index = rendered_slide_index | plus: 1 %}
-{% endif %}
-</div>
-</div>
-{% if slide_count > 1 and block.settings.show_arrows %}
-<button class="pms-arrow pms-arrow--prev" type="button" aria-label="Slide precedente" data-pms-prev>
-<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-<path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</button>
-<button class="pms-arrow pms-arrow--next" type="button" aria-label="Slide successiva" data-pms-next>
-<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-<path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</button>
-{% endif %}
-{% if slide_count > 1 and block.settings.show_dots %}
-<div class="pms-dots" aria-label="Navigazione slider">
-{% for index in (1..slide_count) %}
-{% assign dot_index = index | minus: 1 %}
-<button
-class="pms-dot{% if forloop.first %} is-active{% endif %}"
-type="button"
-aria-label="Vai alla slide {{ index }}"
-aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
-data-pms-dot="{{ dot_index }}"
-></button>
-{% endfor %}
+{% if block.settings.benefit_1 != blank or block.settings.benefit_2 != blank or block.settings.benefit_3 != blank %}
+<div class="sm-benefits">
+{% if block.settings.benefit_1 != blank %}<span>{{ block.settings.benefit_1 }}</span>{% endif %}
+{% if block.settings.benefit_2 != blank %}<span>{{ block.settings.benefit_2 }}</span>{% endif %}
+{% if block.settings.benefit_3 != blank %}<span>{{ block.settings.benefit_3 }}</span>{% endif %}
 </div>
 {% endif %}
 </div>
@@ -174,14 +75,8 @@ data-pms-dot="{{ dot_index }}"
 </section>
 {% elsif request.design_mode %}
 <div class="paradise-maison-slider-placeholder" {{ block.shopify_attributes }}>
-<strong>Nessuna slide attiva</strong>
-<span>Attiva almeno una slide nelle impostazioni per mostrare lo slider.</span>
-</div>
-{% endif %}
-{% elsif request.design_mode %}
-<div class="paradise-maison-slider-placeholder" {{ block.shopify_attributes }}>
 <strong>Slider Maison disattivato</strong>
-<span>Apri le impostazioni e attiva "Mostra slider" per renderlo visibile nel sito.</span>
+<span>Attiva il banner e carica sfondo, modello PNG e testi.</span>
 </div>
 {% endif %}
 {% schema %}
@@ -189,456 +84,51 @@ data-pms-dot="{{ dot_index }}"
 "name": "Slider Maison",
 "target": "section",
 "stylesheet": "maison-slider.css",
-"javascript": "maison-slider.js",
 "settings": [
-{
-"type": "checkbox",
-"id": "enabled",
-"label": "Mostra slider",
-"default": false
-},
-{
-"type": "text",
-"id": "accessibility_label",
-"label": "Etichetta accessibilita'",
-"default": "Banner Paradise luxury"
-},
-{
-"type": "header",
-"content": "Controlli slider"
-},
-{
-"type": "checkbox",
-"id": "autoplay",
-"label": "Attiva scorrimento automatico",
-"default": true
-},
-{
-"type": "range",
-"id": "autoplay_delay",
-"min": 3,
-"max": 10,
-"step": 1,
-"unit": "s",
-"label": "Tempo tra le slide",
-"default": 6
-},
-{
-"type": "checkbox",
-"id": "show_arrows",
-"label": "Mostra frecce",
-"default": true
-},
-{
-"type": "checkbox",
-"id": "show_dots",
-"label": "Mostra indicatori",
-"default": true
-},
-{
-"type": "checkbox",
-"id": "show_frame",
-"label": "Mostra cornice immagine",
-"default": true
-},
-{
-"type": "select",
-"id": "desktop_ratio",
-"label": "Formato immagine desktop",
-"default": "fixed_height",
-"options": [
-{ "value": "original_image", "label": "Originale immagine" },
-{ "value": "fixed_height", "label": "Altezza personalizzata" },
-{ "value": "16 / 5.6", "label": "Largo vecchio" },
-{ "value": "16 / 6.45", "label": "Maison vecchio" },
-{ "value": "16 / 7.5", "label": "Sottile vecchio" },
-{ "value": "16 / 9", "label": "Classico vecchio" }
-]
-},
-{
-"type": "range",
-"id": "desktop_height",
-"min": 320,
-"max": 1600,
-"step": 20,
-"unit": "px",
-"label": "Altezza desktop",
-"default": 820
-},
-{
-"type": "select",
-"id": "desktop_image_position",
-"label": "Posizione immagine desktop",
-"default": "center center",
-"options": [
-{ "value": "center center", "label": "Centro" },
-{ "value": "center top", "label": "Alto" },
-{ "value": "center bottom", "label": "Basso" },
-{ "value": "left center", "label": "Sinistra" },
-{ "value": "right center", "label": "Destra" }
-]
-},
-{
-"type": "range",
-"id": "mobile_min_height",
-"min": 360,
-"max": 1200,
-"step": 20,
-"unit": "px",
-"label": "Altezza mobile",
-"default": 720
-},
-{
-"type": "select",
-"id": "mobile_image_position",
-"label": "Posizione immagine mobile",
-"default": "center center",
-"options": [
-{ "value": "center center", "label": "Centro" },
-{ "value": "center top", "label": "Alto" },
-{ "value": "center bottom", "label": "Basso" },
-{ "value": "left center", "label": "Sinistra" },
-{ "value": "right center", "label": "Destra" }
-]
-},
-{
-"type": "header",
-"content": "Stile"
-},
-{
-"type": "color",
-"id": "panel_background",
-"label": "Sfondo pannello",
-"default": "#faf7f2"
-},
-{
-"type": "range",
-"id": "panel_opacity",
-"min": 40,
-"max": 100,
-"step": 5,
-"unit": "%",
-"label": "Opacita' pannello",
-"default": 90
-},
-{
-"type": "color",
-"id": "panel_text_color",
-"label": "Colore testo pannello",
-"default": "#111111"
-},
-{
-"type": "color",
-"id": "panel_border_color",
-"label": "Colore bordo pannello",
-"default": "#ded8cf"
-},
-{
-"type": "range",
-"id": "panel_radius",
-"min": 0,
-"max": 40,
-"step": 2,
-"unit": "px",
-"label": "Rotondita' pannello",
-"default": 0
-},
-{
-"type": "color",
-"id": "frame_color",
-"label": "Colore cornice",
-"default": "#ffffff"
-},
-{
-"type": "range",
-"id": "overlay_opacity",
-"min": 0,
-"max": 70,
-"step": 5,
-"unit": "%",
-"label": "Opacita' overlay immagine",
-"default": 15
-},
-{
-"type": "color",
-"id": "button_background",
-"label": "Sfondo bottone",
-"default": "#111111"
-},
-{
-"type": "color",
-"id": "button_text_color",
-"label": "Colore testo bottone",
-"default": "#ffffff"
-},
-{
-"type": "color",
-"id": "button_border_color",
-"label": "Colore bordo bottone",
-"default": "#111111"
-},
-{
-"type": "color",
-"id": "button_hover_background",
-"label": "Sfondo bottone al passaggio",
-"default": "#ffffff"
-},
-{
-"type": "color",
-"id": "button_hover_text_color",
-"label": "Testo bottone al passaggio",
-"default": "#111111"
-},
-{
-"type": "range",
-"id": "button_radius",
-"min": 0,
-"max": 40,
-"step": 2,
-"unit": "px",
-"label": "Rotondita' bottone",
-"default": 0
-},
-{
-"type": "range",
-"id": "arrow_radius",
-"min": 0,
-"max": 40,
-"step": 2,
-"unit": "px",
-"label": "Rotondita' frecce",
-"default": 0
-},
-{
-"type": "color",
-"id": "arrow_background",
-"label": "Sfondo frecce",
-"default": "#000000"
-},
-{
-"type": "range",
-"id": "arrow_opacity",
-"min": 0,
-"max": 100,
-"step": 5,
-"unit": "%",
-"label": "Trasparenza sfondo frecce",
-"default": 40
-},
-{
-"type": "color",
-"id": "arrow_text_color",
-"label": "Colore icona frecce",
-"default": "#ffffff"
-},
-{
-"type": "color",
-"id": "arrow_border_color",
-"label": "Colore bordo frecce",
-"default": "#ffffff"
-},
-{
-"type": "range",
-"id": "arrow_border_opacity",
-"min": 0,
-"max": 100,
-"step": 5,
-"unit": "%",
-"label": "Trasparenza bordo frecce",
-"default": 70
-},
-{
-"type": "color",
-"id": "arrow_hover_background",
-"label": "Sfondo frecce al passaggio",
-"default": "#ffffff"
-},
-{
-"type": "color",
-"id": "arrow_hover_text_color",
-"label": "Icona frecce al passaggio",
-"default": "#000000"
-},
-{
-"type": "header",
-"content": "Slide 1"
-},
-{
-"type": "checkbox",
-"id": "slide_1_enabled",
-"label": "Attiva slide 1",
-"default": false
-},
-{
-"type": "image_picker",
-"id": "slide_1_image",
-"label": "Immagine desktop"
-},
-{
-"type": "image_picker",
-"id": "slide_1_mobile_image",
-"label": "Immagine mobile"
-},
-{
-"type": "text",
-"id": "slide_1_kicker",
-"label": "Etichetta piccola",
-"default": "Paradise Collection"
-},
-{
-"type": "text",
-"id": "slide_1_title",
-"label": "Titolo",
-"default": "Clip-In Paradise"
-},
-{
-"type": "richtext",
-"id": "slide_1_text",
-"label": "Testo",
-"default": "<p>Extension in capelli veri per aggiungere volume e lunghezza con un risultato naturale, elegante e immediato.</p>"
-},
-{
-"type": "text",
-"id": "slide_1_button_label",
-"label": "Testo bottone",
-"default": "Scopri la collezione"
-},
-{
-"type": "url",
-"id": "slide_1_button_link",
-"label": "Link bottone"
-},
-{
-"type": "select",
-"id": "slide_1_position",
-"label": "Posizione pannello",
-"default": "left",
-"options": [
-{ "value": "left", "label": "Sinistra" },
-{ "value": "center", "label": "Centro" },
-{ "value": "right", "label": "Destra" }
-]
-},
-{
-"type": "header",
-"content": "Slide 2"
-},
-{
-"type": "checkbox",
-"id": "slide_2_enabled",
-"label": "Attiva slide 2",
-"default": false
-},
-{
-"type": "image_picker",
-"id": "slide_2_image",
-"label": "Immagine desktop"
-},
-{
-"type": "image_picker",
-"id": "slide_2_mobile_image",
-"label": "Immagine mobile"
-},
-{
-"type": "text",
-"id": "slide_2_kicker",
-"label": "Etichetta piccola",
-"default": "Paradise Academy"
-},
-{
-"type": "text",
-"id": "slide_2_title",
-"label": "Titolo",
-"default": "Corso Extension"
-},
-{
-"type": "richtext",
-"id": "slide_2_text",
-"label": "Testo",
-"default": "<p>Una formazione professionale pensata per apprendere il metodo Paradise in modo pratico, completo e professionale.</p>"
-},
-{
-"type": "text",
-"id": "slide_2_button_label",
-"label": "Testo bottone",
-"default": "Scopri il corso"
-},
-{
-"type": "url",
-"id": "slide_2_button_link",
-"label": "Link bottone"
-},
-{
-"type": "select",
-"id": "slide_2_position",
-"label": "Posizione pannello",
-"default": "left",
-"options": [
-{ "value": "left", "label": "Sinistra" },
-{ "value": "center", "label": "Centro" },
-{ "value": "right", "label": "Destra" }
-]
-},
-{
-"type": "header",
-"content": "Slide 3"
-},
-{
-"type": "checkbox",
-"id": "slide_3_enabled",
-"label": "Attiva slide 3",
-"default": false
-},
-{
-"type": "image_picker",
-"id": "slide_3_image",
-"label": "Immagine desktop"
-},
-{
-"type": "image_picker",
-"id": "slide_3_mobile_image",
-"label": "Immagine mobile"
-},
-{
-"type": "text",
-"id": "slide_3_kicker",
-"label": "Etichetta piccola",
-"default": "Paradise Beauty"
-},
-{
-"type": "text",
-"id": "slide_3_title",
-"label": "Titolo",
-"default": "Nuovo banner"
-},
-{
-"type": "richtext",
-"id": "slide_3_text",
-"label": "Testo",
-"default": "<p>Carica una nuova immagine e personalizza questo contenuto dal theme editor Shopify.</p>"
-},
-{
-"type": "text",
-"id": "slide_3_button_label",
-"label": "Testo bottone",
-"default": "Scopri di piu'"
-},
-{
-"type": "url",
-"id": "slide_3_button_link",
-"label": "Link bottone"
-},
-{
-"type": "select",
-"id": "slide_3_position",
-"label": "Posizione pannello",
-"default": "left",
-"options": [
-{ "value": "left", "label": "Sinistra" },
-{ "value": "center", "label": "Centro" },
-{ "value": "right", "label": "Destra" }
-]
-}
+{"type":"checkbox","id":"enabled","label":"Mostra banner","default":true},
+{"type":"header","content":"Sfondo"},
+{"type":"color","id":"background_color","label":"Colore sfondo","default":"#351054"},
+{"type":"image_picker","id":"background_image","label":"Immagine sfondo desktop"},
+{"type":"image_picker","id":"mobile_background_image","label":"Immagine sfondo mobile"},
+{"type":"range","id":"overlay_opacity","min":0,"max":70,"step":5,"unit":"%","label":"Overlay scuro","default":10},
+{"type":"range","id":"desktop_height","min":380,"max":1000,"step":20,"unit":"px","label":"Altezza desktop","default":720},
+{"type":"range","id":"mobile_height","min":520,"max":980,"step":20,"unit":"px","label":"Altezza mobile","default":760},
+{"type":"range","id":"radius","min":0,"max":40,"step":2,"unit":"px","label":"Angoli banner","default":0},
+{"type":"header","content":"Modello PNG"},
+{"type":"image_picker","id":"model_image","label":"Modello desktop PNG"},
+{"type":"image_picker","id":"mobile_model_image","label":"Modello mobile PNG"},
+{"type":"text","id":"model_alt","label":"Alt modello","default":"Paradise model"},
+{"type":"select","id":"model_side","label":"Posizione modello","default":"left","options":[{"value":"left","label":"Sinistra"},{"value":"right","label":"Destra"}]},
+{"type":"range","id":"model_width","min":24,"max":62,"step":2,"unit":"%","label":"Larghezza modello desktop","default":40},
+{"type":"range","id":"mobile_model_width","min":45,"max":100,"step":5,"unit":"%","label":"Larghezza modello mobile","default":80},
+{"type":"select","id":"model_animation","label":"Animazione modello","default":"float","options":[{"value":"none","label":"Nessuna"},{"value":"float","label":"Float luxury"},{"value":"fade","label":"Fade in"},{"value":"zoom","label":"Zoom soft"}]},
+{"type":"header","content":"Testi"},
+{"type":"text","id":"kicker","label":"Sopratitolo","default":"Corsi online estetici riconosciuti"},
+{"type":"text","id":"title","label":"Titolo","default":"Diventa l'estetista che le clienti"},
+{"type":"text","id":"highlight","label":"Parola evidenziata","default":"scelgono,"},
+{"type":"text","id":"subtitle","label":"Sottotitolo","default":"non quella che costa meno."},
+{"type":"richtext","id":"description","label":"Descrizione","default":"<p>Docente digitale + supporto reale. Solo qui.</p>"},
+{"type":"select","id":"text_position","label":"Posizione testo","default":"right","options":[{"value":"left","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"right","label":"Destra"}]},
+{"type":"range","id":"content_width","min":420,"max":980,"step":20,"unit":"px","label":"Larghezza testo","default":820},
+{"type":"range","id":"title_size","min":38,"max":110,"step":2,"unit":"px","label":"Titolo desktop","default":76},
+{"type":"range","id":"mobile_title_size","min":30,"max":62,"step":2,"unit":"px","label":"Titolo mobile","default":42},
+{"type":"color","id":"text_color","label":"Colore testo","default":"#ffffff"},
+{"type":"color","id":"accent_color","label":"Colore evidenziato","default":"#b985ff"},
+{"type":"header","content":"Bottoni"},
+{"type":"text","id":"primary_label","label":"Testo bottone principale","default":"Scopri il percorso giusto per te"},
+{"type":"url","id":"primary_link","label":"Link bottone principale"},
+{"type":"text","id":"secondary_label","label":"Testo bottone secondario","default":"Guarda i corsi"},
+{"type":"url","id":"secondary_link","label":"Link bottone secondario"},
+{"type":"color","id":"button_background","label":"Sfondo bottone","default":"#ff4f62"},
+{"type":"color","id":"button_text_color","label":"Testo bottone","default":"#ffffff"},
+{"type":"color","id":"button_border_color","label":"Bordo bottone","default":"#ff4f62"},
+{"type":"color","id":"secondary_button_text_color","label":"Testo bottone secondario","default":"#ffffff"},
+{"type":"color","id":"secondary_button_border_color","label":"Bordo bottone secondario","default":"#b985ff"},
+{"type":"range","id":"button_radius","min":0,"max":40,"step":2,"unit":"px","label":"Angoli bottone","default":8},
+{"type":"header","content":"Benefit"},
+{"type":"text","id":"benefit_1","label":"Benefit 1","default":"Corsi riconosciuti"},
+{"type":"text","id":"benefit_2","label":"Benefit 2","default":"Studia quando vuoi"},
+{"type":"text","id":"benefit_3","label":"Benefit 3","default":"Supporto reale"}
 ]
 }
 {% endschema %}
