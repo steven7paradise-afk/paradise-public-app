@@ -203,7 +203,6 @@
 
 .slider-maison .sm-benefits span {
   align-items: center;
-  border-left: 1px solid color-mix(in srgb, var(--sm-text) 52%, transparent);
   color: color-mix(in srgb, var(--sm-text) 90%, transparent);
   display: inline-flex;
   font-size: clamp(12px, 1vw, 16px);
@@ -211,7 +210,6 @@
   gap: 12px;
   line-height: 1.45;
   max-width: 180px;
-  padding-left: 20px;
 }
 
 .slider-maison .sm-benefit-icon {
@@ -405,12 +403,10 @@
 
   .slider-maison .sm-benefits span {
     align-items: center;
-    border-left: 1px solid color-mix(in srgb, var(--sm-text) 42%, transparent);
     font-size: 12px;
     justify-content: center;
     max-width: min(100%, 220px);
     min-width: min(100%, 210px);
-    padding-left: 12px;
     text-align: left;
   }
 
