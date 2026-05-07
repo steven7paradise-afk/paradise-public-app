@@ -1,127 +1,99 @@
 (function () {
-  function setupMaisonSlider(section) {
-    if (!section || section.dataset.pmsReady === "true") return;
+  var ticking = false;
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var states = new WeakMap();
 
-    var viewport = section.querySelector("[data-pms-viewport]");
-    var track = section.querySelector("[data-pms-track]");
-    var slides = Array.from(section.querySelectorAll("[data-pms-slide]"));
-    var dots = Array.from(section.querySelectorAll("[data-pms-dot]"));
-    var prev = section.querySelector("[data-pms-prev]");
-    var next = section.querySelector("[data-pms-next]");
-
-    if (!viewport || !track || slides.length < 2) {
-      section.dataset.pmsReady = "true";
-      return;
-    }
-
-    var current = 0;
-    var autoplayId = null;
-    var startX = 0;
-    var deltaX = 0;
-    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var autoplayEnabled = section.dataset.pmsAutoplay === "true";
-    var autoplayDelay = parseInt(section.dataset.pmsDelay, 10) || 5500;
-
-    function render() {
-      track.style.transform = "translate3d(-" + current * 100 + "%, 0, 0)";
-
-      slides.forEach(function (slide, index) {
-        slide.setAttribute("aria-hidden", index === current ? "false" : "true");
-      });
-
-      dots.forEach(function (dot, index) {
-        var isActive = index === current;
-        dot.classList.toggle("is-active", isActive);
-        dot.setAttribute("aria-pressed", isActive ? "true" : "false");
-      });
-    }
-
-    function goTo(index) {
-      current = (index + slides.length) % slides.length;
-      render();
-    }
-
-    function stopAutoplay() {
-      if (autoplayId) {
-        window.clearInterval(autoplayId);
-        autoplayId = null;
-      }
-    }
-
-    function startAutoplay() {
-      if (reduceMotion || !autoplayEnabled) return;
-      stopAutoplay();
-      autoplayId = window.setInterval(function () {
-        goTo(current + 1);
-      }, autoplayDelay);
-    }
-
-    if (prev) {
-      prev.addEventListener("click", function () {
-        goTo(current - 1);
-        startAutoplay();
-      });
-    }
-
-    if (next) {
-      next.addEventListener("click", function () {
-        goTo(current + 1);
-        startAutoplay();
-      });
-    }
-
-    dots.forEach(function (dot, index) {
-      dot.addEventListener("click", function () {
-        goTo(index);
-        startAutoplay();
-      });
-    });
-
-    viewport.addEventListener(
-      "touchstart",
-      function (event) {
-        startX = event.changedTouches[0].clientX;
-        deltaX = 0;
-        stopAutoplay();
-      },
-      { passive: true }
-    );
-
-    viewport.addEventListener(
-      "touchmove",
-      function (event) {
-        deltaX = event.changedTouches[0].clientX - startX;
-      },
-      { passive: true }
-    );
-
-    viewport.addEventListener("touchend", function () {
-      if (Math.abs(deltaX) > 40) {
-        goTo(deltaX < 0 ? current + 1 : current - 1);
-      }
-      startAutoplay();
-    });
-
-    section.addEventListener("mouseenter", stopAutoplay);
-    section.addEventListener("mouseleave", startAutoplay);
-    section.addEventListener("focusin", stopAutoplay);
-    section.addEventListener("focusout", startAutoplay);
-
-    render();
-    startAutoplay();
-    section.dataset.pmsReady = "true";
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
   }
 
-  function bootMaisonSliders() {
-    document.querySelectorAll(".paradise-maison-slider").forEach(setupMaisonSlider);
+  function smooth(current, target) {
+    return current + (target - current) * 0.16;
+  }
+
+  function updateBannerScroll() {
+    ticking = false;
+    if (reduceMotion) return;
+    var needsFollowup = false;
+
+    document.querySelectorAll(".slider-maison").forEach(function (section) {
+      var effect = section.dataset.scrollEffect || "none";
+      if (effect === "none") return;
+
+      var rect = section.getBoundingClientRect();
+      var viewport = window.innerHeight || 1;
+      if (rect.bottom < 0 || rect.top > viewport) return;
+
+      var progress = clamp(((rect.top + rect.height / 2) - viewport / 2) / viewport, -0.85, 0.85);
+      var scrollOut = clamp((0 - rect.top) / Math.max(rect.height * 0.58, 1), 0, 1);
+      var strength = Number(section.style.getPropertyValue("--sm-scroll-strength") || 20);
+      if (window.innerWidth < 750) {
+        strength = strength * 0.45;
+      }
+
+      var model = -progress * strength;
+      var copy = scrollOut * strength * 1.1;
+      var bg = progress * strength * 0.28;
+      var copyOpacity = 1 - scrollOut * 0.92;
+
+      if (effect === "parallax") {
+        model = -progress * strength * 1.45;
+        copy = scrollOut * strength * 1.35;
+        bg = progress * strength * 0.5;
+        copyOpacity = 1 - scrollOut * 0.96;
+      }
+
+      if (effect === "depth") {
+        model = -progress * strength * 1.1;
+        copy = scrollOut * strength * 0.78;
+        bg = progress * strength * 0.34;
+        copyOpacity = 1 - scrollOut * 0.86;
+      }
+
+      var state = states.get(section) || { model: 0, copy: 0, bg: 0, opacity: 1 };
+      state.model = smooth(state.model, model);
+      state.copy = smooth(state.copy, copy);
+      state.bg = smooth(state.bg, bg);
+      state.opacity = smooth(state.opacity, copyOpacity);
+      states.set(section, state);
+      if (
+        Math.abs(state.model - model) > 0.2 ||
+        Math.abs(state.copy - copy) > 0.2 ||
+        Math.abs(state.bg - bg) > 0.2 ||
+        Math.abs(state.opacity - copyOpacity) > 0.01
+      ) {
+        needsFollowup = true;
+      }
+
+      section.style.setProperty("--sm-scroll-model", state.model.toFixed(2) + "px");
+      section.style.setProperty("--sm-scroll-copy", state.copy.toFixed(2) + "px");
+      section.style.setProperty("--sm-scroll-bg", state.bg.toFixed(2) + "px");
+      section.style.setProperty("--sm-scroll-copy-opacity", state.opacity.toFixed(3));
+    });
+
+    if (needsFollowup) {
+      requestUpdate();
+    }
+  }
+
+  function requestUpdate() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(updateBannerScroll);
+  }
+
+  function boot() {
+    requestUpdate();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bootMaisonSliders, { once: true });
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
   } else {
-    bootMaisonSliders();
+    boot();
   }
 
-  document.addEventListener("shopify:section:load", bootMaisonSliders);
-  document.addEventListener("shopify:section:select", bootMaisonSliders);
+  document.addEventListener("shopify:section:load", requestUpdate);
+  document.addEventListener("shopify:section:select", requestUpdate);
 })();

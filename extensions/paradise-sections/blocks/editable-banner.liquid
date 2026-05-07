@@ -2,12 +2,13 @@
 {% if block.settings.enabled %}
 <section
 id="{{ section_id }}"
-class="slider-maison slider-maison--{{ block.settings.layout }} slider-maison--model-{{ block.settings.model_side }} slider-maison--mobile-model-{{ block.settings.mobile_model_position }}"
+class="slider-maison slider-maison--{{ block.settings.layout }} slider-maison--model-{{ block.settings.model_side }} slider-maison--mobile-model-{{ block.settings.mobile_model_position }} slider-maison--mobile-copy-{{ block.settings.mobile_copy_flow }}"
 style="
 --sm-bg: {{ block.settings.background_color }};
 --sm-text: {{ block.settings.text_color }};
 --sm-accent: {{ block.settings.accent_color }};
 --sm-overlay: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+--sm-scroll-strength: {{ block.settings.scroll_strength }};
 --sm-height: {{ block.settings.desktop_height }}px;
 --sm-mobile-height: {{ block.settings.mobile_height }}px;
 --sm-radius: {{ block.settings.radius }}px;
@@ -38,6 +39,7 @@ style="
 --sm-secondary-text: {{ block.settings.secondary_button_text_color }};
 --sm-secondary-border: {{ block.settings.secondary_button_border_color }};
 "
+data-scroll-effect="{{ block.settings.scroll_effect }}"
 {{ block.shopify_attributes }}
 >
 <div class="sm-bg">
@@ -66,10 +68,13 @@ style="
 {% endif %}
 <div class="sm-inner">
 <div class="sm-copy sm-copy--{{ block.settings.text_position }}">
+<div class="sm-copy-top">
 {% if block.settings.kicker != blank %}<p class="sm-kicker">{{ block.settings.kicker }}</p>{% endif %}
 {% if block.settings.title != blank %}
 <h2 class="sm-title">{{ block.settings.title }}{% if block.settings.highlight != blank %} <span>{{ block.settings.highlight }}</span>{% endif %}</h2>
 {% endif %}
+</div>
+<div class="sm-copy-bottom">
 {% if block.settings.subtitle != blank %}<p class="sm-subtitle">{{ block.settings.subtitle }}</p>{% endif %}
 {% if block.settings.description != blank %}<div class="sm-description">{{ block.settings.description }}</div>{% endif %}
 {% if block.settings.primary_label != blank or block.settings.secondary_label != blank %}
@@ -87,6 +92,7 @@ style="
 {% endif %}
 </div>
 </div>
+</div>
 </section>
 {% elsif request.design_mode %}
 <div class="paradise-maison-slider-placeholder" {{ block.shopify_attributes }}>
@@ -99,6 +105,7 @@ style="
 "name": "Banner Ora",
 "target": "section",
 "stylesheet": "maison-slider.css",
+"javascript": "maison-slider.js",
 "settings": [
 {"type":"checkbox","id":"enabled","label":"Mostra banner","default":true},
 {"type":"header","content":"Sfondo"},
@@ -109,6 +116,8 @@ style="
 {"type":"range","id":"desktop_height","min":380,"max":1000,"step":20,"unit":"px","label":"Altezza desktop","default":720},
 {"type":"range","id":"mobile_height","min":520,"max":980,"step":20,"unit":"px","label":"Altezza mobile","default":760},
 {"type":"range","id":"radius","min":0,"max":40,"step":2,"unit":"px","label":"Angoli banner","default":0},
+{"type":"select","id":"scroll_effect","label":"Effetto scroll","default":"soft","options":[{"value":"none","label":"Nessuno"},{"value":"soft","label":"Soft luxury"},{"value":"parallax","label":"Parallax"},{"value":"depth","label":"Profondita"}]},
+{"type":"range","id":"scroll_strength","min":5,"max":40,"step":5,"label":"Intensita scroll","default":20},
 {"type":"header","content":"Modello PNG"},
 {"type":"image_picker","id":"model_image","label":"Modello desktop PNG"},
 {"type":"image_picker","id":"mobile_model_image","label":"Modello mobile PNG"},
@@ -130,6 +139,7 @@ style="
 {"type":"text","id":"subtitle","label":"Sottotitolo","default":"non quella che costa meno."},
 {"type":"richtext","id":"description","label":"Descrizione","default":"<p>Docente digitale + supporto reale. Solo qui.</p>"},
 {"type":"select","id":"text_position","label":"Posizione testo","default":"right","options":[{"value":"left","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"right","label":"Destra"}]},
+{"type":"select","id":"mobile_copy_flow","label":"Testo mobile","default":"together","options":[{"value":"together","label":"Tutto insieme"},{"value":"split","label":"Titolo sopra immagine"}]},
 {"type":"range","id":"content_width","min":420,"max":980,"step":20,"unit":"px","label":"Larghezza testo","default":820},
 {"type":"range","id":"text_x","min":-30,"max":30,"step":2,"unit":"%","label":"Testo X desktop","default":0},
 {"type":"range","id":"text_y","min":-30,"max":30,"step":2,"unit":"%","label":"Testo Y desktop","default":0},
