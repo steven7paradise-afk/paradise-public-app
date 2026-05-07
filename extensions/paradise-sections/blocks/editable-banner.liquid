@@ -13,7 +13,7 @@ style="
 --sm-accent: {{ block.settings.accent_color }};
 --sm-overlay-color: {{ block.settings.overlay_color }};
 --sm-overlay: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
---sm-scroll-strength: {{ block.settings.scroll_strength }};
+--sm-scroll-strength: 20;
 --sm-height: {{ block.settings.desktop_height }}px;
 --sm-mobile-height: {{ block.settings.mobile_height }}px;
 --sm-radius: {{ block.settings.radius }}px;
@@ -23,7 +23,7 @@ style="
 --sm-title-line: {{ block.settings.title_line_height | divided_by: 100.0 }};
 --sm-text-gap: {{ block.settings.text_gap }}px;
 --sm-mobile-text-gap: {{ block.settings.mobile_text_gap }}px;
---sm-model-mobile-gap: {{ block.settings.mobile_model_gap }}px;
+--sm-model-mobile-gap: 20px;
 --sm-content-width: {{ block.settings.content_width }}px;
 --sm-text-x: {{ block.settings.text_x }}%;
 --sm-text-y: {{ block.settings.text_y }}%;
@@ -105,9 +105,24 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {% endif %}
 {% if block.settings.benefit_1 != blank or block.settings.benefit_2 != blank or block.settings.benefit_3 != blank %}
 <div class="sm-benefits">
-{% if block.settings.benefit_1 != blank %}<span>{{ block.settings.benefit_1 }}</span>{% endif %}
-{% if block.settings.benefit_2 != blank %}<span>{{ block.settings.benefit_2 }}</span>{% endif %}
-{% if block.settings.benefit_3 != blank %}<span>{{ block.settings.benefit_3 }}</span>{% endif %}
+{% if block.settings.benefit_1 != blank %}
+<span>
+{% if block.settings.benefit_1_icon != 'none' %}<span class="sm-benefit-icon sm-benefit-icon--{{ block.settings.benefit_1_icon }}" aria-hidden="true"></span>{% endif %}
+<span class="sm-benefit-label">{{ block.settings.benefit_1 }}</span>
+</span>
+{% endif %}
+{% if block.settings.benefit_2 != blank %}
+<span>
+{% if block.settings.benefit_2_icon != 'none' %}<span class="sm-benefit-icon sm-benefit-icon--{{ block.settings.benefit_2_icon }}" aria-hidden="true"></span>{% endif %}
+<span class="sm-benefit-label">{{ block.settings.benefit_2 }}</span>
+</span>
+{% endif %}
+{% if block.settings.benefit_3 != blank %}
+<span>
+{% if block.settings.benefit_3_icon != 'none' %}<span class="sm-benefit-icon sm-benefit-icon--{{ block.settings.benefit_3_icon }}" aria-hidden="true"></span>{% endif %}
+<span class="sm-benefit-label">{{ block.settings.benefit_3 }}</span>
+</span>
+{% endif %}
 </div>
 {% endif %}
 </div>
@@ -138,11 +153,9 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"range","id":"mobile_height","min":520,"max":980,"step":20,"unit":"px","label":"Altezza mobile","default":760},
 {"type":"range","id":"radius","min":0,"max":40,"step":2,"unit":"px","label":"Angoli banner","default":0},
 {"type":"select","id":"scroll_effect","label":"Effetto scroll","default":"soft","options":[{"value":"none","label":"Nessuno"},{"value":"soft","label":"Soft luxury"},{"value":"parallax","label":"Parallax"},{"value":"depth","label":"Profondita"}]},
-{"type":"range","id":"scroll_strength","min":5,"max":40,"step":5,"label":"Intensita scroll","default":20},
 {"type":"header","content":"Modello PNG"},
 {"type":"image_picker","id":"model_image","label":"Modello desktop PNG"},
 {"type":"image_picker","id":"mobile_model_image","label":"Modello mobile PNG"},
-{"type":"text","id":"model_alt","label":"Alt modello","default":"Paradise model"},
 {"type":"select","id":"model_side","label":"Posizione modello","default":"left","options":[{"value":"left","label":"Sinistra"},{"value":"right","label":"Destra"}]},
 {"type":"range","id":"model_width","min":24,"max":62,"step":2,"unit":"%","label":"Larghezza modello desktop","default":40},
 {"type":"range","id":"model_x","min":-20,"max":40,"step":2,"unit":"%","label":"Modello X desktop","default":0},
@@ -151,7 +164,6 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"select","id":"mobile_model_position","label":"Modello mobile","default":"overlay","options":[{"value":"overlay","label":"Sovrapposto"},{"value":"above","label":"Sopra testo"},{"value":"below","label":"Sotto testo"}]},
 {"type":"range","id":"mobile_model_x","min":-30,"max":30,"step":2,"unit":"%","label":"Modello X mobile","default":0},
 {"type":"range","id":"mobile_model_y","min":-40,"max":40,"step":2,"unit":"%","label":"Modello Y mobile","default":0},
-{"type":"range","id":"mobile_model_gap","min":0,"max":80,"step":4,"unit":"px","label":"Spazio modello/testo","default":20},
 {"type":"select","id":"model_animation","label":"Animazione modello","default":"float","options":[{"value":"none","label":"Nessuna"},{"value":"float","label":"Float luxury"},{"value":"fade","label":"Fade in"},{"value":"zoom","label":"Zoom soft"}]},
 {"type":"header","content":"Testi"},
 {"type":"text","id":"kicker","label":"Sopratitolo","default":"Corsi online estetici riconosciuti"},
@@ -204,8 +216,11 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"header","content":"Benefit"},
 {"type":"checkbox","id":"show_benefits_mobile","label":"Mostra benefit su mobile","default":true},
 {"type":"select","id":"benefit_weight","label":"Peso benefit","default":"600","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
+{"type":"select","id":"benefit_1_icon","label":"Icona benefit 1","default":"shield","options":[{"value":"none","label":"Nessuna"},{"value":"shield","label":"Shield"},{"value":"clock","label":"Clock"},{"value":"users","label":"Users"},{"value":"award","label":"Award"},{"value":"sparkles","label":"Sparkles"},{"value":"heart","label":"Heart"},{"value":"star","label":"Star"},{"value":"book","label":"Book"},{"value":"check","label":"Check"}]},
 {"type":"text","id":"benefit_1","label":"Benefit 1","default":"Corsi riconosciuti"},
+{"type":"select","id":"benefit_2_icon","label":"Icona benefit 2","default":"clock","options":[{"value":"none","label":"Nessuna"},{"value":"shield","label":"Shield"},{"value":"clock","label":"Clock"},{"value":"users","label":"Users"},{"value":"award","label":"Award"},{"value":"sparkles","label":"Sparkles"},{"value":"heart","label":"Heart"},{"value":"star","label":"Star"},{"value":"book","label":"Book"},{"value":"check","label":"Check"}]},
 {"type":"text","id":"benefit_2","label":"Benefit 2","default":"Studia quando vuoi"},
+{"type":"select","id":"benefit_3_icon","label":"Icona benefit 3","default":"users","options":[{"value":"none","label":"Nessuna"},{"value":"shield","label":"Shield"},{"value":"clock","label":"Clock"},{"value":"users","label":"Users"},{"value":"award","label":"Award"},{"value":"sparkles","label":"Sparkles"},{"value":"heart","label":"Heart"},{"value":"star","label":"Star"},{"value":"book","label":"Book"},{"value":"check","label":"Check"}]},
 {"type":"text","id":"benefit_3","label":"Benefit 3","default":"Supporto reale"}
 ]
 }

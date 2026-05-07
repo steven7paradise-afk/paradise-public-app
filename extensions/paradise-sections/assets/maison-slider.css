@@ -193,13 +193,46 @@
 }
 
 .slider-maison .sm-benefits span {
+  align-items: center;
   border-left: 1px solid color-mix(in srgb, var(--sm-text) 52%, transparent);
   color: color-mix(in srgb, var(--sm-text) 90%, transparent);
+  display: inline-flex;
   font-size: clamp(12px, 1vw, 16px);
   font-weight: var(--sm-benefit-weight);
+  gap: 12px;
   line-height: 1.45;
   max-width: 180px;
   padding-left: 20px;
+}
+
+.slider-maison .sm-benefit-icon {
+  align-items: center;
+  color: var(--sm-accent);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: clamp(20px, 2.1vw, 34px);
+  height: 1em;
+  justify-content: center;
+  line-height: 1;
+  width: 1em;
+}
+
+.slider-maison .sm-benefit-icon::before {
+  content: "";
+}
+
+.slider-maison .sm-benefit-icon--shield::before { content: "◇"; }
+.slider-maison .sm-benefit-icon--clock::before { content: "◷"; }
+.slider-maison .sm-benefit-icon--users::before { content: "♙"; }
+.slider-maison .sm-benefit-icon--award::before { content: "◎"; }
+.slider-maison .sm-benefit-icon--sparkles::before { content: "✦"; }
+.slider-maison .sm-benefit-icon--heart::before { content: "♡"; }
+.slider-maison .sm-benefit-icon--star::before { content: "☆"; }
+.slider-maison .sm-benefit-icon--book::before { content: "▱"; }
+.slider-maison .sm-benefit-icon--check::before { content: "✓"; }
+
+.slider-maison .sm-benefit-label {
+  display: block;
 }
 
 .slider-maison .sm-model {
