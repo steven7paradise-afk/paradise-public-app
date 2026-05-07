@@ -2,7 +2,7 @@
 {% if block.settings.enabled %}
 <section
 id="{{ section_id }}"
-class="slider-maison slider-maison--{{ block.settings.layout }} slider-maison--model-{{ block.settings.model_side }}"
+class="slider-maison slider-maison--{{ block.settings.layout }} slider-maison--model-{{ block.settings.model_side }} slider-maison--mobile-model-{{ block.settings.mobile_model_position }}"
 style="
 --sm-bg: {{ block.settings.background_color }};
 --sm-text: {{ block.settings.text_color }};
@@ -13,9 +13,17 @@ style="
 --sm-radius: {{ block.settings.radius }}px;
 --sm-title: {{ block.settings.title_size }}px;
 --sm-mobile-title: {{ block.settings.mobile_title_size }}px;
+--sm-title-line: {{ block.settings.title_line_height | divided_by: 100.0 }};
+--sm-text-gap: {{ block.settings.text_gap }}px;
+--sm-mobile-text-gap: {{ block.settings.mobile_text_gap }}px;
+--sm-model-mobile-gap: {{ block.settings.mobile_model_gap }}px;
 --sm-content-width: {{ block.settings.content_width }}px;
 --sm-model-width: {{ block.settings.model_width }}%;
 --sm-model-mobile-width: {{ block.settings.mobile_model_width }}%;
+--sm-model-x: {{ block.settings.model_x }}%;
+--sm-model-y: {{ block.settings.model_y }}%;
+--sm-mobile-model-x: {{ block.settings.mobile_model_x }}%;
+--sm-mobile-model-y: {{ block.settings.mobile_model_y }}%;
 --sm-button-bg: {{ block.settings.button_background }};
 --sm-button-text: {{ block.settings.button_text_color }};
 --sm-button-border: {{ block.settings.button_border_color }};
@@ -75,13 +83,13 @@ style="
 </section>
 {% elsif request.design_mode %}
 <div class="paradise-maison-slider-placeholder" {{ block.shopify_attributes }}>
-<strong>Slider Maison disattivato</strong>
+<strong>Banner Ora disattivato</strong>
 <span>Attiva il banner e carica sfondo, modello PNG e testi.</span>
 </div>
 {% endif %}
 {% schema %}
 {
-"name": "Slider Maison",
+"name": "Banner Ora",
 "target": "section",
 "stylesheet": "maison-slider.css",
 "settings": [
@@ -100,7 +108,13 @@ style="
 {"type":"text","id":"model_alt","label":"Alt modello","default":"Paradise model"},
 {"type":"select","id":"model_side","label":"Posizione modello","default":"left","options":[{"value":"left","label":"Sinistra"},{"value":"right","label":"Destra"}]},
 {"type":"range","id":"model_width","min":24,"max":62,"step":2,"unit":"%","label":"Larghezza modello desktop","default":40},
+{"type":"range","id":"model_x","min":-20,"max":40,"step":2,"unit":"%","label":"Modello X desktop","default":0},
+{"type":"range","id":"model_y","min":-30,"max":30,"step":2,"unit":"%","label":"Modello Y desktop","default":0},
 {"type":"range","id":"mobile_model_width","min":45,"max":100,"step":5,"unit":"%","label":"Larghezza modello mobile","default":80},
+{"type":"select","id":"mobile_model_position","label":"Modello mobile","default":"overlay","options":[{"value":"overlay","label":"Sovrapposto"},{"value":"above","label":"Sopra testo"},{"value":"below","label":"Sotto testo"}]},
+{"type":"range","id":"mobile_model_x","min":-30,"max":30,"step":2,"unit":"%","label":"Modello X mobile","default":0},
+{"type":"range","id":"mobile_model_y","min":-40,"max":40,"step":2,"unit":"%","label":"Modello Y mobile","default":0},
+{"type":"range","id":"mobile_model_gap","min":0,"max":80,"step":4,"unit":"px","label":"Spazio modello/testo","default":20},
 {"type":"select","id":"model_animation","label":"Animazione modello","default":"float","options":[{"value":"none","label":"Nessuna"},{"value":"float","label":"Float luxury"},{"value":"fade","label":"Fade in"},{"value":"zoom","label":"Zoom soft"}]},
 {"type":"header","content":"Testi"},
 {"type":"text","id":"kicker","label":"Sopratitolo","default":"Corsi online estetici riconosciuti"},
@@ -112,6 +126,9 @@ style="
 {"type":"range","id":"content_width","min":420,"max":980,"step":20,"unit":"px","label":"Larghezza testo","default":820},
 {"type":"range","id":"title_size","min":38,"max":110,"step":2,"unit":"px","label":"Titolo desktop","default":76},
 {"type":"range","id":"mobile_title_size","min":30,"max":62,"step":2,"unit":"px","label":"Titolo mobile","default":42},
+{"type":"range","id":"title_line_height","min":85,"max":130,"step":5,"unit":"%","label":"Interlinea titolo","default":110},
+{"type":"range","id":"text_gap","min":0,"max":80,"step":4,"unit":"px","label":"Spazio tra testi desktop","default":24},
+{"type":"range","id":"mobile_text_gap","min":0,"max":60,"step":4,"unit":"px","label":"Spazio tra testi mobile","default":20},
 {"type":"color","id":"text_color","label":"Colore testo","default":"#ffffff"},
 {"type":"color","id":"accent_color","label":"Colore evidenziato","default":"#b985ff"},
 {"type":"header","content":"Bottoni"},
