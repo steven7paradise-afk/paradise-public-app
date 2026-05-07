@@ -19,7 +19,7 @@ style="
 --sm-radius: {{ block.settings.radius }}px;
 --sm-title: {{ block.settings.title_size }}px;
 --sm-mobile-title: {{ block.settings.mobile_title_size }}px;
---sm-mobile-title-width: {{ block.settings.mobile_title_width }}%;
+--sm-mobile-title-width: 100%;
 --sm-title-line: {{ block.settings.title_line_height | divided_by: 100.0 }};
 --sm-text-gap: {{ block.settings.text_gap }}px;
 --sm-mobile-text-gap: {{ block.settings.mobile_text_gap }}px;
@@ -58,6 +58,7 @@ style="
 --sm-mobile-button-height: {{ block.settings.mobile_button_height }}px;
 --sm-secondary-text: {{ block.settings.secondary_button_text_color }};
 --sm-secondary-border: {{ block.settings.secondary_button_border_color }};
+--sm-benefit-icon-size: {{ block.settings.benefit_icon_size }}px;
 "
 data-scroll-effect="{{ block.settings.scroll_effect }}"
 {{ block.shopify_attributes }}
@@ -146,7 +147,7 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 "javascript": "maison-slider.js",
 "settings": [
 {"type":"checkbox","id":"enabled","label":"Mostra banner","default":true},
-{"type":"header","content":"Sfondo"},
+{"type":"header","content":"01 - Sfondo e struttura"},
 {"type":"color","id":"background_color","label":"Colore sfondo","default":"#351054"},
 {"type":"image_picker","id":"background_image","label":"Immagine sfondo desktop"},
 {"type":"image_picker","id":"mobile_background_image","label":"Immagine sfondo mobile"},
@@ -156,27 +157,27 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"range","id":"mobile_height","min":520,"max":980,"step":20,"unit":"px","label":"Altezza mobile","default":760},
 {"type":"range","id":"radius","min":0,"max":40,"step":2,"unit":"px","label":"Angoli banner","default":0},
 {"type":"select","id":"scroll_effect","label":"Effetto scroll","default":"soft","options":[{"value":"none","label":"Nessuno"},{"value":"soft","label":"Soft luxury"},{"value":"parallax","label":"Parallax"},{"value":"depth","label":"Profondita"}]},
-{"type":"header","content":"Modello PNG"},
+{"type":"header","content":"02 - Modello PNG"},
 {"type":"image_picker","id":"model_image","label":"Modello desktop PNG"},
 {"type":"image_picker","id":"mobile_model_image","label":"Modello mobile PNG"},
-{"type":"select","id":"model_side","label":"Posizione modello","default":"left","options":[{"value":"left","label":"Sinistra"},{"value":"right","label":"Destra"}]},
+{"type":"select","id":"model_side","label":"Posizione modello desktop","default":"left","options":[{"value":"left","label":"Sinistra"},{"value":"right","label":"Destra"}]},
 {"type":"range","id":"model_width","min":24,"max":62,"step":2,"unit":"%","label":"Larghezza modello desktop","default":40},
 {"type":"range","id":"model_x","min":-20,"max":40,"step":2,"unit":"%","label":"Modello X desktop","default":0},
 {"type":"range","id":"model_y","min":-30,"max":30,"step":2,"unit":"%","label":"Modello Y desktop","default":0},
 {"type":"range","id":"mobile_model_width","min":45,"max":100,"step":5,"unit":"%","label":"Larghezza modello mobile","default":80},
-{"type":"select","id":"mobile_model_position","label":"Modello mobile","default":"overlay","options":[{"value":"overlay","label":"Sovrapposto"},{"value":"above","label":"Sopra testo"},{"value":"below","label":"Sotto testo"}]},
+{"type":"select","id":"mobile_model_position","label":"Posizione modello mobile","default":"overlay","options":[{"value":"overlay","label":"Sovrapposto"},{"value":"above","label":"Sopra testo"},{"value":"below","label":"Sotto testo"}]},
 {"type":"range","id":"mobile_model_x","min":-30,"max":30,"step":2,"unit":"%","label":"Modello X mobile","default":0},
 {"type":"range","id":"mobile_model_y","min":-40,"max":40,"step":2,"unit":"%","label":"Modello Y mobile","default":0},
 {"type":"select","id":"model_animation","label":"Animazione modello","default":"float","options":[{"value":"none","label":"Nessuna"},{"value":"float","label":"Float luxury"},{"value":"fade","label":"Fade in"},{"value":"zoom","label":"Zoom soft"}]},
-{"type":"header","content":"Testi"},
-{"type":"text","id":"kicker","label":"Sopratitolo","default":"Corsi online estetici riconosciuti"},
-{"type":"text","id":"title","label":"Titolo","default":"Diventa l'estetista che le clienti"},
-{"type":"text","id":"highlight","label":"Parola evidenziata","default":"scelgono,"},
-{"type":"text","id":"subtitle","label":"Sottotitolo","default":"non quella che costa meno."},
-{"type":"richtext","id":"description","label":"Descrizione","default":"<p>Docente digitale + supporto reale. Solo qui.</p>"},
-{"type":"select","id":"text_position","label":"Posizione testo","default":"right","options":[{"value":"left","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"right","label":"Destra"}]},
-{"type":"select","id":"mobile_copy_flow","label":"Testo mobile","default":"together","options":[{"value":"together","label":"Tutto insieme"},{"value":"split","label":"Titolo sopra immagine"}]},
-{"type":"range","id":"content_width","min":420,"max":980,"step":20,"unit":"px","label":"Larghezza testo","default":820},
+{"type":"header","content":"03 - Testi e posizione"},
+{"type":"text","id":"kicker","label":"Sopratitolo / piccolo testo sopra","default":"Corsi online estetici riconosciuti"},
+{"type":"text","id":"title","label":"Titolo principale","default":"Diventa l'estetista che le clienti"},
+{"type":"text","id":"highlight","label":"Parola evidenziata nel titolo","default":"scelgono,"},
+{"type":"text","id":"subtitle","label":"Sottotitolo / frase sotto titolo","default":"non quella che costa meno."},
+{"type":"richtext","id":"description","label":"Descrizione / testo piccolo","default":"<p>Docente digitale + supporto reale. Solo qui.</p>"},
+{"type":"select","id":"text_position","label":"Allineamento testo desktop","default":"right","options":[{"value":"left","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"right","label":"Destra"}]},
+{"type":"select","id":"mobile_copy_flow","label":"Composizione testo mobile","default":"together","options":[{"value":"together","label":"Tutto insieme"},{"value":"split","label":"Titolo sopra immagine"}]},
+{"type":"range","id":"content_width","min":420,"max":980,"step":20,"unit":"px","label":"Larghezza blocco testo desktop","default":820},
 {"type":"range","id":"text_x","min":-30,"max":30,"step":2,"unit":"%","label":"Testo X desktop","default":0},
 {"type":"range","id":"text_y","min":-30,"max":30,"step":2,"unit":"%","label":"Testo Y desktop","default":0},
 {"type":"range","id":"mobile_text_x","min":-30,"max":30,"step":2,"unit":"%","label":"Testo X mobile","default":0},
@@ -191,17 +192,16 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"select","id":"description_weight","label":"Peso descrizione","default":"600","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
 {"type":"range","id":"title_size","min":38,"max":110,"step":2,"unit":"px","label":"Titolo desktop","default":76},
 {"type":"range","id":"mobile_title_size","min":30,"max":62,"step":2,"unit":"px","label":"Titolo mobile","default":42},
-{"type":"range","id":"mobile_title_width","min":45,"max":100,"step":5,"unit":"%","label":"Larghezza titolo mobile","default":100},
 {"type":"range","id":"title_line_height","min":85,"max":130,"step":5,"unit":"%","label":"Interlinea titolo","default":110},
 {"type":"range","id":"text_gap","min":0,"max":80,"step":4,"unit":"px","label":"Spazio tra testi desktop","default":24},
 {"type":"range","id":"mobile_text_gap","min":0,"max":60,"step":4,"unit":"px","label":"Spazio tra testi mobile","default":20},
 {"type":"color","id":"text_color","label":"Colore testo","default":"#ffffff"},
 {"type":"color","id":"accent_color","label":"Colore evidenziato","default":"#b985ff"},
-{"type":"header","content":"Bottoni"},
-{"type":"text","id":"primary_label","label":"Testo bottone principale","default":"Scopri il percorso giusto per te"},
-{"type":"url","id":"primary_link","label":"Link bottone principale"},
-{"type":"text","id":"secondary_label","label":"Testo bottone secondario","default":"Guarda i corsi"},
-{"type":"url","id":"secondary_link","label":"Link bottone secondario"},
+{"type":"header","content":"04 - Bottoni"},
+{"type":"text","id":"primary_label","label":"Bottone 1 - testo","default":"Scopri il percorso giusto per te"},
+{"type":"url","id":"primary_link","label":"Bottone 1 - link"},
+{"type":"text","id":"secondary_label","label":"Bottone 2 - testo","default":"Guarda i corsi"},
+{"type":"url","id":"secondary_link","label":"Bottone 2 - link"},
 {"type":"select","id":"button_desktop_position","label":"Posizione bottoni desktop","default":"flex-start","options":[{"value":"flex-start","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"flex-end","label":"Destra"}]},
 {"type":"range","id":"button_desktop_width","min":140,"max":520,"step":20,"unit":"px","label":"Larghezza bottoni desktop","default":300},
 {"type":"range","id":"button_desktop_size","min":11,"max":24,"step":1,"unit":"px","label":"Testo bottoni desktop","default":16},
@@ -210,21 +210,22 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"range","id":"mobile_button_size","min":10,"max":18,"step":1,"unit":"px","label":"Testo bottoni mobile","default":12},
 {"type":"range","id":"mobile_button_height","min":38,"max":64,"step":2,"unit":"px","label":"Altezza bottoni mobile","default":46},
 {"type":"select","id":"button_weight","label":"Peso bottoni","default":"800","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
-{"type":"color","id":"button_background","label":"Sfondo bottone","default":"#ff4f62"},
-{"type":"color","id":"button_text_color","label":"Testo bottone","default":"#ffffff"},
-{"type":"color","id":"button_border_color","label":"Bordo bottone","default":"#ff4f62"},
-{"type":"color","id":"secondary_button_text_color","label":"Testo bottone secondario","default":"#ffffff"},
-{"type":"color","id":"secondary_button_border_color","label":"Bordo bottone secondario","default":"#b985ff"},
+{"type":"color","id":"button_background","label":"Bottone 1 - sfondo","default":"#ff4f62"},
+{"type":"color","id":"button_text_color","label":"Bottone 1 - testo","default":"#ffffff"},
+{"type":"color","id":"button_border_color","label":"Bottone 1 - bordo","default":"#ff4f62"},
+{"type":"color","id":"secondary_button_text_color","label":"Bottone 2 - testo","default":"#ffffff"},
+{"type":"color","id":"secondary_button_border_color","label":"Bottone 2 - bordo","default":"#b985ff"},
 {"type":"range","id":"button_radius","min":0,"max":40,"step":2,"unit":"px","label":"Angoli bottone","default":8},
-{"type":"header","content":"Benefit"},
+{"type":"header","content":"05 - Benefit / icone"},
 {"type":"checkbox","id":"show_benefits_mobile","label":"Mostra benefit su mobile","default":true},
 {"type":"select","id":"benefit_weight","label":"Peso benefit","default":"600","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
-{"type":"text","id":"benefit_1_icon","label":"Codice icona benefit 1","default":"shield","info":"Catalogo completo: lucide.dev/icons. Esempi: credit-card, shield-check, graduation-cap. Lascia vuoto o scrivi none per nascondere."},
-{"type":"text","id":"benefit_1","label":"Benefit 1","default":"Corsi riconosciuti"},
-{"type":"text","id":"benefit_2_icon","label":"Codice icona benefit 2","default":"clock","info":"Scrivi il nome dell'icona Lucide, per esempio clock, credit-card o sparkles."},
-{"type":"text","id":"benefit_2","label":"Benefit 2","default":"Studia quando vuoi"},
-{"type":"text","id":"benefit_3_icon","label":"Codice icona benefit 3","default":"users","info":"Scrivi il nome dell'icona Lucide. Esempio: users, badge-check, heart-handshake."},
-{"type":"text","id":"benefit_3","label":"Benefit 3","default":"Supporto reale"}
+{"type":"range","id":"benefit_icon_size","min":12,"max":56,"step":1,"unit":"px","label":"Dimensione icone benefit","default":28},
+{"type":"text","id":"benefit_1_icon","label":"Icona 1 - codice Lucide","default":"shield","info":"Scrivi solo il codice icona, per esempio credit-card, mouse-pointer, shield-check. Catalogo: lucide.dev/icons."},
+{"type":"text","id":"benefit_1","label":"Testo benefit 1","default":"Corsi riconosciuti"},
+{"type":"text","id":"benefit_2_icon","label":"Icona 2 - codice Lucide","default":"book","info":"Scrivi solo il codice icona, per esempio book, clock, graduation-cap."},
+{"type":"text","id":"benefit_2","label":"Testo benefit 2","default":"Studia quando vuoi"},
+{"type":"text","id":"benefit_3_icon","label":"Icona 3 - codice Lucide","default":"users","info":"Scrivi solo il codice icona, per esempio users, heart-handshake, badge-check."},
+{"type":"text","id":"benefit_3","label":"Testo benefit 3","default":"Supporto reale"}
 ]
 }
 {% endschema %}
