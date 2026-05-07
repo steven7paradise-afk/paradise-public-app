@@ -23,6 +23,10 @@ style="
 --sm-text-y: {{ block.settings.text_y }}%;
 --sm-mobile-text-x: {{ block.settings.mobile_text_x }}%;
 --sm-mobile-text-y: {{ block.settings.mobile_text_y }}%;
+--sm-bottom-x: {{ block.settings.bottom_text_x }}%;
+--sm-bottom-y: {{ block.settings.bottom_text_y }}%;
+--sm-mobile-bottom-x: {{ block.settings.mobile_bottom_text_x }}%;
+--sm-mobile-bottom-y: {{ block.settings.mobile_bottom_text_y }}%;
 --sm-model-width: {{ block.settings.model_width }}%;
 --sm-model-mobile-width: {{ block.settings.mobile_model_width }}%;
 --sm-model-x: {{ block.settings.model_x }}%;
@@ -145,6 +149,10 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"range","id":"text_y","min":-30,"max":30,"step":2,"unit":"%","label":"Testo Y desktop","default":0},
 {"type":"range","id":"mobile_text_x","min":-30,"max":30,"step":2,"unit":"%","label":"Testo X mobile","default":0},
 {"type":"range","id":"mobile_text_y","min":-30,"max":30,"step":2,"unit":"%","label":"Testo Y mobile","default":0},
+{"type":"range","id":"bottom_text_x","min":-40,"max":40,"step":2,"unit":"%","label":"Sottotitolo/descrizione X desktop","default":0},
+{"type":"range","id":"bottom_text_y","min":-40,"max":40,"step":2,"unit":"%","label":"Sottotitolo/descrizione Y desktop","default":0},
+{"type":"range","id":"mobile_bottom_text_x","min":-40,"max":40,"step":2,"unit":"%","label":"Sottotitolo/descrizione X mobile","default":0},
+{"type":"range","id":"mobile_bottom_text_y","min":-40,"max":40,"step":2,"unit":"%","label":"Sottotitolo/descrizione Y mobile","default":0},
 {"type":"range","id":"title_size","min":38,"max":110,"step":2,"unit":"px","label":"Titolo desktop","default":76},
 {"type":"range","id":"mobile_title_size","min":30,"max":62,"step":2,"unit":"px","label":"Titolo mobile","default":42},
 {"type":"range","id":"title_line_height","min":85,"max":130,"step":5,"unit":"%","label":"Interlinea titolo","default":110},
