@@ -287,6 +287,11 @@ style="
 {% endif %}
 {% if grid_collection != blank and grid_collection.products_count > 0 %}
 {% assign adv_rendered = false %}
+<div class="pcg-search" data-product-search-wrap>
+<label class="pcg-search-label" for="pcg-search-{{ block.id }}">Cerca prodotto</label>
+<input id="pcg-search-{{ block.id }}" class="pcg-search-input" type="search" placeholder="Cerca per nome prodotto..." autocomplete="off" data-product-search>
+<button class="pcg-search-clear" type="button" data-product-search-clear aria-label="Cancella ricerca">×</button>
+</div>
 {% if block.settings.show_view_toolbar %}
 <div class="pcg-toolbar" data-grid-toolbar>
 <div class="pcg-view-buttons" aria-label="Cambia vista prodotti">
@@ -310,7 +315,7 @@ style="
 {% for product in grid_collection.products limit: block.settings.product_limit %}
 {% assign product_number = forloop.index %}
 {% assign product_variant = product.selected_or_first_available_variant %}
-<article class="pcg-product-card{% if block.settings.enable_load_more and product_number > block.settings.initial_visible_products %} pcg-product-card--hidden{% endif %}" data-product-card>
+<article class="pcg-product-card{% if block.settings.enable_load_more and product_number > block.settings.initial_visible_products %} pcg-product-card--hidden{% endif %}" data-product-card data-product-search-text="{{ product.title | append: ' ' | append: product.vendor | downcase | escape }}">
 <a class="pcg-product-media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
 {% if block.settings.show_discount_badge and product.compare_at_price > product.price %}
 {% assign discount_amount = product.compare_at_price | minus: product.price %}
@@ -396,6 +401,7 @@ Esaurito
 {% endif %}
 {% endif %}
 {% endfor %}
+<div class="pcg-search-empty" data-product-search-empty>Nessun prodotto trovato.</div>
 {% if adv_rendered == false and should_render_adv %}
 {{ paradise_adv_card }}
 {% endif %}
@@ -455,10 +461,10 @@ Esaurito
 "type": "range",
 "id": "product_limit",
 "min": 4,
-"max": 48,
+"max": 50,
 "step": 1,
 "label": "Numero prodotti",
-"default": 24
+"default": 50
 },
 {
 "type": "checkbox",
