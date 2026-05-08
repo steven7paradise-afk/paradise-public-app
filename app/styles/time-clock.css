@@ -1,6 +1,15 @@
 .workers-admin {
   display: grid;
-  gap: 18px;
+  gap: 16px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding-bottom: 28px;
+}
+
+s-page:has(.workers-admin) {
+  background:
+    radial-gradient(circle at 50% 0, rgba(246, 200, 223, 0.32), transparent 360px),
+    #f8f7f7;
 }
 
 .workers-hero {
@@ -9,12 +18,12 @@
   gap: 20px;
   align-items: end;
   border: 1px solid rgba(34, 31, 32, 0.08);
-  border-radius: 16px;
-  padding: 26px;
+  border-radius: 12px;
+  padding: 22px 24px;
   background:
     linear-gradient(135deg, rgba(246, 200, 223, 0.92), rgba(255, 248, 251, 0.96)),
     #fff8fb;
-  box-shadow: 0 18px 44px rgba(89, 42, 66, 0.1);
+  box-shadow: 0 14px 34px rgba(89, 42, 66, 0.08);
 }
 
 .workers-hero span {
@@ -30,7 +39,7 @@
 .workers-hero h2 {
   margin: 0;
   color: #221f20;
-  font-size: 34px;
+  font-size: 32px;
   line-height: 1.05;
   letter-spacing: 0;
 }
@@ -52,17 +61,17 @@
 
 .workers-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.75fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.72fr);
+  gap: 16px;
   align-items: start;
 }
 
 .workers-card {
   border: 1px solid rgba(34, 31, 32, 0.08);
-  border-radius: 16px;
-  padding: 22px;
+  border-radius: 12px;
+  padding: 20px;
   background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 16px 38px rgba(89, 42, 66, 0.07);
+  box-shadow: 0 14px 32px rgba(89, 42, 66, 0.06);
 }
 
 .workers-card-primary {
@@ -74,23 +83,24 @@
 .tc-form-grid,
 .tc-edit-form {
   display: grid;
-  gap: 16px;
+  gap: 14px;
   max-width: 900px;
 }
 
 .tc-form-grid {
   grid-template-columns: repeat(2, minmax(220px, 1fr));
+  align-items: start;
 }
 
 .tc-section-intro {
-  margin: 0 0 18px;
+  margin: 0 0 16px;
   max-width: 680px;
 }
 
 .tc-section-intro h2 {
   margin: 0 0 4px;
   color: #221f20;
-  font-size: 24px;
+  font-size: 25px;
   line-height: 1.15;
   letter-spacing: 0;
 }
@@ -124,10 +134,15 @@
   width: 100%;
   border: 1px solid #e2c8d3;
   border-radius: 8px;
-  padding: 13px 14px;
+  padding: 11px 13px;
   font: inherit;
   background: #fffdfd;
-  min-height: 46px;
+  min-height: 44px;
+}
+
+.tc-form-grid input,
+.tc-form-grid select {
+  height: 44px;
 }
 
 .tc-form-grid input:focus,
@@ -144,6 +159,24 @@
   color: #7b626d;
   font-size: 12px;
   line-height: 1.45;
+}
+
+.pin-field {
+  border: 1px solid #f0d4df;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff8fb;
+}
+
+.pin-field input {
+  height: 56px;
+  border-color: transparent;
+  background: #fff;
+  color: #160b12;
+  font-size: 24px;
+  font-weight: 850;
+  text-align: center;
+  letter-spacing: 0.08em;
 }
 
 .tc-form-grid button,
@@ -169,7 +202,7 @@
 
 .tc-form-action button {
   width: 100%;
-  min-height: 46px;
+  min-height: 48px;
 }
 
 .tc-checkbox {
@@ -192,6 +225,7 @@
 
 .tc-inline-form input {
   flex: 1 1 280px;
+  height: 48px;
 }
 
 .tc-location-list {
@@ -207,7 +241,7 @@
   align-items: center;
   gap: 12px;
   border: 1px solid #eadde1;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 12px 14px;
   background: #fff8fb;
   box-shadow: inset 4px 0 0 #f6c8df;
@@ -245,7 +279,7 @@
 .tc-table th,
 .tc-table td {
   border-bottom: 1px solid #eadde1;
-  padding: 14px 12px;
+  padding: 13px 12px;
   text-align: left;
   vertical-align: middle;
 }
