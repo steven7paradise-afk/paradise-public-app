@@ -34,7 +34,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       include: { location: true },
       orderBy: [{ active: "desc" }, { name: "asc" }],
     }),
-    prisma.location.findMany({ where: { shopId: shop.id, active: true }, orderBy: { name: "asc" } }),
+    prisma.location.findMany({ where: { shopId: shop.id }, orderBy: [{ active: "desc" }, { name: "asc" }] }),
   ]);
 
   return { workers, locations, suggestedPin: await generateUniquePin(shop.id) };
@@ -59,13 +59,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return { success: "Lavoratore disattivato senza cancellare lo storico." };
   }
 
-  if (intent === "deactivateLocation") {
+  if (intent === "activateWorker") {
+    const id = String(formData.get("workerId") || "");
+    await prisma.worker.update({ where: { id }, data: { active: true } });
+    return { success: "Lavoratore riattivato." };
+  }
+
+  if (intent === "toggleLocation") {
     const id = String(formData.get("locationId") || "");
-    await prisma.$transaction([
-      prisma.worker.updateMany({ where: { locationId: id }, data: { locationId: null } }),
-      prisma.location.update({ where: { id }, data: { active: false } }),
-    ]);
-    return { success: "Sede disattivata. I lavoratori collegati sono stati spostati su nessuna sede." };
+    const active = String(formData.get("active") || "") === "true";
+
+    if (active) {
+      await prisma.location.update({ where: { id }, data: { active: true } });
+      return { success: "Sede riattivata." };
+    }
+
+    await prisma.location.update({ where: { id }, data: { active: false } });
+    return { success: "Sede disattivata senza cancellare lo storico." };
   }
 
   const pin = String(formData.get("pin") || "").trim() || (await generateUniquePin(shop.id));
@@ -122,7 +132,7 @@ export default function WorkersPage() {
             Sede
             <select name="locationId">
               <option value="">Nessuna sede</option>
-              {locations.map((location) => (
+              {locations.filter((location) => location.active).map((location) => (
                 <option key={location.id} value={location.id}>
                   {location.name}
                 </option>
@@ -150,12 +160,13 @@ export default function WorkersPage() {
         </Form>
         <div className="tc-location-list">
           {locations.map((location) => (
-            <div key={location.id}>
+            <div key={location.id} className={!location.active ? "tc-muted-row" : ""}>
               <span>{location.name}</span>
               <Form method="post">
-                <input type="hidden" name="intent" value="deactivateLocation" />
+                <input type="hidden" name="intent" value="toggleLocation" />
                 <input type="hidden" name="locationId" value={location.id} />
-                <button type="submit">Disattiva</button>
+                <input type="hidden" name="active" value={String(!location.active)} />
+                <button type="submit">{location.active ? "Disattiva" : "Attiva"}</button>
               </Form>
             </div>
           ))}
@@ -196,7 +207,11 @@ export default function WorkersPage() {
                         <button type="submit">Disattiva</button>
                       </Form>
                     ) : (
-                      "-"
+                      <Form method="post">
+                        <input type="hidden" name="intent" value="activateWorker" />
+                        <input type="hidden" name="workerId" value={worker.id} />
+                        <button type="submit">Attiva</button>
+                      </Form>
                     )}
                   </td>
                 </tr>

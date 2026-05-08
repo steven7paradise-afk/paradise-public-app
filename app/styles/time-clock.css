@@ -90,6 +90,16 @@
   font-weight: 750;
 }
 
+.tc-muted-row {
+  opacity: 0.58;
+}
+
+.tc-muted-row span::after {
+  content: " (disattivata)";
+  color: #8f7781;
+  font-weight: 650;
+}
+
 .tc-table-wrap {
   overflow-x: auto;
 }
