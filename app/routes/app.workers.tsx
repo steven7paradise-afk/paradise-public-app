@@ -1,10 +1,29 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { Form, useActionData, useLoaderData } from "react-router";
+import { randomInt } from "node:crypto";
 
 import prisma from "../db.server";
 import { authenticate } from "../shopify.server";
 import { hashPin, validPin } from "../services/auth.server";
 import { ensureShopSettings } from "../services/shop-settings.server";
+
+function randomPin() {
+  return String(randomInt(0, 10000)).padStart(4, "0");
+}
+
+async function generateUniquePin(shopId: string) {
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const pin = randomPin();
+    const existing = await prisma.worker.findFirst({
+      where: { shopId, pinHash: hashPin(pin), active: true },
+      select: { id: true },
+    });
+
+    if (!existing) return pin;
+  }
+
+  throw new Error("Non riesco a generare un PIN libero. Riprova.");
+}
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
@@ -18,7 +37,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     prisma.location.findMany({ where: { shopId: shop.id, active: true }, orderBy: { name: "asc" } }),
   ]);
 
-  return { workers, locations };
+  return { workers, locations, suggestedPin: await generateUniquePin(shop.id) };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -49,7 +68,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return { success: "Sede disattivata. I lavoratori collegati sono stati spostati su nessuna sede." };
   }
 
-  const pin = String(formData.get("pin") || "").trim();
+  const pin = String(formData.get("pin") || "").trim() || (await generateUniquePin(shop.id));
   const name = String(formData.get("name") || "").trim();
 
   if (!name) return { error: "Inserisci il nome del lavoratore." };
@@ -76,7 +95,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function WorkersPage() {
-  const { workers, locations } = useLoaderData<typeof loader>();
+  const { workers, locations, suggestedPin } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
 
   return (
@@ -116,7 +135,8 @@ export default function WorkersPage() {
           </label>
           <label>
             PIN 4 cifre
-            <input name="pin" inputMode="numeric" minLength={4} maxLength={4} required />
+            <input name="pin" inputMode="numeric" minLength={4} maxLength={4} defaultValue={suggestedPin} />
+            <small>Codice generato automaticamente. Puoi cambiarlo prima di salvare.</small>
           </label>
           <button type="submit">Aggiungi lavoratore</button>
         </Form>
