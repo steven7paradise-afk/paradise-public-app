@@ -113,127 +113,150 @@ export default function WorkersPage() {
       {actionData?.error ? <s-banner tone="critical">{actionData.error}</s-banner> : null}
       {actionData?.success ? <s-banner tone="success">{actionData.success}</s-banner> : null}
 
-      <s-section heading="Nuovo lavoratore">
-        <div className="tc-section-intro">
-          <h2>Nuovo profilo</h2>
-          <p>Aggiungi dati, sede e PIN personale. Il codice e gia pronto, ma puoi cambiarlo.</p>
-        </div>
-        <Form method="post" className="tc-form-grid">
-          <input type="hidden" name="intent" value="createWorker" />
-          <label>
-            Nome
-            <input name="name" required />
-          </label>
-          <label>
-            Ruolo
-            <input name="role" />
-          </label>
-          <label>
-            Email
-            <input name="email" type="email" />
-          </label>
-          <label>
-            Sede
-            <select name="locationId">
-              <option value="">Nessuna sede</option>
-              {locations.filter((location) => location.active).map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            URL foto
-            <input name="photoUrl" placeholder="https://..." />
-          </label>
-          <label>
-            PIN 4 cifre
-            <input name="pin" inputMode="numeric" minLength={4} maxLength={4} defaultValue={suggestedPin} />
-            <small>Codice generato automaticamente. Puoi cambiarlo prima di salvare.</small>
-          </label>
-          <div className="tc-form-action">
-            <button type="submit">Aggiungi lavoratore</button>
+      <div className="workers-admin">
+        <div className="workers-hero">
+          <div>
+            <span>Team Paradise</span>
+            <h2>Lavoratori e sedi</h2>
+            <p>Gestisci profili, PIN e sedi operative da un unico pannello pulito.</p>
           </div>
-        </Form>
-      </s-section>
-
-      <s-section heading="Sedi">
-        <div className="tc-section-intro">
-          <h2>Sedi operative</h2>
-          <p>Gestisci le sedi senza perdere lo storico delle timbrature gia registrate.</p>
+          <strong>{workers.filter((worker) => worker.active).length} attivi</strong>
         </div>
-        <Form method="post" className="tc-inline-form">
-          <input type="hidden" name="intent" value="createLocation" />
-          <input name="locationName" placeholder="Nuova sede" />
-          <button type="submit">Aggiungi sede</button>
-        </Form>
-        <div className="tc-location-list">
-          {locations.map((location) => (
-            <div key={location.id} className={!location.active ? "tc-muted-row" : ""}>
-              <span>{location.name}</span>
-              <Form method="post">
-                <input type="hidden" name="intent" value="toggleLocation" />
-                <input type="hidden" name="locationId" value={location.id} />
-                <input type="hidden" name="active" value={String(!location.active)} />
-                <button type="submit">{location.active ? "Disattiva" : "Attiva"}</button>
-              </Form>
+
+        <div className="workers-grid">
+          <section className="workers-card workers-card-primary">
+            <div className="tc-section-intro">
+              <h2>Nuovo profilo</h2>
+              <p>Il PIN e gia generato, ma puoi cambiarlo prima di salvare.</p>
             </div>
-          ))}
-        </div>
-      </s-section>
+            <Form method="post" className="tc-form-grid">
+              <input type="hidden" name="intent" value="createWorker" />
+              <label>
+                Nome
+                <input name="name" required />
+              </label>
+              <label>
+                Ruolo
+                <input name="role" />
+              </label>
+              <label>
+                Email
+                <input name="email" type="email" />
+              </label>
+              <label>
+                Sede
+                <select name="locationId">
+                  <option value="">Nessuna sede</option>
+                  {locations
+                    .filter((location) => location.active)
+                    .map((location) => (
+                      <option key={location.id} value={location.id}>
+                        {location.name}
+                      </option>
+                    ))}
+                </select>
+              </label>
+              <label>
+                URL foto
+                <input name="photoUrl" placeholder="https://..." />
+              </label>
+              <label className="pin-field">
+                PIN 4 cifre
+                <input name="pin" inputMode="numeric" minLength={4} maxLength={4} defaultValue={suggestedPin} />
+                <small>Codice automatico modificabile.</small>
+              </label>
+              <div className="tc-form-action">
+                <button type="submit">Aggiungi lavoratore</button>
+              </div>
+            </Form>
+          </section>
 
-      <s-section heading="Elenco lavoratori">
-        <div className="tc-section-intro">
-          <h2>Team</h2>
-          <p>Disattiva o riattiva un lavoratore senza cancellare dati e report.</p>
-        </div>
-        <div className="tc-table-wrap">
-          <table className="tc-table">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Ruolo</th>
-                <th>Email</th>
-                <th>Sede</th>
-                <th>Stato</th>
-                <th>Azione</th>
-              </tr>
-            </thead>
-            <tbody>
-              {workers.map((worker) => (
-                <tr key={worker.id}>
-                  <td>
-                    <div className="tc-worker-cell">
-                      {worker.photoUrl ? <img src={worker.photoUrl} alt="" /> : <span>{worker.name.charAt(0).toUpperCase()}</span>}
-                      {worker.name}
-                    </div>
-                  </td>
-                  <td>{worker.role || "-"}</td>
-                  <td>{worker.email || "-"}</td>
-                  <td>{worker.location?.name || "-"}</td>
-                  <td>{worker.active ? "Attivo" : "Disattivato"}</td>
-                  <td>
-                    {worker.active ? (
-                      <Form method="post">
-                        <input type="hidden" name="intent" value="deactivateWorker" />
-                        <input type="hidden" name="workerId" value={worker.id} />
-                        <button type="submit">Disattiva</button>
-                      </Form>
-                    ) : (
-                      <Form method="post">
-                        <input type="hidden" name="intent" value="activateWorker" />
-                        <input type="hidden" name="workerId" value={worker.id} />
-                        <button type="submit">Attiva</button>
-                      </Form>
-                    )}
-                  </td>
-                </tr>
+          <section className="workers-card">
+            <div className="tc-section-intro">
+              <h2>Sedi operative</h2>
+              <p>Attiva o sospendi una sede senza cancellare lo storico.</p>
+            </div>
+            <Form method="post" className="tc-inline-form">
+              <input type="hidden" name="intent" value="createLocation" />
+              <input name="locationName" placeholder="Nuova sede" />
+              <button type="submit">Aggiungi</button>
+            </Form>
+            <div className="tc-location-list">
+              {locations.map((location) => (
+                <div key={location.id} className={!location.active ? "tc-muted-row" : ""}>
+                  <span>{location.name}</span>
+                  <Form method="post">
+                    <input type="hidden" name="intent" value="toggleLocation" />
+                    <input type="hidden" name="locationId" value={location.id} />
+                    <input type="hidden" name="active" value={String(!location.active)} />
+                    <button type="submit">{location.active ? "Disattiva" : "Attiva"}</button>
+                  </Form>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </section>
         </div>
-      </s-section>
+
+        <section className="workers-card">
+          <div className="tc-section-intro">
+            <h2>Team</h2>
+            <p>Disattiva o riattiva un lavoratore senza cancellare dati e report.</p>
+          </div>
+          <div className="tc-table-wrap">
+            <table className="tc-table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Ruolo</th>
+                  <th>Email</th>
+                  <th>Sede</th>
+                  <th>Stato</th>
+                  <th>Azione</th>
+                </tr>
+              </thead>
+              <tbody>
+                {workers.map((worker) => (
+                  <tr key={worker.id}>
+                    <td>
+                      <div className="tc-worker-cell">
+                        {worker.photoUrl ? (
+                          <img src={worker.photoUrl} alt="" />
+                        ) : (
+                          <span>{worker.name.charAt(0).toUpperCase()}</span>
+                        )}
+                        {worker.name}
+                      </div>
+                    </td>
+                    <td>{worker.role || "-"}</td>
+                    <td>{worker.email || "-"}</td>
+                    <td>{worker.location?.name || "-"}</td>
+                    <td>
+                      <span className={worker.active ? "status-pill status-pill-active" : "status-pill status-pill-off"}>
+                        {worker.active ? "Attivo" : "Disattivato"}
+                      </span>
+                    </td>
+                    <td>
+                      {worker.active ? (
+                        <Form method="post">
+                          <input type="hidden" name="intent" value="deactivateWorker" />
+                          <input type="hidden" name="workerId" value={worker.id} />
+                          <button type="submit">Disattiva</button>
+                        </Form>
+                      ) : (
+                        <Form method="post">
+                          <input type="hidden" name="intent" value="activateWorker" />
+                          <input type="hidden" name="workerId" value={worker.id} />
+                          <button type="submit">Attiva</button>
+                        </Form>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
     </s-page>
   );
 }
