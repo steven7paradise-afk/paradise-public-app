@@ -153,6 +153,7 @@
 
         popup.hidden = false;
         document.body.classList.add("sm-popup-lock");
+        refreshEmbeddedWidgets(popup);
 
         var close = popup.querySelector("[data-sm-popup-close]");
         if (close) {
@@ -161,6 +162,35 @@
           });
         }
       });
+    });
+  }
+
+  function refreshEmbeddedWidgets(root) {
+    var scope = root || document;
+    var events = ["cowlendar:init", "cowlendar:load", "cowlendar:refresh"];
+    events.forEach(function (name) {
+      document.dispatchEvent(new CustomEvent(name, { detail: { root: scope } }));
+      window.dispatchEvent(new CustomEvent(name, { detail: { root: scope } }));
+    });
+
+    [window.Cowlendar, window.cowlendar, window.CowlendarBooking].forEach(function (api) {
+      if (!api) return;
+      ["init", "load", "render", "refresh"].forEach(function (method) {
+        if (typeof api[method] === "function") {
+          try {
+            api[method](scope);
+          } catch (error) {}
+        }
+      });
+    });
+
+    document.querySelectorAll('script[src*="cowlendar"], script[src*="cowcalendar"]').forEach(function (script) {
+      if (script.dataset.smReloaded === "true") return;
+      script.dataset.smReloaded = "true";
+      var clone = document.createElement("script");
+      clone.src = script.src;
+      clone.async = true;
+      document.head.appendChild(clone);
     });
   }
 

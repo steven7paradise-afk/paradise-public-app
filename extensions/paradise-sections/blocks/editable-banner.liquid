@@ -102,21 +102,31 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {% if block.settings.primary_label != blank or block.settings.secondary_label != blank %}
 {% assign primary_action = block.settings.primary_link | strip %}
 {% assign secondary_action = block.settings.secondary_link | strip %}
+{% assign primary_popup_html = primary_action %}
+{% assign secondary_popup_html = secondary_action %}
 {% assign primary_is_popup = false %}
 {% assign secondary_is_popup = false %}
 {% if primary_action contains '<' %}{% assign primary_is_popup = true %}{% endif %}
 {% if secondary_action contains '<' %}{% assign secondary_is_popup = true %}{% endif %}
+{% if primary_action contains 'cowlendar-section' %}
+{% assign primary_is_popup = true %}
+{% unless primary_action contains '<' %}{% capture primary_popup_html %}<div class="{{ primary_action | escape }}"></div>{% endcapture %}{% endunless %}
+{% endif %}
+{% if secondary_action contains 'cowlendar-section' %}
+{% assign secondary_is_popup = true %}
+{% unless secondary_action contains '<' %}{% capture secondary_popup_html %}<div class="{{ secondary_action | escape }}"></div>{% endcapture %}{% endunless %}
+{% endif %}
 <div class="sm-actions">
 {% if block.settings.primary_label != blank and primary_action != blank %}
 {% if primary_is_popup %}
-<button class="sm-button sm-button--primary" type="button" data-sm-popup-open="primary-{{ block.id }}" data-sm-popup-html="{{ primary_action | escape }}">{{ block.settings.primary_label }}</button>
+<button class="sm-button sm-button--primary" type="button" data-sm-popup-open="primary-{{ block.id }}" data-sm-popup-html="{{ primary_popup_html | escape }}">{{ block.settings.primary_label }}</button>
 {% else %}
 <a class="sm-button sm-button--primary" href="{{ primary_action }}">{{ block.settings.primary_label }}</a>
 {% endif %}
 {% endif %}
 {% if block.settings.secondary_label != blank and secondary_action != blank %}
 {% if secondary_is_popup %}
-<button class="sm-button sm-button--secondary" type="button" data-sm-popup-open="secondary-{{ block.id }}" data-sm-popup-html="{{ secondary_action | escape }}">{{ block.settings.secondary_label }}</button>
+<button class="sm-button sm-button--secondary" type="button" data-sm-popup-open="secondary-{{ block.id }}" data-sm-popup-html="{{ secondary_popup_html | escape }}">{{ block.settings.secondary_label }}</button>
 {% else %}
 <a class="sm-button sm-button--secondary" href="{{ secondary_action }}">{{ block.settings.secondary_label }}</a>
 {% endif %}
@@ -239,11 +249,11 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"checkbox","id":"show_benefits_mobile","label":"Mostra benefit su mobile","default":true},
 {"type":"select","id":"benefit_weight","label":"Peso benefit","default":"600","options":[{"value":"400","label":"Normale"},{"value":"500","label":"Medio"},{"value":"600","label":"Semibold"},{"value":"700","label":"Bold"},{"value":"800","label":"Extra bold"},{"value":"900","label":"Black"}]},
 {"type":"range","id":"benefit_icon_size","min":6,"max":40,"step":1,"unit":"px","label":"Dimensione icone benefit","default":18},
-{"type":"text","id":"benefit_1_icon","label":"Icona 1 - codice Lucide","default":"shield","info":"Scrivi solo il codice icona, per esempio credit-card, mouse-pointer, shield-check. Catalogo: lucide.dev/icons."},
+{"type":"text","id":"benefit_1_icon","label":"Icona 1 - codice Lucide","default":"shield"},
 {"type":"text","id":"benefit_1","label":"Testo benefit 1","default":"Corsi riconosciuti"},
-{"type":"text","id":"benefit_2_icon","label":"Icona 2 - codice Lucide","default":"book","info":"Scrivi solo il codice icona, per esempio book, clock, graduation-cap."},
+{"type":"text","id":"benefit_2_icon","label":"Icona 2 - codice Lucide","default":"book"},
 {"type":"text","id":"benefit_2","label":"Testo benefit 2","default":"Studia quando vuoi"},
-{"type":"text","id":"benefit_3_icon","label":"Icona 3 - codice Lucide","default":"users","info":"Scrivi solo il codice icona, per esempio users, heart-handshake, badge-check."},
+{"type":"text","id":"benefit_3_icon","label":"Icona 3 - codice Lucide","default":"users"},
 {"type":"text","id":"benefit_3","label":"Testo benefit 3","default":"Supporto reale"}
 ]
 }
