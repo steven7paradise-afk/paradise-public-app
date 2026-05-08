@@ -114,6 +114,10 @@ export default function WorkersPage() {
       {actionData?.success ? <s-banner tone="success">{actionData.success}</s-banner> : null}
 
       <s-section heading="Nuovo lavoratore">
+        <div className="tc-section-intro">
+          <h2>Nuovo profilo</h2>
+          <p>Aggiungi dati, sede e PIN personale. Il codice e gia pronto, ma puoi cambiarlo.</p>
+        </div>
         <Form method="post" className="tc-form-grid">
           <input type="hidden" name="intent" value="createWorker" />
           <label>
@@ -148,11 +152,17 @@ export default function WorkersPage() {
             <input name="pin" inputMode="numeric" minLength={4} maxLength={4} defaultValue={suggestedPin} />
             <small>Codice generato automaticamente. Puoi cambiarlo prima di salvare.</small>
           </label>
-          <button type="submit">Aggiungi lavoratore</button>
+          <div className="tc-form-action">
+            <button type="submit">Aggiungi lavoratore</button>
+          </div>
         </Form>
       </s-section>
 
       <s-section heading="Sedi">
+        <div className="tc-section-intro">
+          <h2>Sedi operative</h2>
+          <p>Gestisci le sedi senza perdere lo storico delle timbrature gia registrate.</p>
+        </div>
         <Form method="post" className="tc-inline-form">
           <input type="hidden" name="intent" value="createLocation" />
           <input name="locationName" placeholder="Nuova sede" />
@@ -174,6 +184,10 @@ export default function WorkersPage() {
       </s-section>
 
       <s-section heading="Elenco lavoratori">
+        <div className="tc-section-intro">
+          <h2>Team</h2>
+          <p>Disattiva o riattiva un lavoratore senza cancellare dati e report.</p>
+        </div>
         <div className="tc-table-wrap">
           <table className="tc-table">
             <thead>
@@ -191,7 +205,7 @@ export default function WorkersPage() {
                 <tr key={worker.id}>
                   <td>
                     <div className="tc-worker-cell">
-                      {worker.photoUrl ? <img src={worker.photoUrl} alt="" /> : <span />}
+                      {worker.photoUrl ? <img src={worker.photoUrl} alt="" /> : <span>{worker.name.charAt(0).toUpperCase()}</span>}
                       {worker.name}
                     </div>
                   </td>
