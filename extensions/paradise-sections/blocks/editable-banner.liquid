@@ -25,6 +25,7 @@ style="
 --sm-mobile-text-gap: {{ block.settings.mobile_text_gap }}px;
 --sm-model-mobile-gap: 20px;
 --sm-content-width: {{ block.settings.content_width }}px;
+--sm-layout-scale: {{ block.settings.layout_scale | divided_by: 100.0 }};
 --sm-text-x: {{ block.settings.text_x }}%;
 --sm-text-y: {{ block.settings.text_y }}%;
 --sm-mobile-text-x: {{ block.settings.mobile_text_x }}%;
@@ -177,6 +178,7 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"select","id":"text_position","label":"Allineamento testo desktop","default":"right","options":[{"value":"left","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"right","label":"Destra"}]},
 {"type":"select","id":"mobile_copy_flow","label":"Composizione testo mobile","default":"together","options":[{"value":"together","label":"Tutto insieme"},{"value":"split","label":"Titolo sopra immagine"}]},
 {"type":"range","id":"content_width","min":420,"max":980,"step":20,"unit":"px","label":"Larghezza blocco testo desktop","default":820},
+{"type":"range","id":"layout_scale","min":70,"max":110,"step":5,"unit":"%","label":"Scala layout","default":100},
 {"type":"range","id":"text_x","min":-30,"max":30,"step":2,"unit":"%","label":"Testo X desktop","default":0},
 {"type":"range","id":"text_y","min":-30,"max":30,"step":2,"unit":"%","label":"Testo Y desktop","default":0},
 {"type":"range","id":"mobile_text_x","min":-30,"max":30,"step":2,"unit":"%","label":"Testo X mobile","default":0},
