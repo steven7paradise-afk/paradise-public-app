@@ -40,6 +40,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return { success: "Lavoratore disattivato senza cancellare lo storico." };
   }
 
+  if (intent === "deactivateLocation") {
+    const id = String(formData.get("locationId") || "");
+    await prisma.$transaction([
+      prisma.worker.updateMany({ where: { locationId: id }, data: { locationId: null } }),
+      prisma.location.update({ where: { id }, data: { active: false } }),
+    ]);
+    return { success: "Sede disattivata. I lavoratori collegati sono stati spostati su nessuna sede." };
+  }
+
   const pin = String(formData.get("pin") || "").trim();
   const name = String(formData.get("name") || "").trim();
 
@@ -119,6 +128,18 @@ export default function WorkersPage() {
           <input name="locationName" placeholder="Nuova sede" />
           <button type="submit">Aggiungi sede</button>
         </Form>
+        <div className="tc-location-list">
+          {locations.map((location) => (
+            <div key={location.id}>
+              <span>{location.name}</span>
+              <Form method="post">
+                <input type="hidden" name="intent" value="deactivateLocation" />
+                <input type="hidden" name="locationId" value={location.id} />
+                <button type="submit">Disattiva</button>
+              </Form>
+            </div>
+          ))}
+        </div>
       </s-section>
 
       <s-section heading="Elenco lavoratori">

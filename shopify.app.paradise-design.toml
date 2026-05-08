@@ -10,7 +10,12 @@ api_version = "2026-07"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_metaobject_definitions,write_metaobjects,write_products,write_files"
+scopes = "write_metaobject_definitions,write_metaobjects,write_products,write_files,write_app_proxy"
+
+[app_proxy]
+url = "/apps/timbratura"
+prefix = "apps"
+subpath = "timbratura"
 
 [auth]
 redirect_urls = [ "https://paradise-public-app.onrender.com/auth/callback" ]

@@ -68,6 +68,28 @@
   align-items: end;
 }
 
+.tc-location-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  max-width: 520px;
+}
+
+.tc-location-list div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #eadde1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+}
+
+.tc-location-list span {
+  font-weight: 750;
+}
+
 .tc-table-wrap {
   overflow-x: auto;
 }
