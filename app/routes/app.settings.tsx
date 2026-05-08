@@ -33,6 +33,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function SettingsPage() {
   const { shop } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+  const clockUrl = "https://www.paradisebeauty.it/apps/timbratura";
 
   return (
     <s-page heading="Impostazioni timbratura">
@@ -64,8 +65,7 @@ export default function SettingsPage() {
       </s-section>
       <s-section heading="Pagina lavoratore">
         <s-paragraph>
-          Usa <code>/clock?shop={shop.shop}</code> per testare la schermata lavoratore. In produzione puo essere collegata
-          a <code>/apps/timbratura</code> tramite Shopify App Proxy.
+          Usa <code>{clockUrl}</code> come schermata lavoratore sul sito. Il collegamento passa da Shopify App Proxy.
         </s-paragraph>
       </s-section>
     </s-page>

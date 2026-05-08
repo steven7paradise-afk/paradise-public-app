@@ -61,7 +61,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     }),
   ]);
 
-  return { shop, workers, entries, edits };
+  const clockUrl =
+    process.env.STOREFRONT_CLOCK_URL ||
+    (process.env.SHOP_CUSTOM_DOMAIN
+      ? `https://${process.env.SHOP_CUSTOM_DOMAIN}/apps/timbratura`
+      : "https://www.paradisebeauty.it/apps/timbratura");
+
+  return { shop, workers, entries, edits, clockUrl };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -126,7 +132,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function TimeClockDashboard() {
-  const { shop, workers, entries, edits } = useLoaderData<typeof loader>();
+  const { workers, entries, edits, clockUrl } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const present = workers.filter((worker) => currentStatus(worker.timeEntries[0]) === "PRESENT").length;
   const paused = workers.filter((worker) => currentStatus(worker.timeEntries[0]) === "BREAK").length;
@@ -276,7 +282,7 @@ export default function TimeClockDashboard() {
             <Link to="/app/reports">Report mensile</Link>
           </s-list-item>
           <s-list-item>
-            <a href={`/clock?shop=${shop.shop}`} target="_blank" rel="noreferrer">
+            <a href={clockUrl} target="_blank" rel="noreferrer">
               Apri schermata lavoratore
             </a>
           </s-list-item>
