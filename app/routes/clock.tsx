@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { useEffect, useState } from "react";
-import { Form, useActionData, useLoaderData } from "react-router";
+import { Form, useActionData, useLoaderData, useLocation } from "react-router";
 
 import prisma from "../db.server";
 import { validPin } from "../services/auth.server";
@@ -149,12 +149,16 @@ function LiveClock({ dateLabel }: { dateLabel: string }) {
 export default function ClockPage() {
   const { shop, shopParam, todayLabel } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+  const location = useLocation();
   const worker = actionData && "worker" in actionData ? actionData.worker : null;
   const status = actionData && "status" in actionData ? actionData.status : undefined;
   const pin = actionData && "pin" in actionData ? actionData.pin : "";
   const appUrl = "https://paradise-public-app.onrender.com";
   const logoSrc = shop?.logoUrl || `${appUrl}/paradise-logo-black.svg`;
   const workerInitial = worker?.name?.trim()?.charAt(0)?.toUpperCase() || "?";
+  const isStorefrontProxy = location.pathname.includes("/apps/timbratura");
+  const cleanAction = isStorefrontProxy ? "/apps/timbratura" : `/clock?shop=${encodeURIComponent(shopParam)}`;
+  const cleanExit = cleanAction;
 
   return (
     <main className="clock-page">
@@ -175,7 +179,7 @@ export default function ClockPage() {
         ) : null}
 
         {!worker ? (
-          <Form method="post" className="clock-pin-form">
+          <Form method="post" action={cleanAction} className="clock-pin-form">
             <input type="hidden" name="shop" value={shopParam} />
             <input type="hidden" name="intent" value="verify" />
             <label htmlFor="pin">Codice PIN</label>
@@ -215,7 +219,7 @@ export default function ClockPage() {
 
             <div className="clock-actions">
               {actionButtons(String(status || "OUT")).map(([intent, label]) => (
-                <Form method="post" key={intent}>
+                <Form method="post" action={cleanAction} key={intent}>
                   <input type="hidden" name="shop" value={shopParam} />
                   <input type="hidden" name="pin" value={pin} />
                   <input type="hidden" name="intent" value={intent} />
@@ -226,7 +230,7 @@ export default function ClockPage() {
 
             <details className="clock-leave">
               <summary>Chiedi permesso</summary>
-              <Form method="post">
+              <Form method="post" action={cleanAction}>
                 <input type="hidden" name="shop" value={shopParam} />
                 <input type="hidden" name="pin" value={pin} />
                 <input type="hidden" name="intent" value="leaveRequest" />
@@ -250,7 +254,7 @@ export default function ClockPage() {
               </Form>
             </details>
 
-            <a className="clock-secondary clock-exit-link" href={`/clock?shop=${encodeURIComponent(shopParam)}`}>
+            <a className="clock-secondary clock-exit-link" href={cleanExit}>
               Esci
             </a>
           </div>
