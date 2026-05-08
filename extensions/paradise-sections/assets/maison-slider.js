@@ -118,8 +118,63 @@
     document.head.appendChild(script);
   }
 
+  function initPopups(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+
+    scope.querySelectorAll("[data-sm-popup-open]").forEach(function (button) {
+      if (button.dataset.smPopupReady === "true") return;
+      button.dataset.smPopupReady = "true";
+
+      button.addEventListener("click", function () {
+        var id = button.getAttribute("data-sm-popup-open");
+        var popup = document.querySelector('[data-sm-popup="' + id + '"]');
+        var html = button.getAttribute("data-sm-popup-html") || "";
+
+        if (!popup && html) {
+          popup = document.createElement("div");
+          popup.className = "sm-popup";
+          popup.setAttribute("data-sm-popup", id);
+          popup.hidden = true;
+          popup.innerHTML =
+            '<div class="sm-popup-backdrop" data-sm-popup-close></div>' +
+            '<div class="sm-popup-dialog" role="dialog" aria-modal="true">' +
+            '<button class="sm-popup-close" type="button" data-sm-popup-close aria-label="Chiudi">×</button>' +
+            '<div class="sm-popup-content"></div>' +
+            "</div>";
+          popup.querySelector(".sm-popup-content").innerHTML = html;
+          document.body.appendChild(popup);
+        }
+
+        if (!popup) return;
+
+        if (popup.parentElement !== document.body) {
+          document.body.appendChild(popup);
+        }
+
+        popup.hidden = false;
+        document.body.classList.add("sm-popup-lock");
+
+        var close = popup.querySelector("[data-sm-popup-close]");
+        if (close) {
+          window.requestAnimationFrame(function () {
+            close.focus();
+          });
+        }
+      });
+    });
+  }
+
+  function closePopup(popup) {
+    if (!popup) return;
+    popup.hidden = true;
+    if (!document.querySelector(".sm-popup:not([hidden])")) {
+      document.body.classList.remove("sm-popup-lock");
+    }
+  }
+
   function refresh(event) {
     renderLucideIcons(event && event.target ? event.target : document);
+    initPopups(event && event.target ? event.target : document);
     requestUpdate();
   }
 
@@ -138,4 +193,15 @@
   document.addEventListener("shopify:section:load", refresh);
   document.addEventListener("shopify:section:select", refresh);
   document.addEventListener("shopify:block:select", refresh);
+
+  document.addEventListener("click", function (event) {
+    var close = event.target.closest("[data-sm-popup-close]");
+    if (!close) return;
+    closePopup(close.closest("[data-sm-popup]"));
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape") return;
+    closePopup(document.querySelector(".sm-popup:not([hidden])"));
+  });
 })();

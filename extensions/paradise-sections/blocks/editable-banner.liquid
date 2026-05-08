@@ -100,9 +100,27 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {% if block.settings.subtitle != blank %}<p class="sm-subtitle">{{ block.settings.subtitle }}</p>{% endif %}
 {% if block.settings.description != blank %}<div class="sm-description">{{ block.settings.description }}</div>{% endif %}
 {% if block.settings.primary_label != blank or block.settings.secondary_label != blank %}
+{% assign primary_action = block.settings.primary_link | strip %}
+{% assign secondary_action = block.settings.secondary_link | strip %}
+{% assign primary_is_popup = false %}
+{% assign secondary_is_popup = false %}
+{% if primary_action contains '<' %}{% assign primary_is_popup = true %}{% endif %}
+{% if secondary_action contains '<' %}{% assign secondary_is_popup = true %}{% endif %}
 <div class="sm-actions">
-{% if block.settings.primary_label != blank and block.settings.primary_link != blank %}<a class="sm-button sm-button--primary" href="{{ block.settings.primary_link }}">{{ block.settings.primary_label }}</a>{% endif %}
-{% if block.settings.secondary_label != blank and block.settings.secondary_link != blank %}<a class="sm-button sm-button--secondary" href="{{ block.settings.secondary_link }}">{{ block.settings.secondary_label }}</a>{% endif %}
+{% if block.settings.primary_label != blank and primary_action != blank %}
+{% if primary_is_popup %}
+<button class="sm-button sm-button--primary" type="button" data-sm-popup-open="primary-{{ block.id }}" data-sm-popup-html="{{ primary_action | escape }}">{{ block.settings.primary_label }}</button>
+{% else %}
+<a class="sm-button sm-button--primary" href="{{ primary_action }}">{{ block.settings.primary_label }}</a>
+{% endif %}
+{% endif %}
+{% if block.settings.secondary_label != blank and secondary_action != blank %}
+{% if secondary_is_popup %}
+<button class="sm-button sm-button--secondary" type="button" data-sm-popup-open="secondary-{{ block.id }}" data-sm-popup-html="{{ secondary_action | escape }}">{{ block.settings.secondary_label }}</button>
+{% else %}
+<a class="sm-button sm-button--secondary" href="{{ secondary_action }}">{{ block.settings.secondary_label }}</a>
+{% endif %}
+{% endif %}
 </div>
 {% endif %}
 {% if block.settings.benefit_1 != blank or block.settings.benefit_2 != blank or block.settings.benefit_3 != blank %}
@@ -200,9 +218,9 @@ data-scroll-effect="{{ block.settings.scroll_effect }}"
 {"type":"color","id":"accent_color","label":"Colore evidenziato","default":"#b985ff"},
 {"type":"header","content":"04 - Bottoni"},
 {"type":"text","id":"primary_label","label":"Bottone 1 - testo","default":"Scopri il percorso giusto per te"},
-{"type":"url","id":"primary_link","label":"Bottone 1 - link"},
+{"type":"text","id":"primary_link","label":"Bottone 1 - link o codice popup"},
 {"type":"text","id":"secondary_label","label":"Bottone 2 - testo","default":"Guarda i corsi"},
-{"type":"url","id":"secondary_link","label":"Bottone 2 - link"},
+{"type":"text","id":"secondary_link","label":"Bottone 2 - link o codice popup"},
 {"type":"select","id":"button_desktop_position","label":"Posizione bottoni desktop","default":"flex-start","options":[{"value":"flex-start","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"flex-end","label":"Destra"}]},
 {"type":"range","id":"button_desktop_width","min":140,"max":520,"step":20,"unit":"px","label":"Larghezza bottoni desktop","default":300},
 {"type":"range","id":"button_desktop_size","min":11,"max":24,"step":1,"unit":"px","label":"Testo bottoni desktop","default":16},
