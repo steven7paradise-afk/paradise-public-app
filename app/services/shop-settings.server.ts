@@ -13,7 +13,8 @@ export async function ensureShopSettings(shop: string) {
 
 export async function findPublicShop(shop?: string | null) {
   if (shop) {
-    return prisma.shopSettings.findUnique({ where: { shop } });
+    const exactShop = await prisma.shopSettings.findUnique({ where: { shop } });
+    if (exactShop) return exactShop;
   }
 
   return prisma.shopSettings.findFirst({ orderBy: { createdAt: "asc" } });
