@@ -5,6 +5,11 @@ import { PrismaClient } from "@prisma/client";
 
 const databaseUrl = process.env.DATABASE_URL || "file:./dev.sqlite";
 
+if (!databaseUrl.startsWith("file:")) {
+  console.log("Non-SQLite database detected. Prisma db push will handle schema setup.");
+  process.exit(0);
+}
+
 if (databaseUrl.startsWith("file:")) {
   const rawPath = databaseUrl.slice("file:".length);
   if (rawPath.startsWith("/")) {
