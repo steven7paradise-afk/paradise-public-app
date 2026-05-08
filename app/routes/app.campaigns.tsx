@@ -784,7 +784,7 @@ export default function CampaignsPage() {
       return next;
     });
 
-    const target = event.target as HTMLInputElement;
+    const target = event.target as unknown as HTMLInputElement;
     if (target.type === "file" && target.files?.[0]) {
       const previewUrl = URL.createObjectURL(target.files[0]);
       if (target.name === "desktop_image_file") setDesktopFilePreview(previewUrl);

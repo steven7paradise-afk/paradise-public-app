@@ -32,3 +32,139 @@ model Session {
   refreshToken        String?
   refreshTokenExpires DateTime?
 }
+
+model ShopSettings {
+  id                 String   @id @default(cuid())
+  shop               String   @unique
+  companyName        String?
+  logoUrl            String?
+  managerEmail       String?
+  breakPaid          Boolean  @default(false)
+  forgottenClockHour Int      @default(22)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  workers            Worker[]
+  locations          Location[]
+  adminUsers         AdminUser[]
+  timeEntries        TimeEntry[]
+  leaveRequests      LeaveRequest[]
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  shopId    String
+  name      String
+  address   String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shop      ShopSettings @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  workers   Worker[]
+  entries   TimeEntry[]
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  shopId       String
+  name         String
+  email        String
+  passwordHash String
+  role         String   @default("MANAGER")
+  active       Boolean  @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  shop         ShopSettings @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  edits        TimeEntryEdit[]
+
+  @@unique([shopId, email])
+}
+
+model Worker {
+  id         String   @id @default(cuid())
+  shopId     String
+  locationId String?
+  name       String
+  role       String?
+  email      String?
+  photoUrl   String?
+  pinHash    String
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  shop          ShopSettings   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  location      Location?      @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  timeEntries   TimeEntry[]
+  leaveRequests LeaveRequest[]
+
+  @@index([shopId, active])
+}
+
+model TimeEntry {
+  id                 String   @id @default(cuid())
+  shopId             String
+  workerId           String
+  locationId         String?
+  workDate           DateTime
+  clockInReal        DateTime?
+  clockInRounded     DateTime?
+  breakStartReal     DateTime?
+  breakStartRounded  DateTime?
+  breakEndReal       DateTime?
+  breakEndRounded    DateTime?
+  clockOutReal       DateTime?
+  clockOutRounded    DateTime?
+  breakPaidSnapshot  Boolean  @default(false)
+  totalMinutes       Int      @default(0)
+  status             String   @default("INCOMPLETE")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  shop       ShopSettings    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  worker     Worker          @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  location   Location?       @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  edits      TimeEntryEdit[]
+
+  @@index([shopId, workDate])
+  @@index([workerId, workDate])
+}
+
+model TimeEntryEdit {
+  id          String   @id @default(cuid())
+  timeEntryId String
+  adminUserId String?
+  fieldName   String
+  oldValue    String?
+  newValue    String?
+  note        String
+  createdAt   DateTime @default(now())
+
+  timeEntry TimeEntry  @relation(fields: [timeEntryId], references: [id], onDelete: Cascade)
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([timeEntryId])
+}
+
+model LeaveRequest {
+  id         String   @id @default(cuid())
+  shopId     String
+  workerId   String
+  date       DateTime
+  startTime  DateTime
+  endTime    DateTime?
+  reason     String
+  status     String   @default("PENDING")
+  reviewedBy String?
+  reviewedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  shop   ShopSettings @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  worker Worker       @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@index([shopId, status])
+}

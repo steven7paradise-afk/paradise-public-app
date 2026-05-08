@@ -14,7 +14,7 @@ const shopify = shopifyApp({
   scopes: (process.env.SCOPES || "write_metaobject_definitions,write_metaobjects,write_products,write_files").split(","),
   appUrl: process.env.SHOPIFY_APP_URL || "https://paradise-public-app.onrender.com",
   authPathPrefix: "/auth",
-  sessionStorage: new PrismaSessionStorage(prisma),
+  sessionStorage: new PrismaSessionStorage(prisma) as never,
   distribution: AppDistribution.AppStore,
   future: {
     expiringOfflineAccessTokens: true,

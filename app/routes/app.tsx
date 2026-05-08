@@ -4,6 +4,7 @@ import { boundary } from "@shopify/shopify-app-react-router/server";
 import { AppProvider } from "@shopify/shopify-app-react-router/react";
 
 import { authenticate } from "../shopify.server";
+import "../styles/time-clock.css";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
@@ -19,6 +20,11 @@ export default function App() {
     <AppProvider embedded apiKey={apiKey}>
       <s-app-nav>
         <s-link href="/app/campaigns">Campagne ADV</s-link>
+        <s-link href="/app/timeclock">Timbratura</s-link>
+        <s-link href="/app/workers">Lavoratori</s-link>
+        <s-link href="/app/reports">Report</s-link>
+        <s-link href="/app/admins">Admin</s-link>
+        <s-link href="/app/settings">Impostazioni</s-link>
       </s-app-nav>
       <Outlet />
     </AppProvider>
