@@ -1,12 +1,23 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { Form, redirect, useActionData } from "react-router";
 
+import prisma from "../db.server";
 import { getResponsibleSession, loginResponsible } from "../services/responsible-auth.server";
 import "../styles/time-clock.css";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getResponsibleSession(request);
-  if (session.get("adminUserId")) throw redirect("/admin");
+  const adminUserId = session.get("adminUserId");
+
+  if (typeof adminUserId === "string") {
+    const admin = await prisma.adminUser.findFirst({
+      where: { id: adminUserId, active: true },
+      select: { id: true },
+    });
+
+    if (admin) throw redirect("/admin");
+  }
+
   return null;
 };
 
