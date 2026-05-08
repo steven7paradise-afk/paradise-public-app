@@ -1,4 +1,5 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
+import { useEffect, useState } from "react";
 import { Form, useActionData, useLoaderData } from "react-router";
 
 import prisma from "../db.server";
@@ -12,7 +13,7 @@ const storefrontStyles = `
   .clock-page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;padding:0 20px 28px;background:linear-gradient(180deg,#f4c8df 0 52%,#fff 52% 100%);color:#171015;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
   .clock-header{width:min(100%,460px);display:flex;justify-content:space-between;align-items:center;min-height:128px;margin-top:clamp(46px,14vh,150px);padding:0 2px 16px}
   .clock-header-logo{width:154px;max-width:52%;max-height:76px;object-fit:contain}
-  .clock-header span{color:#6a565f;font-size:14px;font-weight:760;text-align:right;text-transform:capitalize}
+  .clock-datetime{display:grid;gap:4px;color:#6a565f;text-align:right}.clock-datetime span{font-size:14px;font-weight:760;text-transform:capitalize}.clock-datetime strong{color:#221f20;font-size:28px;line-height:1;font-weight:850;letter-spacing:0}
   .clock-panel{width:min(100%,460px);border:1px solid rgba(34,31,32,.08);border-radius:14px;padding:28px 26px 26px;background:#fff;box-shadow:0 24px 70px rgba(89,42,66,.14);text-align:center}
   .clock-panel-heading{margin-bottom:26px}.clock-panel-heading p{margin:0 0 6px;color:#8f7781;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.clock-panel h1{margin:0;font-size:34px;line-height:1.1;letter-spacing:0}
   .clock-pin-form,.clock-worker,.clock-leave form{display:grid;gap:14px}.clock-pin-form label,.clock-leave label{display:grid;gap:6px;color:#3b2d31;font-size:13px;font-weight:650}
@@ -24,7 +25,7 @@ const storefrontStyles = `
   .clock-worker h2{margin:0;font-size:24px}.clock-worker p{margin:4px 0 10px;color:#6d5960}.clock-status{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:13px}.clock-status-present{background:#d9f4e4;color:#0f6b3f}.clock-status-break{background:#fff2c7;color:#765000}.clock-status-out{background:#ece7e9;color:#5d5055}
   .clock-actions{display:grid;gap:10px}.clock-actions form,.clock-actions button{width:100%}.clock-leave{text-align:left;border-top:1px solid #eadde1;padding-top:12px}.clock-leave summary{cursor:pointer;font-weight:750;text-align:center;min-height:44px;display:grid;place-items:center}
   .clock-error,.clock-success{border-radius:8px;padding:10px 12px;font-weight:650}.clock-error{background:#ffe4e4;color:#8a1f1f}.clock-success{background:#d9f4e4;color:#0f6b3f}
-  @media(max-width:520px){.clock-page{padding:0 16px 22px}.clock-header{min-height:96px;margin-top:34px;padding-bottom:12px}.clock-header-logo{width:132px;max-width:50%}.clock-header span{font-size:12px;max-width:140px}.clock-panel{padding:22px 18px;border-radius:12px}.clock-panel h1{font-size:28px}.clock-worker-card{align-items:flex-start}}
+  @media(max-width:520px){.clock-page{padding:0 16px 22px}.clock-header{min-height:96px;margin-top:34px;padding-bottom:12px}.clock-header-logo{width:132px;max-width:50%}.clock-datetime span{font-size:12px}.clock-datetime strong{font-size:22px}.clock-panel{padding:22px 18px;border-radius:12px}.clock-panel h1{font-size:28px}.clock-worker-card{align-items:flex-start}}
 `;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -116,6 +117,35 @@ function actionButtons(status?: string) {
   return [["clockIn", "Timbra ingresso"]];
 }
 
+function LiveClock({ dateLabel }: { dateLabel: string }) {
+  const [time, setTime] = useState(() =>
+    new Date().toLocaleTimeString("it-IT", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  );
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setTime(
+        new Date().toLocaleTimeString("it-IT", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      );
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="clock-datetime">
+      <span>{dateLabel}</span>
+      <strong>{time}</strong>
+    </div>
+  );
+}
+
 export default function ClockPage() {
   const { shop, shopParam, todayLabel } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
@@ -131,7 +161,7 @@ export default function ClockPage() {
       <style dangerouslySetInnerHTML={{ __html: storefrontStyles }} />
       <header className="clock-header">
         <img className="clock-header-logo" src={logoSrc} alt={shop?.companyName || "Paradise"} />
-        <span>{todayLabel}</span>
+        <LiveClock dateLabel={todayLabel} />
       </header>
       <section className="clock-panel">
         <div className="clock-panel-heading">

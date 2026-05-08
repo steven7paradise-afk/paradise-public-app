@@ -383,12 +383,25 @@
   object-fit: contain;
 }
 
-.clock-header span {
+.clock-datetime {
+  display: grid;
+  gap: 4px;
   color: #6a565f;
+  text-align: right;
+}
+
+.clock-datetime span {
   font-size: 14px;
   font-weight: 760;
-  text-align: right;
   text-transform: capitalize;
+}
+
+.clock-datetime strong {
+  color: #221f20;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 850;
+  letter-spacing: 0;
 }
 
 .clock-panel {
@@ -578,9 +591,13 @@
     max-width: 50%;
   }
 
-  .clock-header span {
+  .clock-datetime span {
     font-size: 12px;
     max-width: 140px;
+  }
+
+  .clock-datetime strong {
+    font-size: 22px;
   }
 
   .clock-panel {
