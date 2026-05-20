@@ -1,8 +1,7 @@
-# Copia questo file in shopify.app.netlify.toml quando hai l'URL Netlify definitivo.
-# Esempio URL: https://paradise-design.netlify.app
+# Config produzione Netlify per paradise_design.
 
 client_id = "42dc399cfbfed4bef0844ac123237b6b"
-application_url = "https://YOUR-NETLIFY-SITE.netlify.app"
+application_url = "https://paradise-public-app.netlify.app"
 embedded = true
 name = "paradise_design"
 
@@ -13,7 +12,7 @@ api_version = "2026-07"
 scopes = "write_metaobject_definitions,write_metaobjects,write_products,write_files"
 
 [auth]
-redirect_urls = [ "https://YOUR-NETLIFY-SITE.netlify.app/auth/callback" ]
+redirect_urls = [ "https://paradise-public-app.netlify.app/auth/callback" ]
 
 [build]
 automatically_update_urls_on_dev = true

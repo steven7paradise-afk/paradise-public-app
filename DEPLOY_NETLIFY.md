@@ -24,7 +24,7 @@ In Netlify > Site configuration > Environment variables aggiungi:
 SHOPIFY_API_KEY=42dc399cfbfed4bef0844ac123237b6b
 SHOPIFY_API_SECRET=IL_TUO_SECRET_SHOPIFY
 SHOPIFY_APP_URL=https://TUO-SITO-NETLIFY.netlify.app
-SCOPES=write_metaobject_definitions,write_metaobjects,write_products,write_files,write_app_proxy
+SCOPES=write_metaobject_definitions,write_metaobjects,write_products,write_files
 DATABASE_URL=postgresql://...
 ```
 
