@@ -21,7 +21,6 @@ DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
 In Netlify > Site configuration > Environment variables aggiungi:
 
 ```txt
-NODE_ENV=production
 SHOPIFY_API_KEY=42dc399cfbfed4bef0844ac123237b6b
 SHOPIFY_API_SECRET=IL_TUO_SECRET_SHOPIFY
 SHOPIFY_APP_URL=https://TUO-SITO-NETLIFY.netlify.app
@@ -72,6 +71,8 @@ Dopo il deploy, apri l'app nello store Shopify. Se chiede login o resta bianca, 
 - redirect URL Shopify uguale a `https://TUO-SITO-NETLIFY.netlify.app/auth/callback`
 - `DATABASE_URL` valido
 - `SHOPIFY_API_SECRET` corretto
+
+Non impostare `NODE_ENV=production` manualmente su Netlify: durante l'installazione puo' impedire l'installazione delle devDependencies necessarie al build.
 
 ## Nota importante
 

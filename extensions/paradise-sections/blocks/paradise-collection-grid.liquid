@@ -275,6 +275,8 @@ style="
 --pcg-quick-text: {{ block.settings.quick_add_text_color }};
 --pcg-quick-hover-bg: {{ block.settings.quick_add_hover_background }};
 --pcg-quick-hover-text: {{ block.settings.quick_add_hover_text_color }};
+--pcg-soft-pink: #f7a8bd;
+--pcg-pink: #f05286;
 "
 {{ block.shopify_attributes }}
 >
@@ -311,6 +313,47 @@ style="
 {% for product in grid_collection.products %}
 {% assign product_number = forloop.index %}
 {% assign product_variant = product.selected_or_first_available_variant %}
+{% assign product_color = product.metafields.custom.colore.value | default: product.metafields.custom.color.value %}
+{% assign product_swatch = product.metafields.custom.colore_hex.value | default: product.metafields.custom.color_hex.value %}
+{% if product_color == blank %}
+{% for product_option in product.options_with_values %}
+{% assign option_name = product_option.name | downcase %}
+{% if option_name contains 'colore' or option_name contains 'color' %}
+{% case forloop.index %}
+{% when 1 %}{% assign product_color = product_variant.option1 | default: product_option.values.first %}
+{% when 2 %}{% assign product_color = product_variant.option2 | default: product_option.values.first %}
+{% when 3 %}{% assign product_color = product_variant.option3 | default: product_option.values.first %}
+{% endcase %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if product_color == blank %}
+{% assign product_color = product.title | replace: 'Clip-In', '' | replace: 'Clip In', '' | replace: 'Clip in', '' | replace: 'Invisible', '' | replace: 'Extension', '' | replace: 'Extensions', '' | strip %}
+{% endif %}
+{% assign color_key = product_color | downcase %}
+{% if product_swatch == blank %}
+{% if color_key contains 'nero' or color_key contains 'black' or color_key contains 'off black' %}
+{% assign product_swatch = '#17110f' %}
+{% elsif color_key contains 'castano' or color_key contains 'brown' or color_key contains 'brunette' %}
+{% assign product_swatch = '#5b2f1f' %}
+{% elsif color_key contains 'chocolate' or color_key contains 'cioccolato' or color_key contains 'espresso' %}
+{% assign product_swatch = '#3a1e16' %}
+{% elsif color_key contains 'bronde' or color_key contains 'balayage' or color_key contains 'tortoiseshell' %}
+{% assign product_swatch = 'linear-gradient(135deg, #4a2518 0%, #8f5531 48%, #d4a46e 100%)' %}
+{% elsif color_key contains 'biondo' or color_key contains 'blonde' or color_key contains 'champagne' %}
+{% assign product_swatch = '#d7ad75' %}
+{% elsif color_key contains 'ash' or color_key contains 'cenere' %}
+{% assign product_swatch = '#b7a391' %}
+{% else %}
+{% assign product_swatch = 'linear-gradient(135deg, #4b261c 0%, #8b5638 50%, #d4a06f 100%)' %}
+{% endif %}
+{% endif %}
+{% assign primary_card_image = product.featured_image %}
+{% assign secondary_card_image = blank %}
+{% if product.images.size > 1 %}
+{% assign primary_card_image = product.images[1] %}
+{% assign secondary_card_image = product.featured_image %}
+{% endif %}
 <article class="pcg-product-card{% if block.settings.enable_load_more and product_number > block.settings.initial_visible_products %} pcg-product-card--hidden{% endif %}" data-product-card>
 <a class="pcg-product-media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
 {% if block.settings.show_discount_badge and product.compare_at_price > product.price %}
@@ -324,11 +367,10 @@ style="
 {% endif %}
 </span>
 {% endif %}
-{% if product.featured_image != blank %}
-{{ product.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--primary' }}
-{% if block.settings.show_hover_image and product.images.size > 1 %}
-{% assign hover_image = product.images[1] %}
-{{ hover_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--hover' }}
+{% if primary_card_image != blank %}
+{{ primary_card_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--primary' }}
+{% if block.settings.show_hover_image and secondary_card_image != blank %}
+{{ secondary_card_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300, 450, 600, 750, 900', sizes: '(max-width: 749px) 50vw, 25vw', alt: product.title, class: 'pcg-product-img pcg-product-img--hover' }}
 {% endif %}
 {% endif %}
 </a>
@@ -339,6 +381,12 @@ style="
 {% endif %}
 <a class="pcg-product-title" href="{{ product.url }}">{{ product.title }}</a>
 </span>
+{% if product_color != blank %}
+<span class="pcg-product-color">
+<span class="pcg-product-color-dot" style="--pcg-swatch: {{ product_swatch }};"></span>
+<span><strong>COLORE:</strong> {{ product_color }}</span>
+</span>
+{% endif %}
 {% if block.settings.show_rating %}
 <span class="pcg-rating" aria-label="{{ block.settings.rating_value }} stelle su 5">
 <span class="pcg-stars" aria-hidden="true">
@@ -415,434 +463,5 @@ Esaurito
 </div>
 </section>
 {% schema %}
-{
-"name": "Paradise Collection Grid",
-"target": "section",
-"stylesheet": "paradise-collection-grid.css",
-"settings": [
-{
-"type": "checkbox",
-"id": "use_current_collection",
-"label": "Usa collezione corrente",
-"default": false
-},
-{
-"type": "collection",
-"id": "collection",
-"label": "Collezione manuale"
-},
-{
-"type": "text",
-"id": "kicker",
-"label": "Sopratitolo",
-"default": "Shop"
-},
-{
-"type": "text",
-"id": "heading",
-"label": "Titolo"
-},
-{
-"type": "select",
-"id": "heading_alignment",
-"label": "Allineamento titolo",
-"default": "left",
-"options": [
-{ "value": "left", "label": "Sinistra" },
-{ "value": "center", "label": "Centro" },
-{ "value": "right", "label": "Destra" }
-]
-},
-{
-"type": "checkbox",
-"id": "enable_load_more",
-"label": "Mostra prodotti a pagine",
-"default": true
-},
-{
-"type": "range",
-"id": "initial_visible_products",
-"min": 4,
-"max": 24,
-"step": 1,
-"label": "Prodotti visibili all'inizio",
-"default": 12
-},
-{
-"type": "range",
-"id": "load_more_step",
-"min": 2,
-"max": 24,
-"step": 1,
-"label": "Prodotti da mostrare ogni click",
-"default": 8
-},
-{
-"type": "text",
-"id": "load_more_label",
-"label": "Testo bottone mostra altro",
-"default": "Mostra altro"
-},
-{
-"type": "select",
-"id": "desktop_columns",
-"label": "Colonne desktop",
-"default": "3",
-"options": [
-{ "value": "3", "label": "3 prodotti per riga" },
-{ "value": "4", "label": "4 prodotti per riga" }
-]
-},
-{
-"type": "select",
-"id": "mobile_columns",
-"label": "Colonne mobile",
-"default": "1",
-"options": [
-{ "value": "1", "label": "1 colonna" },
-{ "value": "2", "label": "2 colonne" }
-]
-},
-{
-"type": "checkbox",
-"id": "show_price",
-"label": "Mostra prezzo",
-"default": true
-},
-{
-"type": "checkbox",
-"id": "show_vendor",
-"label": "Mostra brand/vendor",
-"default": false
-},
-{
-"type": "checkbox",
-"id": "show_quick_add",
-"label": "Mostra quantita e aggiungi al carrello",
-"default": true
-},
-{
-"type": "text",
-"id": "quick_add_label",
-"label": "Testo bottone carrello",
-"default": "Aggiungi al carrello"
-},
-{
-"type": "checkbox",
-"id": "show_hover_image",
-"label": "Mostra seconda immagine al passaggio mouse",
-"default": true
-},
-{
-"type": "checkbox",
-"id": "show_view_toolbar",
-"label": "Mostra barra cambio vista",
-"default": true
-},
-{
-"type": "select",
-"id": "product_image_fit",
-"label": "Visualizzazione immagine",
-"default": "contain",
-"options": [
-{ "value": "contain", "label": "Completa" },
-{ "value": "cover", "label": "Riempi card" }
-]
-},
-{
-"type": "color",
-"id": "product_image_background",
-"label": "Colore spazio area immagine",
-"default": "#ffffff"
-},
-{
-"type": "range",
-"id": "product_image_padding",
-"min": 0,
-"max": 40,
-"step": 2,
-"unit": "px",
-"label": "Spazio interno immagine",
-"default": 0
-},
-{
-"type": "range",
-"id": "product_image_scale",
-"min": 80,
-"max": 140,
-"step": 5,
-"unit": "%",
-"label": "Dimensione immagine prodotto",
-"default": 100
-},
-{
-"type": "select",
-"id": "product_image_position",
-"label": "Posizione immagine prodotto",
-"default": "center center",
-"options": [
-{ "value": "center center", "label": "Centro" },
-{ "value": "center top", "label": "Alto" },
-{ "value": "center bottom", "label": "Basso" },
-{ "value": "left center", "label": "Sinistra" },
-{ "value": "right center", "label": "Destra" }
-]
-},
-{
-"type": "select",
-"id": "product_text_alignment",
-"label": "Allineamento testi prodotto",
-"default": "left",
-"options": [
-{ "value": "left", "label": "Sinistra" },
-{ "value": "center", "label": "Centro" },
-{ "value": "right", "label": "Destra" }
-]
-},
-{
-"type": "checkbox",
-"id": "show_discount_badge",
-"label": "Mostra badge sconto",
-"default": true
-},
-{
-"type": "text",
-"id": "discount_badge_label",
-"label": "Testo badge sconto"
-},
-{
-"type": "color",
-"id": "discount_badge_background",
-"label": "Sfondo badge sconto",
-"default": "#d24f5f"
-},
-{
-"type": "color",
-"id": "discount_badge_text_color",
-"label": "Testo badge sconto",
-"default": "#ffffff"
-},
-{
-"type": "select",
-"id": "discount_badge_position",
-"label": "Posizione badge sconto",
-"default": "top-left",
-"options": [
-{ "value": "top-left", "label": "Alto sinistra" },
-{ "value": "top-right", "label": "Alto destra" },
-{ "value": "bottom-left", "label": "Basso sinistra" },
-{ "value": "bottom-right", "label": "Basso destra" }
-]
-},
-{
-"type": "range",
-"id": "discount_badge_font_size",
-"min": 8,
-"max": 22,
-"step": 1,
-"unit": "px",
-"label": "Dimensione badge sconto",
-"default": 11
-},
-{
-"type": "range",
-"id": "discount_badge_radius",
-"min": 0,
-"max": 24,
-"step": 2,
-"unit": "px",
-"label": "Angoli badge sconto",
-"default": 4
-},
-{
-"type": "color",
-"id": "product_card_background",
-"label": "Sfondo card prodotto",
-"default": "#ffffff"
-},
-{
-"type": "color",
-"id": "product_card_border",
-"label": "Bordo card prodotto",
-"default": "#ece3e0"
-},
-{
-"type": "select",
-"id": "product_title_font",
-"label": "Font titolo prodotto",
-"default": "inherit",
-"options": [
-{ "value": "inherit", "label": "Font tema" },
-{ "value": "Arial, sans-serif", "label": "Sans moderna" },
-{ "value": "Georgia, serif", "label": "Editoriale serif" },
-{ "value": "'Helvetica Neue', Arial, sans-serif", "label": "Helvetica" }
-]
-},
-{
-"type": "select",
-"id": "product_title_weight",
-"label": "Peso titolo prodotto",
-"default": "750",
-"options": [
-{ "value": "400", "label": "Normale" },
-{ "value": "600", "label": "Semi bold" },
-{ "value": "750", "label": "Bold" },
-{ "value": "900", "label": "Extra bold" }
-]
-},
-{
-"type": "range",
-"id": "product_title_size",
-"min": 10,
-"max": 28,
-"step": 1,
-"unit": "px",
-"label": "Dimensione titolo prodotto",
-"default": 15
-},
-{
-"type": "color",
-"id": "product_title_color",
-"label": "Colore titolo prodotto",
-"default": "#171313"
-},
-{
-"type": "color",
-"id": "product_vendor_color",
-"label": "Colore vendor",
-"default": "#6c5958"
-},
-{
-"type": "color",
-"id": "product_price_color",
-"label": "Colore prezzo",
-"default": "#5c5350"
-},
-{
-"type": "color",
-"id": "product_compare_price_color",
-"label": "Colore prezzo barrato",
-"default": "#9a8b88"
-},
-{
-"type": "checkbox",
-"id": "show_rating",
-"label": "Mostra stelle recensioni",
-"default": true
-},
-{
-"type": "range",
-"id": "rating_value",
-"min": 0,
-"max": 5,
-"step": 1,
-"label": "Numero stelle",
-"default": 5
-},
-{
-"type": "text",
-"id": "rating_review_count",
-"label": "Numero recensioni",
-"default": "0"
-},
-{
-"type": "color",
-"id": "rating_star_color",
-"label": "Colore stelle piene",
-"default": "#171313"
-},
-{
-"type": "color",
-"id": "rating_empty_star_color",
-"label": "Colore stelle vuote",
-"default": "#d8cecb"
-},
-{
-"type": "color",
-"id": "rating_text_color",
-"label": "Colore numero recensioni",
-"default": "#6c5958"
-},
-{
-"type": "color",
-"id": "quick_add_background",
-"label": "Sfondo quantita e bottone",
-"default": "#ffffff"
-},
-{
-"type": "color",
-"id": "quick_add_text_color",
-"label": "Testo quantita e bottone",
-"default": "#171313"
-},
-{
-"type": "color",
-"id": "quick_add_border_color",
-"label": "Bordo quantita e bottone",
-"default": "#171313"
-},
-{
-"type": "color",
-"id": "quick_add_hover_background",
-"label": "Sfondo bottone hover",
-"default": "#171313"
-},
-{
-"type": "color",
-"id": "quick_add_hover_text_color",
-"label": "Testo bottone hover",
-"default": "#ffffff"
-},
-{
-"type": "checkbox",
-"id": "show_adv",
-"label": "Inserisci ADV nella griglia",
-"default": true
-},
-{
-"type": "checkbox",
-"id": "use_global_campaign",
-"label": "Usa campagna globale dall'app",
-"default": true
-},
-{
-"type": "checkbox",
-"id": "use_collection_campaign",
-"label": "Usa campagna della collezione",
-"default": true
-},
-{
-"type": "text",
-"id": "adv_slot_code",
-"label": "Codice ADV",
-"default": "collection-adv-1"
-},
-{
-"type": "text",
-"id": "adv_slot_codes",
-"label": "Altri ADV"
-},
-{
-"type": "select",
-"id": "adv_animation",
-"label": "Animazione",
-"default": "fade",
-"options": [
-{"value": "fade", "label": "Fade"},
-{"value": "slide", "label": "Slide"},
-{"value": "zoom", "label": "Zoom"}
-]
-},
-{
-"type": "range",
-"id": "adv_interval",
-"min": 2,
-"max": 10,
-"step": 1,
-"unit": "s",
-"label": "Durata",
-"default": 4
-}
-]
-}
+{"name":"Paradise Collection Grid","target":"section","stylesheet":"paradise-collection-grid.css","settings":[{"type":"checkbox","id":"use_current_collection","label":"Usa collezione corrente","default":false},{"type":"collection","id":"collection","label":"Collezione manuale"},{"type":"text","id":"kicker","label":"Sopratitolo","default":"Shop"},{"type":"text","id":"heading","label":"Titolo"},{"type":"select","id":"heading_alignment","label":"Allineamento titolo","default":"left","options":[{"value":"left","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"right","label":"Destra"}]},{"type":"checkbox","id":"enable_load_more","label":"Mostra prodotti a pagine","default":true},{"type":"range","id":"initial_visible_products","min":4,"max":24,"step":1,"label":"Prodotti visibili all'inizio","default":12},{"type":"range","id":"load_more_step","min":2,"max":24,"step":1,"label":"Prodotti da mostrare ogni click","default":8},{"type":"text","id":"load_more_label","label":"Testo bottone mostra altro","default":"Mostra altro"},{"type":"select","id":"desktop_columns","label":"Colonne desktop","default":"3","options":[{"value":"3","label":"3 prodotti per riga"},{"value":"4","label":"4 prodotti per riga"}]},{"type":"select","id":"mobile_columns","label":"Colonne mobile","default":"1","options":[{"value":"1","label":"1 colonna"},{"value":"2","label":"2 colonne"}]},{"type":"checkbox","id":"show_price","label":"Mostra prezzo","default":true},{"type":"checkbox","id":"show_vendor","label":"Mostra brand/vendor","default":false},{"type":"checkbox","id":"show_quick_add","label":"Mostra quantita e aggiungi al carrello","default":true},{"type":"text","id":"quick_add_label","label":"Testo bottone carrello","default":"Aggiungi al carrello"},{"type":"checkbox","id":"show_hover_image","label":"Mostra seconda immagine al passaggio mouse","default":true},{"type":"checkbox","id":"show_view_toolbar","label":"Mostra barra cambio vista","default":true},{"type":"select","id":"product_image_fit","label":"Visualizzazione immagine","default":"contain","options":[{"value":"contain","label":"Completa"},{"value":"cover","label":"Riempi card"}]},{"type":"color","id":"product_image_background","label":"Colore spazio area immagine","default":"#ffffff"},{"type":"range","id":"product_image_padding","min":0,"max":40,"step":2,"unit":"px","label":"Spazio interno immagine","default":0},{"type":"range","id":"product_image_scale","min":80,"max":140,"step":5,"unit":"%","label":"Dimensione immagine prodotto","default":100},{"type":"select","id":"product_image_position","label":"Posizione immagine prodotto","default":"center center","options":[{"value":"center center","label":"Centro"},{"value":"center top","label":"Alto"},{"value":"center bottom","label":"Basso"},{"value":"left center","label":"Sinistra"},{"value":"right center","label":"Destra"}]},{"type":"select","id":"product_text_alignment","label":"Allineamento testi prodotto","default":"left","options":[{"value":"left","label":"Sinistra"},{"value":"center","label":"Centro"},{"value":"right","label":"Destra"}]},{"type":"checkbox","id":"show_discount_badge","label":"Mostra badge sconto","default":true},{"type":"text","id":"discount_badge_label","label":"Testo badge sconto"},{"type":"color","id":"discount_badge_background","label":"Sfondo badge sconto","default":"#f05286"},{"type":"color","id":"discount_badge_text_color","label":"Testo badge sconto","default":"#ffffff"},{"type":"select","id":"discount_badge_position","label":"Posizione badge sconto","default":"top-left","options":[{"value":"top-left","label":"Alto sinistra"},{"value":"top-right","label":"Alto destra"},{"value":"bottom-left","label":"Basso sinistra"},{"value":"bottom-right","label":"Basso destra"}]},{"type":"range","id":"discount_badge_font_size","min":8,"max":22,"step":1,"unit":"px","label":"Dimensione badge sconto","default":11},{"type":"range","id":"discount_badge_radius","min":0,"max":24,"step":2,"unit":"px","label":"Angoli badge sconto","default":4},{"type":"color","id":"product_card_background","label":"Sfondo card prodotto","default":"#ffffff"},{"type":"color","id":"product_card_border","label":"Bordo card prodotto","default":"#f6dce4"},{"type":"select","id":"product_title_font","label":"Font titolo prodotto","default":"inherit","options":[{"value":"inherit","label":"Font tema"},{"value":"Arial, sans-serif","label":"Sans moderna"},{"value":"Georgia, serif","label":"Editoriale serif"},{"value":"'Helvetica Neue', Arial, sans-serif","label":"Helvetica"}]},{"type":"select","id":"product_title_weight","label":"Peso titolo prodotto","default":"750","options":[{"value":"400","label":"Normale"},{"value":"600","label":"Semi bold"},{"value":"750","label":"Bold"},{"value":"900","label":"Extra bold"}]},{"type":"range","id":"product_title_size","min":10,"max":28,"step":1,"unit":"px","label":"Dimensione titolo prodotto","default":15},{"type":"color","id":"product_title_color","label":"Colore titolo prodotto","default":"#171313"},{"type":"color","id":"product_vendor_color","label":"Colore vendor","default":"#6c5958"},{"type":"color","id":"product_price_color","label":"Colore prezzo","default":"#5c5350"},{"type":"color","id":"product_compare_price_color","label":"Colore prezzo barrato","default":"#9a8b88"},{"type":"checkbox","id":"show_rating","label":"Mostra stelle recensioni","default":true},{"type":"range","id":"rating_value","min":0,"max":5,"step":1,"label":"Numero stelle","default":5},{"type":"text","id":"rating_review_count","label":"Numero recensioni","default":"0"},{"type":"color","id":"rating_star_color","label":"Colore stelle piene","default":"#171313"},{"type":"color","id":"rating_empty_star_color","label":"Colore stelle vuote","default":"#f3d7df"},{"type":"color","id":"rating_text_color","label":"Colore numero recensioni","default":"#6c5958"},{"type":"color","id":"quick_add_background","label":"Sfondo quantita e bottone","default":"#ffffff"},{"type":"color","id":"quick_add_text_color","label":"Testo quantita e bottone","default":"#171313"},{"type":"color","id":"quick_add_border_color","label":"Bordo quantita e bottone","default":"#f05286"},{"type":"color","id":"quick_add_hover_background","label":"Sfondo bottone hover","default":"#f05286"},{"type":"color","id":"quick_add_hover_text_color","label":"Testo bottone hover","default":"#ffffff"},{"type":"checkbox","id":"show_adv","label":"Inserisci ADV nella griglia","default":true},{"type":"checkbox","id":"use_global_campaign","label":"Usa campagna globale dall'app","default":true},{"type":"checkbox","id":"use_collection_campaign","label":"Usa campagna della collezione","default":true},{"type":"text","id":"adv_slot_code","label":"Codice ADV","default":"collection-adv-1"},{"type":"text","id":"adv_slot_codes","label":"Altri ADV"},{"type":"select","id":"adv_animation","label":"Animazione","default":"fade","options":[{"value":"fade","label":"Fade"},{"value":"slide","label":"Slide"},{"value":"zoom","label":"Zoom"}]},{"type":"range","id":"adv_interval","min":2,"max":10,"step":1,"unit":"s","label":"Durata","default":4}]}
 {% endschema %}

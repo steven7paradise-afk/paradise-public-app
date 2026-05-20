@@ -156,6 +156,12 @@
   transform: scale(calc(var(--pcg-image-scale, 1) + 0.035));
 }
 
+.pcg-product-card:hover,
+.pcg-product-card:focus-within {
+  border-color: var(--pcg-soft-pink, #f7a8bd);
+  box-shadow: 0 14px 34px rgba(240, 82, 134, 0.12);
+}
+
 .pcg-sale-badge {
   background: var(--pcg-sale-bg);
   border-radius: var(--pcg-sale-radius);
@@ -238,6 +244,34 @@
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.pcg-product-color {
+  align-items: center;
+  color: #5c5350;
+  display: flex;
+  font-size: 11px;
+  gap: 7px;
+  justify-content: var(--pcg-text-justify, flex-start);
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.pcg-product-color strong {
+  color: var(--pcg-pink, #f05286);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+}
+
+.pcg-product-color-dot {
+  background: var(--pcg-swatch);
+  border: 2px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--pcg-soft-pink, #f7a8bd);
+  flex: 0 0 auto;
+  height: 18px;
+  width: 18px;
 }
 
 .pcg-rating {
@@ -357,6 +391,10 @@
 .pcg-cart-button:hover {
   background: var(--pcg-quick-hover-bg);
   color: var(--pcg-quick-hover-text);
+}
+
+.pcg-qty-btn:hover {
+  color: var(--pcg-pink, #f05286);
 }
 
 .pcg-cart-button:disabled {
