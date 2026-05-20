@@ -20,11 +20,6 @@ export default function App() {
     <AppProvider embedded apiKey={apiKey}>
       <s-app-nav>
         <s-link href="/app/campaigns">Campagne ADV</s-link>
-        <s-link href="/app/timeclock">Timbratura</s-link>
-        <s-link href="/app/workers">Lavoratori</s-link>
-        <s-link href="/app/reports">Report</s-link>
-        <s-link href="/app/admins">Admin</s-link>
-        <s-link href="/app/settings">Impostazioni</s-link>
       </s-app-nav>
       <Outlet />
     </AppProvider>
