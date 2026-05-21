@@ -41,6 +41,8 @@ type AdminClient = {
   graphql: (query: string, options?: { variables?: Record<string, unknown> }) => Promise<Response>;
 };
 
+let cachedClientCredentialsToken = "";
+
 function shopFromRequest(request: Request) {
   const url = new URL(request.url);
   const configuredShop =
@@ -52,21 +54,63 @@ function shopFromRequest(request: Request) {
   return url.searchParams.get("shop") || configuredShop;
 }
 
+async function getClientCredentialsToken(shop: string) {
+  if (cachedClientCredentialsToken) return cachedClientCredentialsToken;
+
+  // eslint-disable-next-line no-undef
+  const clientId = process.env.SHOPIFY_API_KEY;
+  // eslint-disable-next-line no-undef
+  const clientSecret = process.env.SHOPIFY_API_SECRET;
+
+  if (!clientId || !clientSecret) return "";
+
+  const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      client_id: clientId,
+      client_secret: clientSecret,
+      grant_type: "client_credentials",
+    }),
+  });
+
+  const payload = (await response.json().catch(() => ({}))) as {
+    access_token?: string;
+    error?: string;
+    error_description?: string;
+  };
+
+  if (!response.ok || !payload.access_token) {
+    throw new Error(payload.error_description || payload.error || "Shopify non ha autorizzato il token automatico.");
+  }
+
+  cachedClientCredentialsToken = payload.access_token;
+  return cachedClientCredentialsToken;
+}
+
 function adminTokenClient(shop: string): AdminClient | null {
   // eslint-disable-next-line no-undef
-  const token = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
-  if (!token) return null;
+  const staticToken = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
 
   return {
-    graphql: (query, options) =>
-      fetch(`https://${shop}/admin/api/2025-10/graphql.json`, {
+    graphql: async (query, options) => {
+      const token = staticToken || (await getClientCredentialsToken(shop));
+      if (!token) {
+        throw new Error("Connessione Shopify non autorizzata: mancano le credenziali Admin API.");
+      }
+
+      return fetch(`https://${shop}/admin/api/2025-10/graphql.json`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-Shopify-Access-Token": token,
         },
         body: JSON.stringify({ query, variables: options?.variables || {} }),
-      }),
+      });
+    },
   };
 }
 
@@ -75,8 +119,7 @@ async function getAdminClient(request: Request) {
     const { admin } = await authenticate.admin(request);
     return admin as AdminClient;
   } catch (error) {
-    const fallbackAdmin = adminTokenClient(shopFromRequest(request));
-    if (fallbackAdmin) return fallbackAdmin;
+    return adminTokenClient(shopFromRequest(request)) as AdminClient;
     throw error;
   }
 }
