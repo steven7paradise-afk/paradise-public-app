@@ -499,13 +499,14 @@ async function uploadImageFile(
 }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const admin = await getAdminClient(request);
   const selectedHandle = new URL(request.url).searchParams.get("handle") || "";
 
   let campaigns: Campaign[] = [];
   let setupError = "";
+  let admin: AdminClient | null = null;
 
   try {
+    admin = await getAdminClient(request);
     await ensureCampaignDefinition(admin);
 
     const data = await runGraphql<{
@@ -542,12 +543,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       fields: fieldMap(campaign.fields),
     }));
   } catch (error) {
-    setupError = error instanceof Error ? error.message : "Errore durante il setup delle campagne.";
+    setupError =
+      error instanceof Error
+        ? error.message
+        : "Connessione Shopify non autorizzata. Aggiungi SHOPIFY_ADMIN_ACCESS_TOKEN nelle variabili Netlify.";
   }
 
   let collections: CollectionOption[] = [];
 
   try {
+    if (!admin) throw new Error("Admin non disponibile.");
     const collectionData = await runGraphql<{
       collections: {
         nodes: CollectionOption[];
@@ -575,11 +580,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const admin = await getAdminClient(request);
   const formData = await request.formData();
   const handle = normalizeHandle(formData.get("handle"));
 
   try {
+    const admin = await getAdminClient(request);
     await ensureCampaignDefinition(admin);
 
     const appFormFieldKeys = [
