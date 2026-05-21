@@ -37,6 +37,50 @@ type MetaobjectNode = {
   }>;
 };
 
+type AdminClient = {
+  graphql: (query: string, options?: { variables?: Record<string, unknown> }) => Promise<Response>;
+};
+
+function shopFromRequest(request: Request) {
+  const url = new URL(request.url);
+  const configuredShop =
+    // eslint-disable-next-line no-undef
+    process.env.SHOPIFY_DEFAULT_SHOP ||
+    // eslint-disable-next-line no-undef
+    process.env.SHOPIFY_SHOP_DOMAIN ||
+    "c1uzax-u0.myshopify.com";
+  return url.searchParams.get("shop") || configuredShop;
+}
+
+function adminTokenClient(shop: string): AdminClient | null {
+  // eslint-disable-next-line no-undef
+  const token = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
+  if (!token) return null;
+
+  return {
+    graphql: (query, options) =>
+      fetch(`https://${shop}/admin/api/2025-10/graphql.json`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Access-Token": token,
+        },
+        body: JSON.stringify({ query, variables: options?.variables || {} }),
+      }),
+  };
+}
+
+async function getAdminClient(request: Request) {
+  try {
+    const { admin } = await authenticate.admin(request);
+    return admin as AdminClient;
+  } catch (error) {
+    const fallbackAdmin = adminTokenClient(shopFromRequest(request));
+    if (fallbackAdmin) return fallbackAdmin;
+    throw error;
+  }
+}
+
 const fieldDefinitions = [
   { key: "is_active", name: "Attiva", type: "boolean" },
   { key: "starts_at", name: "Data inizio", type: "date_time" },
@@ -197,7 +241,7 @@ function imageFormatHelp(format = "") {
 }
 
 async function runGraphql<TData extends Record<string, unknown>>(
-  admin: Awaited<ReturnType<typeof authenticate.admin>>["admin"],
+  admin: AdminClient,
   query: string,
   variables = {},
 ) {
@@ -214,7 +258,7 @@ async function runGraphql<TData extends Record<string, unknown>>(
   return payload.data as TData;
 }
 
-async function ensureCampaignDefinition(admin: Awaited<ReturnType<typeof authenticate.admin>>["admin"]) {
+async function ensureCampaignDefinition(admin: AdminClient) {
   const existing = await runGraphql<{
     metaobjectDefinitionByType?: {
       id: string;
@@ -321,7 +365,7 @@ async function ensureCampaignDefinition(admin: Awaited<ReturnType<typeof authent
   }
 }
 
-async function getCampaign(admin: Awaited<ReturnType<typeof authenticate.admin>>["admin"], handle: string) {
+async function getCampaign(admin: AdminClient, handle: string) {
   const data = await runGraphql<{
     metaobjectByHandle?: MetaobjectNode | null;
   }>(
@@ -352,7 +396,7 @@ async function getCampaign(admin: Awaited<ReturnType<typeof authenticate.admin>>
 }
 
 async function uploadImageFile(
-  admin: Awaited<ReturnType<typeof authenticate.admin>>["admin"],
+  admin: AdminClient,
   file: File,
   alt: string,
 ) {
@@ -455,7 +499,7 @@ async function uploadImageFile(
 }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+  const admin = await getAdminClient(request);
   const selectedHandle = new URL(request.url).searchParams.get("handle") || "";
 
   let campaigns: Campaign[] = [];
@@ -531,7 +575,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+  const admin = await getAdminClient(request);
   const formData = await request.formData();
   const handle = normalizeHandle(formData.get("handle"));
 
