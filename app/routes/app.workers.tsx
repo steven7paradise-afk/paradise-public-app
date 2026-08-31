@@ -15,7 +15,9 @@ async function generateUniquePin(shopId: string) {
   for (let attempt = 0; attempt < 20; attempt += 1) {
     const pin = randomPin();
     const existing = await prisma.worker.findFirst({
-      where: { shopId, pinHash: hashPin(pin), active: true },
+      // I PIN degli ex dipendenti restano riservati: riutilizzarli permetterebbe
+      // a chi conosce il vecchio codice di timbrare con il profilo nuovo.
+      where: { shopId, pinHash: hashPin(pin) },
       select: { id: true },
     });
 
@@ -85,9 +87,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (!validPin(pin)) return { error: "Il PIN deve avere 4 cifre." };
 
   const existingPin = await prisma.worker.findFirst({
-    where: { shopId: shop.id, pinHash: hashPin(pin), active: true },
+    where: { shopId: shop.id, pinHash: hashPin(pin) },
   });
-  if (existingPin) return { error: "Questo PIN e gia assegnato a un lavoratore attivo." };
+  if (existingPin) return { error: "Questo PIN è già stato assegnato. Scegli un codice diverso." };
 
   await prisma.worker.create({
     data: {

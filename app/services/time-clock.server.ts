@@ -11,11 +11,10 @@ import {
 export type ClockAction = "clockIn" | "breakStart" | "breakEnd" | "clockOut";
 
 export async function getWorkerByPin(shopId: string, pin: string) {
-  return prisma.worker.findFirst({
+  const workers = await prisma.worker.findMany({
     where: {
       shopId,
       pinHash: hashPin(pin),
-      active: true,
     },
     include: {
       location: true,
@@ -25,7 +24,13 @@ export async function getWorkerByPin(shopId: string, pin: string) {
         take: 1,
       },
     },
+    take: 2,
   });
+
+  // Un ex dipendente non può timbrare. Blocchiamo anche i vecchi PIN duplicati:
+  // potrebbero essere conosciuti da una persona che non lavora più in azienda.
+  if (workers.length !== 1 || !workers[0].active) return null;
+  return workers[0];
 }
 
 export async function getTodayEntry(workerId: string, shopId: string) {

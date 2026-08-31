@@ -23,6 +23,7 @@ const storefrontStyles = `
   .clock-pin-form button,.clock-actions button{min-height:52px;font-size:16px}.clock-secondary{display:block;background:#fff!important;color:#171015!important;border:1px solid #d8c7cc!important;box-shadow:none!important}
   .clock-worker-card{display:flex;align-items:center;gap:16px;text-align:left;border:1px solid rgba(34,31,32,.08);border-radius:12px;padding:14px;background:#fff8fb}.clock-avatar{width:82px;height:82px;border-radius:50%;object-fit:cover;background:#f6cfe4;flex:0 0 auto}.clock-avatar-initial{display:grid;place-items:center;border:1px solid rgba(34,31,32,.08);color:#221f20;font-size:34px;font-weight:800}
   .clock-worker h2{margin:0;font-size:24px}.clock-worker p{margin:4px 0 10px;color:#6d5960}.clock-status{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:13px}.clock-status-present{background:#d9f4e4;color:#0f6b3f}.clock-status-break{background:#fff2c7;color:#765000}.clock-status-out{background:#ece7e9;color:#5d5055}
+  .clock-times{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.clock-time{display:grid;gap:4px;border:1px solid #eadde1;border-radius:10px;padding:12px;background:#fff;text-align:left}.clock-time span{color:#806b73;font-size:12px;font-weight:750;text-transform:uppercase}.clock-time strong{color:#221f20;font-size:20px}
   .clock-actions{display:grid;gap:10px}.clock-actions form,.clock-actions button{width:100%}.clock-leave{text-align:left;border-top:1px solid #eadde1;padding-top:12px}.clock-leave summary{cursor:pointer;font-weight:750;text-align:center;min-height:44px;display:grid;place-items:center}
   .clock-error,.clock-success{border-radius:8px;padding:10px 12px;font-weight:650}.clock-error{background:#ffe4e4;color:#8a1f1f}.clock-success{background:#d9f4e4;color:#0f6b3f}
   @media(max-width:520px){.clock-page{padding:0 16px 22px}.clock-header{min-height:96px;margin-top:34px;padding-bottom:12px}.clock-header-logo{width:132px;max-width:50%}.clock-datetime span{font-size:12px}.clock-datetime strong{font-size:22px}.clock-panel{padding:22px 18px;border-radius:12px}.clock-panel h1{font-size:28px}.clock-worker-card{align-items:flex-start}}
@@ -95,8 +96,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     const updatedWorker = await getWorkerByPin(shop.id, pin);
+    const successMessages: Record<string, string> = {
+      clockIn: "Entrata registrata correttamente.",
+      breakStart: "Inizio pausa registrato correttamente.",
+      breakEnd: "Fine pausa registrata correttamente.",
+      clockOut: "Uscita registrata correttamente.",
+    };
     return {
-      success: "Timbratura registrata.",
+      success: successMessages[intent] || "Timbratura registrata.",
       pin,
       worker: updatedWorker,
       status: currentStatus(updatedWorker?.timeEntries[0]),
@@ -115,6 +122,14 @@ function actionButtons(status?: string) {
   }
   if (status === "BREAK") return [["breakEnd", "Fine pausa"]];
   return [["clockIn", "Timbra ingresso"]];
+}
+
+function formatClockTime(value?: Date | string | null) {
+  if (!value) return "Non registrata";
+  return new Date(value).toLocaleTimeString("it-IT", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function LiveClock({ dateLabel }: { dateLabel: string }) {
@@ -161,6 +176,7 @@ export default function ClockPage() {
   const isStorefrontProxy = location.pathname.includes("/apps/timbratura");
   const cleanAction = isStorefrontProxy ? "/apps/timbratura" : `/clock?shop=${encodeURIComponent(shopParam)}`;
   const cleanExit = cleanAction;
+  const todayEntry = worker?.timeEntries?.[0];
 
   return (
     <main className="clock-page">
@@ -216,6 +232,17 @@ export default function ClockPage() {
                 <strong className={`clock-status clock-status-${String(status || "OUT").toLowerCase()}`}>
                   {statusLabel(String(status || "OUT"))}
                 </strong>
+              </div>
+            </div>
+
+            <div className="clock-times" aria-label="Timbrature di oggi">
+              <div className="clock-time">
+                <span>Entrata</span>
+                <strong>{formatClockTime(todayEntry?.clockInReal)}</strong>
+              </div>
+              <div className="clock-time">
+                <span>Uscita</span>
+                <strong>{formatClockTime(todayEntry?.clockOutReal)}</strong>
               </div>
             </div>
 
