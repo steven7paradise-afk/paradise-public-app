@@ -20,3 +20,7 @@ services:
         sync: false
       - key: SHOPIFY_APP_URL
         sync: false
+      - key: COWCALENDAR_API_KEY
+        sync: false
+      - key: COWCALENDAR_BOOKING_ENDPOINT
+        sync: false
